@@ -13,7 +13,7 @@
 # p_syn: percent pruned for synonymous variants
 ##############################################################################
 
-# Read in legend file 
+# Read in legend file (admixed)
 read_leg = function(dir, Pop1, Pop2, sim_rep) {
   
   leg = read.table(paste0(dir, 'chr19.block37.', Pop1, '-', Pop2, '.sim', sim_rep, '.legend'), header=T, sep='\t')
@@ -22,11 +22,29 @@ read_leg = function(dir, Pop1, Pop2, sim_rep) {
   return(leg)
 }
 
-# Read in haplotype file
+# Read in haplotype file (homogeneous)
+read_leg_homo = function(dir, Pop, sim_rep) {
+  
+  leg = read.table(paste0(dir, 'chr19.block37.', Pop, '.sim', sim_rep, '.legend'), header=T, sep='\t')
+  leg$row = 1:nrow(leg)
+  
+  return(leg)
+}
+
+# Read in haplotype file (admixed)
 read_hap = function(dir, Pop1, Pop2, sim_rep, scen, dataset, p_fun, p_syn) {
   
   hap = fread(paste0(dir, 'chr19.block37.', Pop1, '-', Pop2, '.sim', sim_rep, '.', scen, 
                      '.', dataset, '.', p_fun, 'fun.', p_syn, 'syn.haps.gz'))
+  hap = as.data.frame(hap)
+  
+  return(hap)
+}
+
+# Read in haplotype file (homogeneous)
+read_hap_homo = function(dir, Pop, sim_rep, dataset, p_fun, p_syn) {
+  
+  hap = fread(paste0(dir, 'chr19.block37.', Pop, '.sim', sim_rep, '.', dataset, '.', p_fun, 'fun.', p_syn, 'syn.haps.gz'))
   hap = as.data.frame(hap)
   
   return(hap)

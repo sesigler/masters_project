@@ -1,6 +1,7 @@
 ############################################################################## 
 # This file is used to generate the haplotype files necessary for running
 # the type I error and power calculations for proxECAT, LogProx, and iECAT-O
+# on an admixed population
 ##############################################################################
 
 library(data.table)
@@ -56,6 +57,9 @@ for(j in 1:100){
   
   # add allele counts to the haplotypes
   leg$count = rowSums(hap)
+  
+  # convert to minor allele counts
+  leg$MAC = ifelse(leg$count>Nsim, 2*Nsim-leg$count, leg$count)
   
   # subset the legend file to the functional variants (those are the only ones we'll prune)
   leg_fun = leg %>% filter(fun=="fun")
@@ -115,6 +119,7 @@ for(j in 1:100){
   # update the allele counts for just the common controls
   leg_cc = leg
   leg_cc$count = rowSums(hap_all_pruned)
+  leg_cc$MAC = ifelse(leg_cc$count>Nsim, 2*Nsim-leg_cc$count, leg_cc$count)
   
   # subset the variants
   leg_fun_cc = leg_cc %>% filter(fun=="fun")

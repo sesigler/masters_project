@@ -19,7 +19,7 @@ select_var = function(legend, bins){
   for (k in 1:nrow(bins)){ # loop through the MAC bins
     
     # subset the variants within the MAC bin
-    leg_k = legend %>% filter(count %in% c(bins$Lower[k]:bins$Upper[k]))
+    leg_k = legend %>% filter(MAC %in% c(bins$Lower[k]:bins$Upper[k]))
     
     if(nrow(leg_k)>0){
       
