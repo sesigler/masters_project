@@ -19,9 +19,9 @@ source("/home/math/siglersa/mastersProject/Input/read_in_funcs.R")
 source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
 
-source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/read_in_funcs.R")
-source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/general_data_manip.R")
-source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/methods_funcs.R")
+# source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/read_in_funcs.R")
+# source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/general_data_manip.R")
+# source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/methods_funcs.R")
 
 
 Pop = 'NFE'
@@ -37,8 +37,8 @@ dir_leg = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
 dir_in = '/home/math/siglersa/mastersProject/20K_NFE/cc10k/'
 dir_out ='/home/math/siglersa/mastersProject/Results/cc10k/'
 
-dir_leg = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/'
-dir_in = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/AFR_NFE_pops/cc10K_newMACs/'
+# dir_leg = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/'
+# dir_in = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/'
 
 # create empty vectors to store the p-values from each replicate
 prox_p = prox_int_p = c()
@@ -48,7 +48,7 @@ skat_int_p = skat_ext_p = skat_all_p = c()
 
 
 set.seed(1) 
-i=1
+# i=1
 # loop through the simulation replicates
 for (i in 1:100){
   
