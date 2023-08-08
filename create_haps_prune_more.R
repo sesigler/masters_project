@@ -1,7 +1,8 @@
 ############################################################################## 
 # This file is used to generate the haplotype files necessary for running
-# the type I error and power calculations for proxECAT, LogProx, and iECAT-O
-# on an admixed population
+# ADDITIONAL pruning scenarios for type I error calculations for proxECAT, 
+# LogProx, and iECAT-O on an admixed population
+# Note: only the additional pruned haplotype files are saved
 ##############################################################################
 
 library(data.table)
@@ -13,7 +14,7 @@ source("/home/math/siglersa/mastersProject/Input/subset_haps_funcs.R")
 Pop1 = 'AFR'
 Pop2 = 'NFE'
 p_case = 120
-p_conf = 80
+p_conf = 95
 Nsim = 22500 
 maf = 0.001
 scen = 's1' #scenario: 's1' or 's2'
@@ -72,41 +73,41 @@ for(j in 1:100){
   refs = ref_cols(afr_cols, nfe_cols, afr_ref_size, nfe_ref_size, cases, ics, ccs, scen)
   
   # subset the case haplotypes (120% fun and 100% syn)
-  hap_cases_pcase = sub_hap_scen(hap, cases, scen)
+  # hap_cases = sub_hap_scen(hap, cases, scen)
   
   # write the haplotype file for the cases (power)
-  fwrite(hap_cases_pcase, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.cases.', p_case, 'fun.100syn.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
+  # fwrite(hap_cases, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.cases.', p_case, 'fun.100syn.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
   
   # prune the functional variants back to 100%
   rem_fun = select_var(leg_fun, exp_fun)
   hap_all_pruned = prune_var(rem_fun, hap, Nsim)
   
-  # subset the pruned haplotypes (100% fun and 100% syn)
-  hap_cases = sub_hap_scen(hap_all_pruned, cases, scen)
-  hap_int = sub_hap_scen(hap_all_pruned, ics, scen)
-  hap_cc = sub_hap_cc(hap_all_pruned, ccs)
-  # subset the reference haplotypes (100% fun and 100% syn)
-  hap_refs_afr = sub_hap_refs(hap_all_pruned, refs, Pop1)
-  hap_refs_nfe = sub_hap_refs(hap_all_pruned, refs, Pop2)
+  # subset the datasets at 100% fun and syn
+  # hap_cases_pruned = sub_hap_scen(hap_all_pruned, cases, scen)
+  # hap_int = sub_hap_scen(hap_all_pruned, ics, scen)
+  # hap_cc = sub_hap_cc(hap_all_pruned, ccs)
+  # subset the reference haplotypes 
+  # hap_refs_afr = sub_hap_refs(hap_all_pruned, refs, Pop1)
+  # hap_refs_nfe = sub_hap_refs(hap_all_pruned, refs, Pop2)
   
-  # write the haplotype files for the pruned datasets
-  fwrite(hap_cases, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.cases.100fun.100syn.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
-  
-  fwrite(hap_int, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.internal.controls.100fun.100syn.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
-  
-  fwrite(hap_cc, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.common.controls.100fun.100syn.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
+  # write the haplotype file for the datasets pruned at 100% fun and syn
+  # fwrite(hap_cases_pruned, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.cases.100fun.100syn.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
 
-  fwrite(hap_refs_afr, paste0(dir_out, 'chr19.block37.', Pop1, '.sim', j, '.', scen, '.ref.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
-  fwrite(hap_refs_nfe, paste0(dir_out, 'chr19.block37.', Pop2, '.sim', j, '.', scen, '.ref.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
+  # fwrite(hap_int, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.internal.controls.100fun.100syn.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
+
+  # fwrite(hap_cc, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.common.controls.100fun.100syn.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
+
+  # fwrite(hap_refs_afr, paste0(dir_out, 'chr19.block37.', Pop1, '.sim', j, '.', scen, '.ref.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
+  # fwrite(hap_refs_nfe, paste0(dir_out, 'chr19.block37.', Pop2, '.sim', j, '.', scen, '.ref.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
   
   
-  #### Prune back to 80% of the functional and synonymous variants
+  #### Prune back to p_conf % of the functional and synonymous variants
   
   # update the allele counts for just the common controls
   leg_cc = leg
@@ -117,25 +118,25 @@ for(j in 1:100){
   leg_fun_cc = leg_cc %>% filter(fun=="fun")
   leg_syn_cc = leg_cc %>% filter(fun=="syn")
   
-  # prune the functional and synonymous variants of the common controls to 80%
+  # prune the functional and synonymous variants of the common controls to p_conf %
   rem_cc_fun = select_var(leg_fun_cc, exp_fun_conf)
   rem_cc_syn = select_var(leg_syn_cc, exp_syn_conf)
   hap_cc_conf = prune_var(rbind(rem_cc_fun, rem_cc_syn), hap_all_pruned, Nsim)
   
-  # subset the p_conf % pruned haplotype files
+  # subset the datasets to p_conf %
   hap_cc_pruned = sub_hap_cc(hap_cc_conf, ccs)
-  hap_case_pconf = sub_hap_scen(hap_cc_conf, cases, scen)
-  hap_int_pruned = sub_hap_scen(hap_cc_conf, ics, scen)
+  # hap_case_pruned_pconf = sub_hap_scen(hap_cc_conf, cases, scen)
+  # hap_int_pruned = sub_hap_scen(hap_cc_conf, ics, scen)
   
-  # write the haplotype files for the p_conf % pruned datasets
+  # write the haplotype files for the datasets pruned to p_conf %
   fwrite(hap_cc_pruned, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.common.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
-
-  fwrite(hap_case_pconf, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.cases.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
-
-  fwrite(hap_int_pruned, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.internal.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
+  
+  # fwrite(hap_case_pruned_pconf, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.cases.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
+  # 
+  # fwrite(hap_int_pruned, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.internal.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
   
   print(j)
 }
