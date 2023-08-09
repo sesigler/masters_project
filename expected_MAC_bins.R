@@ -6,10 +6,10 @@
 library(RAREsim)
 library(dplyr)
 
-Pop = 'AFR'
+Pop = 'NFE'
 p_case = 120
-p_conf = 85
-Nsim = 22500
+p_conf = 99
+Nsim = 20000
 reg_size = 19.029 
 
 

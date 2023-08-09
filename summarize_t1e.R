@@ -14,11 +14,11 @@ Pop1 = "AFR"
 Pop2 = "NFE"
 scen = "s1"
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
-Ncc = 'cc5k'  #Number of common controls: 'cc5k' or 'cc10k'
+Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
-ext_prune = 100
+ext_prune = 95
 
-dir = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/Results/cc5k/'
+dir = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/Results/cc10k/'
 
 ### Type 1 error
 
