@@ -31,7 +31,7 @@ iecat.p = skat.int.p = skat.ext.p = skat.all.p = c()
 
 
 # loop through the simulation replicates
-set.seed(1) 
+set.seed(13) 
 i=1
 for (i in 1:100){
   
@@ -98,11 +98,11 @@ for (i in 1:100){
    #prox.genes.p = rbind(prox.genes.p, prox.genes$p.value)
    
    # create case/control phenotype matrices for iECAT/SKAT
-   pheno.int = rep(0, (ncol(geno.cases) + ncol(geno.int))) 
-   pheno.int[1:ncol(geno.cases)] = 1
+   pheno_int = rep(0, (ncol(geno_cases) + ncol(geno_int))) 
+   pheno_int[1:ncol(geno_cases)] = 1
    
-   pheno.ext = rep(0, (ncol(geno.cases) + ncol(geno.cc))) 
-   pheno.ext[1:ncol(geno.cases)] = 1
+   pheno_ext = rep(0, (ncol(geno_cases) + ncol(geno_cc))) 
+   pheno_ext[1:ncol(geno_cases)] = 1
 
    pheno.all = rep(0, (ncol(geno.cases) + ncol(geno.int) + ncol(geno.cc))) 
    pheno.all[1:ncol(geno.cases)] = 1
@@ -118,8 +118,8 @@ for (i in 1:100){
    geno_all = cbind(geno_cases, geno_int, geno_cc)[-union(leg_syn$row, common_all$row),] # SKAT (all)
 
    # null model object
-   obj.int = SKAT_Null_Model(as.numeric(pheno.int) ~ 1, out_type="D") # D-dichotomous
-   obj.ext = SKAT_Null_Model(as.numeric(pheno.ext) ~ 1, out_type="D") # D-dichotomous
+   obj_int = SKAT_Null_Model(as.numeric(pheno_int) ~ 1, out_type="D") # D-dichotomous
+   obj_ext = SKAT_Null_Model(as.numeric(pheno_ext) ~ 1, out_type="D") # D-dichotomous
    obj.all = SKAT_Null_Model(as.numeric(pheno.all) ~ 1, out_type="D") # D-dichotomous
 
    # fit the ProxECATv2 model
@@ -134,7 +134,7 @@ for (i in 1:100){
    p.prox.int = summary(glm.int.prox)$coefficients[2,4]
    
    # create MAC matrix for external controls
-   tbl = data.frame(a0=rowSums(geno.ext)) %>% mutate(a1=2*ncol(geno.ext)-a0)
+   tbl = data.frame(a0=rowSums(geno_ext)) %>% mutate(a1=2*ncol(geno_ext)-a0)
    
    # call the iECAT function
    re = iECAT(t(geno.int.all), obj.int, as.matrix(tbl), method="optimal")
@@ -160,9 +160,9 @@ for (i in 1:100){
      data_gene = data_all %>% filter(gene==genes[g])
 
      # return NA if there are no minor alleles in any of the groups
-     if(summary(data.gene$group)[2]==0 | summary(data.gene$group)[1]==0 | #internal or external
-        summary(data.gene$case)[2]==0 | summary(data.gene$case)[1]==0 |   #control or case
-        summary(data.gene$fun)[2]==0 | summary(data.gene$fun)[1]==0){     #syn or fun
+     if(summary(data_gene$group)[[2]]==0 | summary(data_gene$group)[[1]]==0 | #internal or external
+        summary(data_gene$case)[[2]]==0 | summary(data_gene$case)[[1]]==0 |   #control or case
+        summary(data_gene$fun)[[2]]==0 | summary(data_gene$fun)[[1]]==0){     #syn or fun
 
        prox2.genes = c(prox2.genes, NA)
        iecat.genes = c(iecat.genes, NA)
@@ -178,11 +178,12 @@ for (i in 1:100){
         pvalue_genes = summary(glm_prox)$coefficients[2,4]
 
         # subset the genotype matrices
-        Z_int = geno_int_all[which(leg_fun$gene==genes[g]),]
-        Z_ext = geno_cases_cc[which(leg_fun$gene==genes[g]),]
+        # LAST FEW ROWS ARE NA FOR THE FIRST GENE, NEED TO FIGURE OUT WHY
+        Z_int = geno_int_all[which(leg_fun$gene==genes[g]), ]
+        Z_ext = geno_cases_cc[which(leg_fun$gene==genes[g]), ]
 
         # subset the MAC matrix for the external controls
-        tbl_gene = tbl[which(leg_fun$gene==genes[g]),]
+        tbl_gene = tbl[which(leg_fun$gene==genes[g]), ]
 
         # call the iECAT function
         re_gene = iECAT(t(Z_int), obj_int, as.matrix(tbl_gene), method="optimal")
@@ -192,6 +193,30 @@ for (i in 1:100){
         iecat.genes = c(iecat.genes, re_gene$p.value)
         skat.int.genes = c(skat.int.genes, re_gene$p.value.internal)
         skat.ext.genes = c(skat.ext.genes, re_skat_gene$p.value)
+     }
+   }
+   
+   # Check counts of MAC > 2 for internal and external samples
+   mac_df = data.frame(matrix(nrow = length(genes), ncol = 3))
+   colnames(mac_df) = c("Gene", "Internal ACs > 2", "External ACs > 2")
+   for (g in 1:length(genes)) {
+     mac_df[g, 1] = genes[g]
+     
+     Z_int = geno_int_all[which(leg_fun$gene==genes[g]),]
+     mac_df[g, 2] = length(which(rowSums(Z_int) > 2))
+     
+     tbl_gene = tbl[which(leg_fun$gene==genes[g]),]
+     mac_df[g, 3] = length(which(tbl_gene$a0 > 2))
+     
+   }
+   
+   for (g in 1:length(genes)) {
+     Z_int = geno_int_all[which(leg_fun$gene==genes[g]), ]
+     if (any(is.na(Z_int))) {
+       print(paste("Gene ", genes[g], " contains ", sum(any(is.na(Z_int))), " value(s)."))
+     }
+     else {
+       print(paste("Gene ", genes[g], " contains no NA values."))
      }
    }
 
