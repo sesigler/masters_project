@@ -31,7 +31,7 @@ iecat.p = skat.int.p = skat.ext.p = skat.all.p = c()
 
 
 # loop through the simulation replicates
-set.seed(13) 
+set.seed(1) 
 i=1
 for (i in 1:100){
   
@@ -151,7 +151,7 @@ for (i in 1:100){
    skat.all.p = c(skat.all.p, re.all$p.value)
    
    # call ProxECATv2/iECAT/SKAT once per gene
-   prox2.genes = iecat.genes = skat.int.genes = skat.ext.genes = c()
+   prox2_genes = iecat_genes = skat_int_genes = skat_ext_genes = c()
    genes = levels(droplevels(as.factor(leg$gene)))
    g = 1
    for(g in 1:length(genes)){ # loop through the genes

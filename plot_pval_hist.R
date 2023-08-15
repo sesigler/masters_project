@@ -14,7 +14,7 @@ scen = "s1"
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
-ext_prune = 100
+ext_prune = 80
 
 dir = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/Results/cc10k/'
 
@@ -43,10 +43,12 @@ t1e_adj = pivot_longer(t1e_adj, prox_p_adj:iecat_p_adj, names_to="Method", value
 
 results = rbind(t1e_homo, t1e, t1e_adj)
 
-results$Method = factor(results$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
-                                                   "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p"),
+results$Method = factor(results$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p",
+                                                 "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
+                                                 "prox_p_adj", "prox2_p_adj", "prox2_all_p_adj", "iecat_p_adj"),
                          labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
-                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O"))
+                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O",
+                                  "ProxECAT", "LogProx", "LogProx", "iECAT-O"))
 
 results$Calculation = factor(results$Calculation)
 results$Scenario = factor(results$Scenario)
@@ -58,9 +60,26 @@ results$Configuration = factor(results$Configuration, levels=c("Homogeneous-Unad
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 cbPalette2 = c("#999999", "#BC9F4C", "#56B4E9", "#009E73", "#0072B2")
 colors = c("#009E73", "#0072B2", "#D55E00")
+#colors = c("#F0E442", "#56B4E9", "#CC79A7")
 
 # P-value Distribution
 ggplot(results,
+       aes(x =`P-Value`, color = Configuration, fill = Configuration)) +
+  geom_histogram(position = "identity", alpha = 0.4, bins = 20) +
+  #geom_density(alpha=0.4) +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.2)) +
+  scale_color_manual(values=colors) +
+  scale_fill_manual(values=colors) +
+  facet_grid(Data~factor(Method, levels = c("iECAT-O", "ProxECAT", "LogProx", "SKAT-O")), space = "free_x", scales = "free_x") +
+  labs(title = "Histogram of P-values: 100% vs 80% Pruned", x = "P-value", y = "Counts") +
+  theme_bw(base_size = 20)
+
+
+
+ggplot(results %>% 
+         filter(Method == "ProxECAT" & Data == "Internal" |
+                  Method == "LogProx" & Data == "Internal" |
+                  Method == "SKAT-O"),
        aes(x=`P-Value`, color=Configuration, fill=Configuration)) +
   geom_histogram(alpha=0.5, binwidth = 0.05) +
   #geom_histogram(aes(y=after_stat(density)), alpha=0.5, binwidth = 0.05) +
@@ -69,22 +88,26 @@ ggplot(results,
   scale_fill_manual(values=colors) +
   facet_grid(Data~Method, space = "free_x", scales = "free_x")
 
-hist1 <- results %>%
-  filter(Method != "iECAT-O") %>%
-  ggplot(results, aes(x=`P-Value`, color=Configuration, fill=Configuration)) +
-    geom_histogram(alpha=0.5, binwidth = 0.05) +
-    #geom_histogram(aes(y=after_stat(density)), alpha=0.5, binwidth = 0.05) +
-    #geom_density(alpha=0.2) +
-    scale_color_manual(values=colors)+
-    scale_fill_manual(values=colors) +
-    facet_grid(rows = vars(Data), cols = vars(Method))
-
-ggplot(results %>% filter(Method == "iECAT-O"),
-       aes(x=`P-Value`, color=Configuration, fill=Configuration)) +
+ggplot(results %>% 
+         filter(Method == "ProxECAT" & Data == "External" |
+                  Method == "LogProx" & Data != "Internal"),
+       aes(x=`P-Value`, fill=Configuration)) +
   geom_histogram(alpha=0.5, binwidth = 0.05) +
   #geom_histogram(aes(y=after_stat(density)), alpha=0.5, binwidth = 0.05) +
   #geom_density(alpha=0.2) +
-  scale_color_manual(values=colors)+
+  scale_color_manual(values=colors) +
   scale_fill_manual(values=colors) +
-  facet_grid(Data~Method)
+  facet_grid(Data~Method, space = "free_x", scales = "free_x")
+
+
+ggplot(results %>% 
+         filter(Method == "iECAT-O"), 
+       aes(x=`P-Value`, fill=Configuration)) +
+  geom_histogram(alpha=0.5, binwidth = 0.05) +
+  #geom_histogram(aes(y=after_stat(density)), alpha=0.5, binwidth = 0.05) +
+  #geom_density(alpha=0.2) +
+  #scale_color_manual(values=colors) +
+  scale_fill_manual(values=colors) +
+  facet_grid(Data~Method, space = "free_x", scales = "free_x")
+
 
