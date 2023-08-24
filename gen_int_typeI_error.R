@@ -17,17 +17,19 @@ library(Summix)
 source("/home/math/siglersa/mastersProject/Input/read_in_funcs.R")
 source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
+# source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
-source("C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/read_in_funcs.R")
-source("C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/general_data_manip.R")
-source("C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/methods_funcs.R")
+# source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/read_in_funcs.R")
+# source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/general_data_manip.R")
+# source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/methods_funcs.R")
+# source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/create_haps_funcs.R")
 
 
 Pop1 = 'AFR'
 Pop2 = 'NFE'
 scen = 's1' #scenario = 's1' or 's2'
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
-p_cc_fun = p_cc_syn = ext_prune = 100
+p_cc_fun = p_cc_syn = ext_prune = 99
 Ncase = Nint = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 Nref = 500
@@ -41,8 +43,13 @@ dir_leg ='/storage/math/projects/compinfo/simulations/output/NFE_AFR_pops/'
 dir_in = '/home/math/siglersa/mastersProject/new_AFR_NFE_pops/cc10k/'
 dir_out ='/home/math/siglersa/mastersProject/Results/cc10k/'
 
-dir_leg = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/'
-dir_in = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/AFR_NFE_pops/cc10K_newMACs/'
+# dir_in = '/home/math/siglersa/mastersProject/Input/'
+# dir_out = '/home/math/siglersa/mastersProject/Output/'
+
+
+# dir_leg = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/'
+# dir_in = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/'
+# dir_out = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/output/'
 
 # create empty vectors to store the p-values from each replicate
 prox_p = prox_p_adj = c()
@@ -52,17 +59,21 @@ skat_int_p = skat_ext_p = skat_all_p = c()
 # Added for cases vs internal controls testing
 prox_int_p = prox2_int_p = c()
 
-# Store summix ancestry proportion estimates
-prop_ests_cc = prop_ests_cases = prop_ests_int = c()
+# Create dataframe to store counts and ratios of fun:syn alleles for each dataset 
+# ratios <- data.frame(matrix(ncol = 4, nrow = 5))
+# colnames(ratios) <- c('Dataset', 'Functional', 'Synonymous', 'Ratio')
+# ratios[, "Dataset"] <- c("Cases", "Internal Controls", "External Controls", "Ref AFR", "Ref NFE")
 
 
 set.seed(1) 
-i=1
 # loop through the simulation replicates
 for (i in 1:100){
   
   # read in the legend file
   leg = read_leg(dir_leg, Pop1, Pop2, i)
+  
+  leg_fun = leg %>% filter(fun=="fun")
+  leg_syn = leg %>% filter(fun=="syn")
   
   # read in the haplotype and reference files
   hap_cases = read_hap(dir_in, Pop1, Pop2, i, scen, "cases", p_case_fun, p_case_syn)
@@ -70,6 +81,37 @@ for (i in 1:100){
   hap_cc = read_hap(dir_in, Pop1, Pop2, i, scen, "common.controls", p_cc_fun, p_cc_syn)
   hap_ref_afr = read_ref(dir_in, Pop1, i, scen)
   hap_ref_nfe = read_ref(dir_in, Pop2, i, scen)
+  
+  ### CHECK COUNTS AND OUTPUT TO CSV
+  ### Check ratio of fun to syn rare alleles in cases
+  # ratios[1, 2] = rare_var(leg_fun$row, hap_cases, maf = maf)
+  # ratios[1, 3] = rare_var(leg_syn$row, hap_cases, maf = maf)
+  # ratios[1, 4] = ratios[1, 2]/ratios[1, 3]
+  # 
+  # ## Check ratio of fun to syn variants in internal controls
+  # ratios[2, 2] = rare_var(leg_fun$row, hap_int, maf = maf)
+  # ratios[2, 3] = rare_var(leg_syn$row, hap_int, maf = maf)
+  # ratios[2, 4] = ratios[2, 2]/ratios[2, 3]
+  # 
+  # ### Check ratio of fun to syn variants in external controls
+  # ratios[3, 2] = rare_var(leg_fun$row, hap_cc, maf = maf)
+  # ratios[3, 3] = rare_var(leg_syn$row, hap_cc, maf = maf)
+  # ratios[3, 4] = ratios[3, 2]/ratios[3, 3]
+  # 
+  # ### Check ratio of fun to syn variants in ref AFR
+  # ratios[4, 2] = rare_var(leg_fun$row, hap_ref_afr, maf = maf)
+  # ratios[4, 3] = rare_var(leg_syn$row, hap_ref_afr, maf = maf)
+  # ratios[4, 4] = ratios[4, 2]/ratios[4, 3]
+  # 
+  # ### Check ratio of fun to syn variants in ref NFE
+  # ratios[5, 2] = rare_var(leg_fun$row, hap_ref_nfe, maf = maf)
+  # ratios[5, 3] = rare_var(leg_syn$row, hap_ref_nfe, maf = maf)
+  # ratios[5, 4] = ratios[5, 2]/ratios[5, 3]
+  # 
+  # # Output ratios
+  # fwrite(ratios, paste0(dir_out, 'ratios_100_v_',  ext_prune, '_sim', i, '_t1e_checks.csv'),
+  #        quote=F, row.names=F, col.names=T, sep=',')
+  ##################################
   
   # convert the haplotypes into genotypes
   geno_cases = make_geno(hap_cases)
@@ -86,20 +128,12 @@ for (i in 1:100){
   count_ref_nfe = calc_allele_freqs_ref(Pop2, hap_ref_nfe, Nref)
   
   cc_refs = cbind(count_cc, count_ref_afr, count_ref_nfe)
-  cases_refs = cbind(count_cases, count_ref_afr, count_ref_nfe)
-  int_refs = cbind(count_int, count_ref_afr, count_ref_nfe)
   
   # Estimate ancestry proportions using only COMMON variants
-  cc_est_prop = est_props(cc_refs, maf)
-  cases_est_prop = est_props(cases_refs, maf)
-  int_est_prop = est_props(int_refs, maf)
-  
-  prop_ests_cc <- rbind(prop_ests_cc, cc_est_prop)
-  prop_ests_cases <- rbind(prop_ests_cases, cases_est_prop)
-  prop_ests_int <- rbind(prop_ests_int, int_est_prop)
+  cc_est_prop = est_props(cc_refs, Pop1, Pop2, maf)
   
   # Calculate adjusted AFs 
-  count_cc_adj = calc_adjusted_AF(cc_refs, cc_est_prop, pi_tar1, pi_tar2, Ncc)
+  count_cc_adj = calc_adjusted_AF(cc_refs, Pop2, cc_est_prop, pi_tar1, pi_tar2, Ncc)
   
   # identify the common variants
   common_ext = leg[which(count_cases$maf > maf | count_cc$maf > maf),]
@@ -111,9 +145,9 @@ for (i in 1:100){
   common_int = leg[which(count_cases$maf > maf | count_int$maf > maf),]
   
   ### Run proxECAT and extract p-value 
-  prox = prox_data_prep(leg, count_cases, count_cc, common_ext, adj=FALSE)
-  prox_adj = prox_data_prep(leg, count_cases, count_cc_adj, common_ext_adj, adj=TRUE)
-  prox_int = prox_int_prep(leg, count_cases, count_int, common_int)
+  prox = prox_data_prep(leg_fun, leg_syn, count_cases, count_cc, maf)
+  prox_adj = prox_data_prep(leg_fun, leg_syn, count_cases, count_cc_adj, maf)
+  prox_int = prox_data_prep(leg_fun, leg_syn, count_cases, count_int, maf)
   
   # store proxECAT p-values
   prox_p = c(prox_p, prox)
@@ -126,7 +160,6 @@ for (i in 1:100){
                                   common_ext_adj, common_all_adj, adj=TRUE)
   p_prox2_int = logprox_int_prep(leg, count_cases, count_int, common_int)
   
-  # NEED TO CHECK INDEXING
   # Store LogProx p-values
   prox2_p = c(prox2_p, p_prox2[[1]])
   prox2_all_p = c(prox2_all_p, p_prox2[[2]])
@@ -163,8 +196,3 @@ results_adj = data.frame(prox_p_adj, prox2_p_adj, prox2_all_p_adj, iecat_p_adj)
 # Save results
 write.table(results, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), quote=F, row.names=F)
 write.table(results_adj, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_adj_", Pop1, '-', Pop2, "_maf", maf, ".txt"), quote=F, row.names=F)
-
-# Proportion estimates
-write.table(prop_ests_cases, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_case_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), quote=F, row.names=F)
-write.table(prop_ests_cc, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_cc_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), quote=F, row.names=F)
-write.table(prop_ests_int, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_int_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), quote=F, row.names=F)

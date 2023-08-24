@@ -11,6 +11,7 @@ library(Summix)
 # source("/home/math/siglersa/mastersProject/Input/read_in_funcs.R")
 # source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 # source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
+# source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
 source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/read_in_funcs.R")
 source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/general_data_manip.R")
@@ -44,10 +45,9 @@ dir_in = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/'
 prox_p = prox_p_adj = c()
 prox2_p = prox2_all_p = prox2_p_adj = prox2_all_p_adj = c()
 iecat_p = iecat_p_adj = c()
-## OPTIONAL
-prox_int_p = prox_int_p_adj = prox2_int_p = prox2_int_p_adj = c() 
-# Store summix ancestry proportion estimates
-prop_ests_cc = prop_ests_cases = prop_ests_int = c()
+skat_int_p = skat_ext_p = skat_all_p = c()
+# Added for cases vs internal controls testing
+prox_int_p = prox2_int_p = c() 
 
 
 set.seed(1) 
@@ -103,32 +103,32 @@ for (i in 1:100){
   count_cc = calc_allele_freqs(geno_cc, Ncc)
   
   ### CHECKS
-  hap_fun = count_cases[leg_fun$row, ]
-  hap_rare = which(hap_fun$maf <= maf)
-  ratios[7, 2] = sum(hap_fun[hap_rare,]$count)
-  
-  hap_syn = count_cases[leg_syn$row, ]
-  hap_rare = which(hap_syn$maf <= maf)
-  ratios[7, 3] = sum(hap_syn[hap_rare,]$count)
-  ratios[7, 4] = ratios[7, 2]/ratios[7, 3]
-  
-  hap_fun = count_int[leg_fun$row, ]
-  hap_rare = which(hap_fun$maf <= maf)
-  ratios[8, 2] = sum(hap_fun[hap_rare,]$count)
-  
-  hap_syn = count_int[leg_syn$row, ]
-  hap_rare = which(hap_syn$maf <= maf)
-  ratios[8, 3] = sum(hap_syn[hap_rare,]$count)
-  ratios[8, 4] = ratios[8, 2]/ratios[8, 3]
-  
-  hap_fun = count_cc[leg_fun$row, ]
-  hap_rare = which(hap_fun$maf <= maf)
-  ratios[9, 2] = sum(hap_fun[hap_rare,]$count)
-  
-  hap_syn = count_cc[leg_syn$row, ]
-  hap_rare = which(hap_syn$maf <= maf)
-  ratios[9, 3] = sum(hap_syn[hap_rare,]$count)
-  ratios[9, 4] = ratios[9, 2]/ratios[9, 3]
+  # hap_fun = count_cases[leg_fun$row, ]
+  # hap_rare = which(hap_fun$maf <= maf)
+  # ratios[7, 2] = sum(hap_fun[hap_rare,]$count)
+  # 
+  # hap_syn = count_cases[leg_syn$row, ]
+  # hap_rare = which(hap_syn$maf <= maf)
+  # ratios[7, 3] = sum(hap_syn[hap_rare,]$count)
+  # ratios[7, 4] = ratios[7, 2]/ratios[7, 3]
+  # 
+  # hap_fun = count_int[leg_fun$row, ]
+  # hap_rare = which(hap_fun$maf <= maf)
+  # ratios[8, 2] = sum(hap_fun[hap_rare,]$count)
+  # 
+  # hap_syn = count_int[leg_syn$row, ]
+  # hap_rare = which(hap_syn$maf <= maf)
+  # ratios[8, 3] = sum(hap_syn[hap_rare,]$count)
+  # ratios[8, 4] = ratios[8, 2]/ratios[8, 3]
+  # 
+  # hap_fun = count_cc[leg_fun$row, ]
+  # hap_rare = which(hap_fun$maf <= maf)
+  # ratios[9, 2] = sum(hap_fun[hap_rare,]$count)
+  # 
+  # hap_syn = count_cc[leg_syn$row, ]
+  # hap_rare = which(hap_syn$maf <= maf)
+  # ratios[9, 3] = sum(hap_syn[hap_rare,]$count)
+  # ratios[9, 4] = ratios[9, 2]/ratios[9, 3]
   #############################################
   
   count_all = calc_allele_freqs_all(count_cases, count_int, count_cc, Ncase, Nint, Ncc)
@@ -136,17 +136,9 @@ for (i in 1:100){
   count_ref_nfe = calc_allele_freqs_ref(Pop2, hap_ref_nfe, Nref)
   
   cc_refs = cbind(count_cc, count_ref_afr, count_ref_nfe)
-  # cases_refs = cbind(count_cases, count_ref_afr, count_ref_nfe)
-  # int_refs = cbind(count_int, count_ref_afr, count_ref_nfe)
   
   # Estimate ancestry proportions using only COMMON variants
   cc_est_prop = est_props(cc_refs, Pop1, Pop2, maf)
-  # cases_est_prop = est_props(cases_refs, Pop1, Pop2, maf)
-  # int_est_prop = est_props(int_refs, Pop1, Pop2, maf)
-  # 
-  # prop_ests_cc <- rbind(prop_ests_cc, cc_est_prop)
-  # prop_ests_cases <- rbind(prop_ests_cases, cases_est_prop)
-  # prop_ests_int <- rbind(prop_ests_int, int_est_prop)
   
   # Calculate adjusted AFs 
   count_cc_adj = calc_adjusted_AF(cc_refs, Pop2, cc_est_prop, pi_tar1, pi_tar2, Ncc)
@@ -158,41 +150,24 @@ for (i in 1:100){
   common_ext_adj = leg[which(count_cases$maf > maf | count_cc_adj$maf > maf),]
   common_all_adj = leg[which(count_cases$maf > maf | count_int$maf > maf | count_cc_adj$maf > maf),]
   
+  common_int = leg[which(count_cases$maf > maf | count_int$maf > maf),]
+  
   ### Run proxECAT and extract p-value 
-  prox = prox_data_prep(leg, count_cases, count_cc, common_ext, adj=FALSE)
-  prox_adj = prox_data_prep(leg, count_cases, count_cc_adj, common_ext_adj, adj=TRUE)
-  
-  ### CHECK COUNTS
-  # convert genotypes into long format for ProxECAT v2
-  data.cases = make_long(count_cases, leg, "case", "int")
-  if (adj){
-    data.cc = make_long_adj(counts.cc, leg, "control", "ext") #doesn't have count column
-  }
-  else{
-    data.cc = make_long(count_cc, leg, "control", "ext")
-  }
-  
-  # combine the data together AND REMOVE COMMON VARIANTS
-  data.prox = data.frame(lapply(rbind(data.cases, data.cc), factor)) %>% 
-    filter(!(id %in% common_ext$id))
-  
-  # getting overall counts for functional & case status
-  # data for proxECAT method
-  counts.prox = data.prox %>% count(case, fun)
-  
-  # Run proxECAT
-  prox = proxecat(counts.prox$n[1], counts.prox$n[2], counts.prox$n[3], counts.prox$n[4])
+  prox = prox_data_prep(leg_fun, leg_syn, count_cases, count_cc, maf)
+  prox_adj = prox_data_prep(leg_fun, leg_syn, count_cases, count_cc_adj, maf)
+  prox_int = prox_data_prep(leg_fun, leg_syn, count_cases, count_int, maf)
   
   # store proxECAT p-values
   prox_p = c(prox_p, prox)
   prox_p_adj = c(prox_p_adj, prox_adj)
+  prox_int_p = c(prox_int_p, prox_int)
   
   ### Run LogProx and extract p-value
   p_prox2 = logprox_data_prep(leg, count_cases, count_int, count_cc, common_ext, common_all, adj=FALSE)
   p_prox2_adj = logprox_data_prep(leg, count_cases, count_int, count_cc_adj, 
                                   common_ext_adj, common_all_adj, adj=TRUE)
+  p_prox2_int = logprox_int_prep(leg, count_cases, count_int, common_int)
   
-  # NEED TO CHECK INDEXING
   # Store LogProx p-values
   prox2_p = c(prox2_p, p_prox2[[1]])
   prox2_all_p = c(prox2_all_p, p_prox2[[2]])
@@ -200,26 +175,32 @@ for (i in 1:100){
   prox2_p_adj = c(prox2_p_adj, p_prox2_adj[[1]])
   prox2_all_p_adj = c(prox2_all_p_adj, p_prox2_adj[[2]])
   
+  prox2_int_p = c(prox2_int_p, p_prox2_int)
+  
   ### Run iECAT and extract p-value
   run_iecat = iecat_data_prep(geno_cases, geno_int, leg, common_all, count_cc, Ncc)
   run_iecat_adj = iecat_data_prep(geno_cases, geno_int, leg, common_all_adj, count_cc_adj, Ncc)
   
   # Store iECAT p-values
-  iecat_p = c(iecat_p, run_iecat)
-  iecat_p_adj = c(iecat_p_adj, run_iecat_adj)
+  iecat_p = c(iecat_p, run_iecat[[1]])
+  iecat_p_adj = c(iecat_p_adj, run_iecat_adj[[1]])
+  
+  # Run SKAT-O and extract p-values
+  run_skat = skat_data_prep(geno_cases, geno_int, geno_cc, leg, common_ext, common_all)
+  
+  # Store SKAT p-values
+  skat_int_p = c(skat_int_p, run_iecat[[2]])
+  skat_ext_p = c(skat_ext_p, run_skat[[1]])
+  skat_all_p = c(skat_all_p, run_skat[[2]])
   
   print(i)
 }
 
 # Combine p-values from each method into one dataframe
-results = data.frame(prox_p, prox2_p, prox2_all_p, iecat_p)
+results = data.frame(prox_p, prox_int_p, prox2_p, prox2_all_p, prox2_int_p, 
+                     iecat_p, skat_int_p, skat_ext_p, skat_all_p)
 results_adj = data.frame(prox_p_adj, prox2_p_adj, prox2_all_p_adj, iecat_p_adj)
 
 # Save results
 write.table(results, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), quote=F, row.names=F)
 write.table(results_adj, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_adj_", Pop1, '-', Pop2, "_maf", maf, ".txt"), quote=F, row.names=F)
-
-# Proportion estimates
-write.table(prop_ests_cases, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_case_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), quote=F, row.names=F)
-write.table(prop_ests_cc, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_cc_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), quote=F, row.names=F)
-write.table(prop_ests_int, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_int_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), quote=F, row.names=F)
