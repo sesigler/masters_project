@@ -71,9 +71,10 @@ for (i in 1:100){
   leg_syn = leg %>% filter(fun=="syn")
   
   # Create dataframe to store counts and ratios of fun:syn alleles for each dataset 
-  ratios <- data.frame(matrix(ncol = 4, nrow = 3))
+  ratios <- data.frame(matrix(ncol = 4, nrow = 6))
   colnames(ratios) <- c('Dataset', 'Functional', 'Synonymous', 'Ratio')
-  ratios[, "Dataset"] <- c("Cases", "Internal Controls", "External Controls")
+  ratios[, "Dataset"] <- rep(c("Cases", "Internal Controls", "External Controls"), 2)
+  ratios[7:9, 1] <- c("Cases", "Internal Controls", "External Controls")
   
   ### Check ratio of fun to syn rare alleles in cases
   ratios[1, 2] = rare_var(leg_fun$row, hap_cases, maf = maf)
@@ -89,19 +90,7 @@ for (i in 1:100){
   ratios[3, 2] = rare_var(leg_fun$row, hap_cc, maf = maf)
   ratios[3, 3] = rare_var(leg_syn$row, hap_cc, maf = maf)
   ratios[3, 4] = ratios[3, 2]/ratios[3, 3]
-  
-  # Subset haplotype file to rows of legend file by functional status
-  hap_syn = hap_cases[leg_syn$row, ]
-  
-  # Calculate the AFs of each row of the haplotype file
-  hap_AF = rowSums(hap_syn)/ncol(hap_cases)
-  
-  # Determine which rows of the haplotype file are rare variants
-  hap_rare = which(hap_AF <= maf)
-  
-  # Sum up number of rare alleles in the haplotype file
-  out = sum(rowSums(hap_syn[hap_rare, ]))
-  ################
+  ##########################################################
   
   # convert the haplotypes into genotypes
   geno_cases = make_geno(hap_cases)
@@ -112,6 +101,35 @@ for (i in 1:100){
   count_cases = calc_allele_freqs(geno_cases, Ncase)
   count_int = calc_allele_freqs(geno_int, Nint)
   count_cc = calc_allele_freqs(geno_cc, Ncc)
+  
+  ### CHECKS
+  hap_fun = count_cases[leg_fun$row, ]
+  hap_rare = which(hap_fun$maf <= maf)
+  ratios[7, 2] = sum(hap_fun[hap_rare,]$count)
+  
+  hap_syn = count_cases[leg_syn$row, ]
+  hap_rare = which(hap_syn$maf <= maf)
+  ratios[7, 3] = sum(hap_syn[hap_rare,]$count)
+  ratios[7, 4] = ratios[7, 2]/ratios[7, 3]
+  
+  hap_fun = count_int[leg_fun$row, ]
+  hap_rare = which(hap_fun$maf <= maf)
+  ratios[8, 2] = sum(hap_fun[hap_rare,]$count)
+  
+  hap_syn = count_int[leg_syn$row, ]
+  hap_rare = which(hap_syn$maf <= maf)
+  ratios[8, 3] = sum(hap_syn[hap_rare,]$count)
+  ratios[8, 4] = ratios[8, 2]/ratios[8, 3]
+  
+  hap_fun = count_cc[leg_fun$row, ]
+  hap_rare = which(hap_fun$maf <= maf)
+  ratios[9, 2] = sum(hap_fun[hap_rare,]$count)
+  
+  hap_syn = count_cc[leg_syn$row, ]
+  hap_rare = which(hap_syn$maf <= maf)
+  ratios[9, 3] = sum(hap_syn[hap_rare,]$count)
+  ratios[9, 4] = ratios[9, 2]/ratios[9, 3]
+  #############################################
   
   count_all = calc_allele_freqs_all(count_cases, count_int, count_cc, Ncase, Nint, Ncc)
   count_ref_afr = calc_allele_freqs_ref(Pop1, hap_ref_afr, Nref)
@@ -144,6 +162,7 @@ for (i in 1:100){
   prox = prox_data_prep(leg, count_cases, count_cc, common_ext, adj=FALSE)
   prox_adj = prox_data_prep(leg, count_cases, count_cc_adj, common_ext_adj, adj=TRUE)
   
+  ### CHECK COUNTS
   # convert genotypes into long format for ProxECAT v2
   data.cases = make_long(count_cases, leg, "case", "int")
   if (adj){

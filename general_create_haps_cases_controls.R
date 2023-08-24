@@ -13,7 +13,7 @@ source("/home/math/siglersa/mastersProject/Input/subset_haps_funcs.R")
 Pop1 = 'AFR'
 Pop2 = 'NFE'
 p_case = 120
-p_conf = 80
+p_conf = 99
 Nsim = 22500 
 maf = 0.001
 scen = 's1' #scenario: 's1' or 's2'
@@ -44,7 +44,6 @@ exp_syn_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop1,
 
 
 set.seed(1) # Will be different for each replicate but same for each run
-
 for(j in 1:100){
   
   # read in the legend file
@@ -102,11 +101,12 @@ for(j in 1:100){
 
   fwrite(hap_refs_afr, paste0(dir_out, 'chr19.block37.', Pop1, '.sim', j, '.', scen, '.ref.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
+  
   fwrite(hap_refs_nfe, paste0(dir_out, 'chr19.block37.', Pop2, '.sim', j, '.', scen, '.ref.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
   
   
-  #### Prune back to 80% of the functional and synonymous variants
+  #### Prune back to p_conf % of the functional and synonymous variants
   
   # update the allele counts for just the common controls
   leg_cc = leg
@@ -117,7 +117,7 @@ for(j in 1:100){
   leg_fun_cc = leg_cc %>% filter(fun=="fun")
   leg_syn_cc = leg_cc %>% filter(fun=="syn")
   
-  # prune the functional and synonymous variants of the common controls to 80%
+  # prune the functional and synonymous variants of the common controls to p_conf %
   rem_cc_fun = select_var(leg_fun_cc, exp_fun_conf)
   rem_cc_syn = select_var(leg_syn_cc, exp_syn_conf)
   hap_cc_conf = prune_var(rbind(rem_cc_fun, rem_cc_syn), hap_all_pruned, Nsim)

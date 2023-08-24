@@ -46,7 +46,7 @@ ratios_case_pow = ratios_case_t1e = ratios_case_pconf = ratios_int = ratios_int_
 
 mac_dir = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/'
 dir_in = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/'
-dir_out = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/'
+dir_out = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/'
 
 
 ### read in the expected number of functional and synonymous variants from RAREsim
