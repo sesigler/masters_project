@@ -34,16 +34,21 @@ nfe_cols = 38001:45000
 
 mac_dir = '/home/math/siglersa/mastersProject/Input/'
 dir_in = '/storage/math/projects/compinfo/simulations/output/NFE_AFR_pops/'
-dir_out = '/home/math/siglersa/mastersProject/new_AFR_NFE_pops/cc10k/'
+# dir_out = '/home/math/siglersa/mastersProject/new_AFR_NFE_pops/cc10k/'
+dir_out = '/home/math/siglersa/mastersProject/Output/'
+
 
 
 ### read in the expected number of functional and synonymous variants from RAREsim
+exp_fun_case = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop1, '_fun_', p_case,  '.txt'), header=T, sep='\t')
+exp_syn = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop1, '_syn_100.txt'), header=T, sep='\t')
 exp_fun = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop1, '_fun_100.txt'), header=T, sep='\t')
 exp_fun_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop1, '_fun_', p_conf, '.txt'), header=T, sep='\t')
 exp_syn_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop1, '_syn_', p_conf, '.txt'), header=T, sep='\t')
 
 
 set.seed(1) # Will be different for each replicate but same for each run
+i=7
 for(j in 1:100){
   
   # read in the legend file
@@ -70,12 +75,24 @@ for(j in 1:100){
   ccs = cc_cols(afr_cols, nfe_cols, afr_cc_size, nfe_cc_size, cases, ics, scen)
   refs = ref_cols(afr_cols, nfe_cols, afr_ref_size, nfe_ref_size, cases, ics, ccs, scen)
   
+  # Create dataframe to store counts and ratios of fun:syn variants for each dataset 
+  ratios <- data.frame(matrix(ncol = 4, nrow = 9))
+  colnames(ratios) <- c('Dataset', 'Functional', 'Synonymous', 'Ratio')
+  ratios[, "Dataset"] <- c("Cases (Power)", "Cases (T1E)", "Internal Controls", 
+                           "External Controls", "Ref AFR", "Ref NFE", "Cases (Pruned)", 
+                           "Internal Controls (Pruned)", "External Controls (Pruned)")
+  
   # subset the case haplotypes (120% fun and 100% syn)
   hap_cases_pcase = sub_hap_scen(hap, cases, scen)
   
   # write the haplotype file for the cases (power)
   fwrite(hap_cases_pcase, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.cases.', p_case, 'fun.100syn.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
+  
+  ### Check ratio of fun to syn variants in cases (power)
+  ratios[1, 2] = rare_var(leg_fun$row, hap_cases_pcase, maf = maf)
+  ratios[1, 3] = rare_var(leg_syn$row, hap_cases_pcase, maf = maf)
+  ratios[1, 4] = ratios[1, 2]/ratios[1, 3]
   
   # prune the functional variants back to 100%
   rem_fun = select_var(leg_fun, exp_fun)
@@ -104,6 +121,31 @@ for(j in 1:100){
   
   fwrite(hap_refs_nfe, paste0(dir_out, 'chr19.block37.', Pop2, '.sim', j, '.', scen, '.ref.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
+  
+  ## Check ratio of fun to syn variants in cases (T1E)
+  ratios[2, 2] = rare_var(leg_fun$row, hap_cases, maf = maf)
+  ratios[2, 3] = rare_var(leg_syn$row, hap_cases, maf = maf)
+  ratios[2, 4] = ratios[2, 2]/ratios[2, 3]
+  
+  ### Check ratio of fun to syn variants in internal controls
+  ratios[3, 2] = rare_var(leg_fun$row, hap_int, maf = maf)
+  ratios[3, 3] = rare_var(leg_syn$row, hap_int, maf = maf)
+  ratios[3, 4] = ratios[3, 2]/ratios[3, 3]
+  
+  ### Check ratio of fun to syn variants in external controls (no confounding)
+  ratios[4, 2] = rare_var(leg_fun$row, hap_cc, maf = maf)
+  ratios[4, 3] = rare_var(leg_syn$row, hap_cc, maf = maf)
+  ratios[4, 4] = ratios[4, 2]/ratios[4, 3]
+  
+  ### Check ratio of fun to syn variants in ref-afr
+  ratios[5, 2] = rare_var(leg_fun$row, hap_refs_afr, maf = maf)
+  ratios[5, 3] = rare_var(leg_syn$row, hap_refs_afr, maf = maf)
+  ratios[5, 4] = ratios[5, 2]/ratios[5, 3]
+  
+  ### Check ratio of fun to syn variants in ref-nfe
+  ratios[6, 2] = rare_var(leg_fun$row, hap_refs_nfe, maf = maf)
+  ratios[6, 3] = rare_var(leg_syn$row, hap_refs_nfe, maf = maf)
+  ratios[6, 4] = ratios[6, 2]/ratios[6, 3]
   
   
   #### Prune back to p_conf % of the functional and synonymous variants
@@ -136,6 +178,24 @@ for(j in 1:100){
 
   fwrite(hap_int_pruned, paste0(dir_out, 'chr19.block37.', Pop1, '-', Pop2, '.sim', j, '.', scen, '.internal.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
+  
+  ### Check ratio of fun to syn variants in cases-p_conf %
+  ratios[7, 2] = rare_var(leg_fun_cc$row, hap_case_pconf, maf = maf) 
+  ratios[7, 3] = rare_var(leg_syn_cc$row, hap_case_pconf, maf = maf) 
+  ratios[7, 4] = ratios[7, 2]/ratios[7, 3]
+  
+  ### Check ratio of fun to syn variants in internal controls-p_conf %
+  ratios[8, 2] = rare_var(leg_fun_cc$row, hap_int_pruned, maf = maf) 
+  ratios[8, 3] = rare_var(leg_syn_cc$row, hap_int_pruned, maf = maf) 
+  ratios[8, 4] = ratios[8, 2]/ratios[8, 3]
+  
+  ### Check ratio of fun to syn variants in common controls-p_conf %
+  ratios[9, 2] = rare_var(leg_fun_cc$row, hap_cc_pruned, maf = maf) 
+  ratios[9, 3] = rare_var(leg_syn_cc$row, hap_cc_pruned, maf = maf) 
+  ratios[9, 4] = ratios[9, 2]/ratios[9, 3]
+  
+  fwrite(ratios, paste0(dir_out, 'ratios_100_v_',  p_conf, '_sim', j, '_haps_checks.csv'),
+         quote=F, row.names=F, col.names=T, sep=',')
   
   print(j)
 }

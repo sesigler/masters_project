@@ -26,7 +26,7 @@ source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
 
 Pop = 'NFE'
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
-p_cc_fun = p_cc_syn = ext_prune = 100
+p_cc_fun = p_cc_syn = ext_prune = 99
 Ncase = Nint = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)

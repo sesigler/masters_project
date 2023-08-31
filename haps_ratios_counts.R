@@ -86,10 +86,10 @@ for(j in 1:100){
   refs = ref_cols(afr_cols, nfe_cols, afr_ref_size, nfe_ref_size, cases, ics, ccs, scen)
   
   # Create dataframe to store counts and ratios of fun:syn variants for each dataset 
-  ratios <- data.frame(matrix(ncol = 4, nrow = 7))
+  ratios <- data.frame(matrix(ncol = 4, nrow = 9))
   colnames(ratios) <- c('Dataset', 'Functional', 'Synonymous', 'Ratio')
   ratios[, "Dataset"] <- c("Cases (Power)", "Cases (T1E)", "Internal Controls", 
-                           "External Controls", "Cases (Pruned)", 
+                           "External Controls", "Ref AFR", "Ref NFE", "Cases (Pruned)", 
                            "Internal Controls (Pruned)", "External Controls (Pruned)")
   
   # subset the case haplotypes (120% fun and 100% syn)
