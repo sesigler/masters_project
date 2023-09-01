@@ -12,16 +12,18 @@ Pop2 = "NFE"
 scen = "s1"
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 int_prune = 100
-ext_prune = 99
+ext_prune = 80
 ext_prune2 = 80
+nsim = 100
 
 dir = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/Results/cc10k/'
+dir_out = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/output/'
 
 # Read in p-values
-# t1e = read.table(paste0(dir, "T1e_", int_prune, "_v_", int_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
-# t1e_conf = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
-t1e = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
-t1e_conf = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune2, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
+t1e = read.table(paste0(dir, "T1e_", int_prune, "_v_", int_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
+t1e_conf = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
+# t1e = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
+# t1e_conf = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune2, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
 
 
 # puts in a format for ggplot
@@ -41,6 +43,7 @@ results$Method = factor(results$Method, levels=c("prox_p", "prox_int_p", "prox2_
                         labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O"))
 
+results$row = rep(1:nsim, each = 9)
 results$Calculation = factor(results$Calculation)
 results$Scenario = factor(results$Scenario)
 results$MAF = factor(results$MAF)
@@ -77,10 +80,12 @@ ggplot(subset(results, Data %in% "External"),
   scale_shape_manual(values=c(16, 4, 3))+
   facet_grid(~Data, space = "free_x", scales = "free_x") +
   #facet_grid(Data~factor(Method, levels = c("iECAT-O", "ProxECAT", "LogProx", "SKAT-O")), space = "free_x", scales = "free_x") +
-  labs(title = "Scatter Plot of P-values: 99% vs 80% Pruned", x = "100% vs 80% -log10pvalue", y = "100% vs 99% -log10pvalue") +
+  labs(title = "Scatter Plot of P-values: 100% vs 80% Pruned", x = "100% vs 80% -log10pvalue", y = "100% vs 100% -log10pvalue") +
   theme_bw(base_size = 20)
 
 
 ### Checks
 results2 = subset(results, Data %in% "External")
 results2 = results2 %>% filter(`Log-Unpruned` > -log10(0.05) & `Log-Pruned` < -log10(0.05))
+fwrite(results2, paste0(dir_out, 'rows_99_v_80_counts_to_check.csv'),
+       quote=F, row.names=F, col.names=T, sep=',')
