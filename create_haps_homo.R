@@ -34,7 +34,7 @@ obs_MACbin_syn_pconf = obs_MACbin_syn_exp
 
 mac_dir = '/home/math/siglersa/mastersProject/Input/'
 dir_in = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
-dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100vs', p_conf, '/')
+dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100v', p_conf, '/')
 
 # mac_dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
 # dir_in = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'

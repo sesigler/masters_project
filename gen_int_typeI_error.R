@@ -40,7 +40,7 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 
 # Set appropriate directories
 dir_leg ='/storage/math/projects/compinfo/simulations/output/NFE_AFR_pops/'
-dir_in = '/home/math/siglersa/mastersProject/new_AFR_NFE_pops/cc10k/100v99/'
+dir_in = paste0('/home/math/siglersa/mastersProject/new_AFR_NFE_pops/cc10k/100v', ext_prune, '/')
 # dir_out ='/home/math/siglersa/mastersProject/Results/cc10k/'
 
 # dir_in = '/home/math/siglersa/mastersProject/Input/'
