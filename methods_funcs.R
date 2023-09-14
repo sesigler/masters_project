@@ -13,16 +13,16 @@
 # Ncc: Number of individuals in the common controls
 ##############################################################################
 
-### Determine the number of rare fun and syn MACs in a dataset
+### Determine the number of rare fun and syn minor alleles in a dataset
 rare_counts = function(counts, leg.fun, leg.syn, maf){
   
-  fun.case = counts[leg.fun$row, ]
-  rare.fun = which(fun.case$maf <= maf)
-  out.fun = sum(fun.case[rare.fun, ]$mac)
+  fun.counts = counts[leg.fun$row, ]
+  rare.fun = which(fun.counts$maf <= maf)
+  out.fun = sum(fun.counts[rare.fun, ]$mac)
   
-  syn.case = counts[leg.syn$row, ]
-  rare.syn = which(syn.case$maf <= maf)
-  out.syn = sum(syn.case[rare.syn, ]$mac)
+  syn.counts = counts[leg.syn$row, ]
+  rare.syn = which(syn.counts$maf <= maf)
+  out.syn = sum(syn.counts[rare.syn, ]$mac)
   
   out = c(out.fun, out.syn)
   
