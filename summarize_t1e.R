@@ -18,7 +18,7 @@ Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
 ext_prune = 80
 
-dir = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/Results/cc10k/'
+dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
 
 ### Type 1 error
 
@@ -34,3 +34,15 @@ write.csv(t(as.data.frame(t1e_out)), paste0(dir, "T1e_all_", int_prune, "_v_", e
 write.csv(t(as.data.frame(t1e_adj_out)), paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 write.csv(t(as.data.frame(t1e_homo_out)), paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 
+
+# Recalculate p-values
+dir = 'C:/Users/sagee/Documents/GitHub/masters_project/'
+counts99 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_99.csv'), header = T, sep = ',')
+counts95 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_95.csv'), header = T, sep = ',')
+counts90 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_90.csv'), header = T, sep = ',')
+counts80 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_80.csv'), header = T, sep = ',')
+pow <- c()
+pow <- c(pow, my.power(counts99$P.Value))
+pow <- c(pow, my.power(counts95$P.Value))
+pow <- c(pow, my.power(counts90$P.Value))
+pow <- c(pow, my.power(counts80$P.Value))

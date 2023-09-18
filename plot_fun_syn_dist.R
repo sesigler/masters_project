@@ -12,7 +12,7 @@ Pop2 = "NFE"
 scen = "s1"
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 int_prune = 100
-ext_prune = 99
+ext_prune = 90
 
 dir = 'C:/Users/sagee/Documents/GitHub/masters_project/'
 dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/'
@@ -69,7 +69,4 @@ ggsave(file = paste0(dir_out, 'dist_fun_syn_', Pop2, '_100v', ext_prune, '.jpg')
 #   #facet_grid(Data~factor(Method, levels = c("iECAT-O", "ProxECAT", "LogProx", "SKAT-O")), space = "free_x", scales = "free_x") +
 #   labs(title = "Distribution of Synonymous Alleles (100% vs 99% Pruned)", x = "Number of Synonymous Alleles", y = "Density") +
 #   theme_bw(base_size = 20)
-
-
-
 

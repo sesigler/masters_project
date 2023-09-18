@@ -20,10 +20,10 @@ source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
 source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
-source("C:/Users/sagee/Documents/GitHub/masters_project/read_in_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/general_data_manip.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/methods_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/create_haps_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/read_in_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/general_data_manip.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/methods_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/create_haps_funcs.R")
 
 Pop = 'NFE'
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
@@ -39,9 +39,9 @@ dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100v', ext_pru
 # dir_out ='/home/math/siglersa/mastersProject/Results/cc10k/'
 dir_out = '/home/math/siglersa/mastersProject/Output/'
 
-dir_leg = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
-dir_in = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
-dir_out = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/output/'
+# dir_leg = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
+# dir_in = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
+# dir_out = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/output/'
 
 # create empty vectors to store the p-values from each replicate
 # prox_p = prox_int_p = c()
@@ -61,7 +61,7 @@ colnames(proxEcounts) <- c('Case-Fun (O)', 'Case-Syn (O)', 'Control-Fun (O)', 'C
 
 
 set.seed(1) 
-i=1
+# i=1
 # loop through the simulation replicates
 for (i in 1:100){
   
