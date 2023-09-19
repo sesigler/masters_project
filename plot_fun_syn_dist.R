@@ -12,7 +12,7 @@ Pop2 = "NFE"
 scen = "s1"
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 int_prune = 100
-ext_prune = 90
+ext_prune = 99
 
 dir = 'C:/Users/sagee/Documents/GitHub/masters_project/'
 dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/'
@@ -35,10 +35,14 @@ ctrls_df <- rbind(data.frame(ctrls = counts$`Control-Fun (O)`, Source = "Observe
                   data.frame(ctrls = counts$`Control-Syn (O)`, Source = "Observed Synonymous Alleles"),
                   data.frame(ctrls = counts$`Control-Syn (E)`, Source = "Expected Synonymous Alleles based on observed cases"))
 
+cases_df <- rbind(data.frame(cases = counts$`Case-Fun (O)`, Source = "Observed Functional Alleles in Cases"),
+                  data.frame(cases = counts$`Case-Syn (O)`, Source = "Observed Synonymous Alleles in Cases"))
+
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 cbPalette2 = c("#999999", "#BC9F4C", "#56B4E9", "#009E73", "#0072B2")
 colors = c("#0072B2", "#CC79A7")
 colors2 = c("#0072B2", "#BC9F4C", "#CC79A7", "#009E73")
+colors_cases = c("#CC79A7", "#009E73")
 
 # Make the density plots
 p1 <- ggplot(ctrls_df, aes(x = ctrls, color = Source, fill = Source)) +
@@ -51,6 +55,17 @@ p1 <- ggplot(ctrls_df, aes(x = ctrls, color = Source, fill = Source)) +
 p1
 ggsave(file = paste0(dir_out, 'dist_fun_syn_', Pop2, '_100v', ext_prune, '.jpg'),
        plot = p1, height = 5, width = 12, units = 'in')
+
+p2 <- ggplot(cases_df, aes(x = cases, color = Source, fill = Source)) +
+  geom_density(alpha = 0.4) +
+  scale_color_manual(values=colors_cases) +
+  scale_fill_manual(values=colors_cases) +
+  labs(title = paste0('Distribution of Functional and Synonymous Alleles (100% Pruned Cases)\nPop: 100% NFE'), 
+       x = "Number of Alleles", y = "Density") +
+  theme_bw(base_size = 18)
+p2
+ggsave(file = paste0(dir_out, 'dist_fun_syn_', Pop2, '_100%_cases.jpg'),
+       plot = p2, height = 5, width = 12, units = 'in')
 
 # ggplot(ctrls_fun_df, aes(x = ctrl_fun, color = Source, fill = Source)) +
 #   geom_density(alpha = 0.4) +

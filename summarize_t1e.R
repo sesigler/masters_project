@@ -41,8 +41,26 @@ counts99 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_99.
 counts95 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_95.csv'), header = T, sep = ',')
 counts90 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_90.csv'), header = T, sep = ',')
 counts80 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_80.csv'), header = T, sep = ',')
-pow <- c()
-pow <- c(pow, my.power(counts99$P.Value))
-pow <- c(pow, my.power(counts95$P.Value))
-pow <- c(pow, my.power(counts90$P.Value))
-pow <- c(pow, my.power(counts80$P.Value))
+pow <- data.frame(matrix(nrow = 1, ncol = 4))
+colnames(pow) <- c('t1e_99', 't1e_95', 't1e_90', 't1e_80')
+pow[1, 1] <- my.power(counts99$P.Value)
+pow[1, 2] <- my.power(counts95$P.Value)
+pow[1, 3] <- my.power(counts90$P.Value)
+pow[1, 4] <- my.power(counts80$P.Value)
+
+write.csv(pow, paste0(dir, "T1e_NFE_99-80_maf", maf, ".csv"), quote=F, row.names=F)
+
+counts99v99 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_99_v_99.csv'), header = T, sep = ',')
+counts95v95 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_95_v_95.csv'), header = T, sep = ',')
+counts90v90 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_90_v_90.csv'), header = T, sep = ',')
+counts80v80 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_80_v_80.csv'), header = T, sep = ',')
+
+t1e_ext_v_ext <- data.frame(matrix(nrow = 1, ncol = 4))
+colnames(t1e_ext_v_ext) <- c('t1e_99v99', 't1e_95v95', 't1e_90v90', 't1e_80v80')
+
+t1e_ext_v_ext[1, 1] <- my.power(counts99v99$P.Value)
+t1e_ext_v_ext[1, 2] <- my.power(counts95v95$P.Value)
+t1e_ext_v_ext[1, 3] <- my.power(counts90v90$P.Value)
+t1e_ext_v_ext[1, 4] <- my.power(counts80v80$P.Value)
+
+write.csv(t1e_ext_v_ext, paste0(dir, "T1e_NFE_99v99-80v80_maf", maf, ".csv"), quote=F, row.names=F)

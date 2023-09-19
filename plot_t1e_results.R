@@ -15,7 +15,8 @@ Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
 ext_prune = 99
 
-dir = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/Results/cc10k/'
+# dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
+dir = 'C:/Users/sagee/Documents/GitHub/masters_project/'
 
 # read in the results
 # Proportion Estimates 
@@ -27,6 +28,41 @@ dir = 'C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/Results/cc1
 t1e_all = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 t1e_all_adj = read.csv(paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 t1e_all_homo = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+
+# t1e 100% NFE
+t1e_int_v_ext = read.csv(paste0(dir, "T1e_NFE_99-80_maf", maf, ".csv"), header=T)
+t1e_ext_v_ext = read.csv(paste0(dir, "T1e_NFE_99v99-80v80_maf", maf, ".csv"), header=T)
+
+t1e_int_v_ext = pivot_longer(t1e_int_v_ext, t1e_99:t1e_80, values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
+         Scenario = c("100% v 99%", "100% v 95%", "100% v 90%", "100% v 80%"),
+         Pruning = c("99%", "95%", "90%", "80%"))
+
+t1e_ext_v_ext = pivot_longer(t1e_ext_v_ext, t1e_99v99:t1e_80v80, values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
+         Scenario = c("99% v 99%", "95% v 95%", "90% v 90%", "80% v 80%"),
+         Pruning = c("99%", "95%", "90%", "80%"))
+
+results = rbind(t1e_int_v_ext, t1e_ext_v_ext)
+results$Scenario = factor(results$Scenario, levels=c("100% v 99%", "100% v 95%", 
+                                                     "100% v 90%", "100% v 80%",
+                                                     "99% v 99%", "95% v 95%", 
+                                                     "90% v 90%", "80% v 80%"))
+results$Pruning = factor(results$Pruning, levels=c("99%", "95%", "90%", "80%"))
+results$`Internal Cases` = factor(results$`Internal Cases`, levels=c("100% Pruned", "Same as External Controls"))
+# get CI's
+results$Lower = '.'
+results$Upper = '.'
+# default level is 95% confidence
+nsim = 100
+for(i in 1:nrow(results)){
+  results$Lower[i] = binom.confint(nsim*results$Value[i], nsim, method=c("wilson"), type="central")$lower
+  results$Upper[i] = binom.confint(nsim*results$Value[i], nsim, method=c("wilson"), type="central")$upper
+}
+
+results$Lower = as.numeric(results$Lower)
+results$Upper = as.numeric(results$Upper)
+#############################################
 
 # puts in a format for ggplot
 t1e_all = pivot_longer(t1e_all, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
@@ -89,6 +125,8 @@ results2$Upper = as.numeric(results2$Upper)
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 cbPalette2 = c("#999999", "#BC9F4C", "#56B4E9", "#009E73", "#0072B2")
 colors = c("#009E73", "#0072B2", "#D55E00")
+colors_nfe = c("#009E73", "#0072B2", "#D55E00", "#CC79A7",
+               "lightgreen", "#56B4E9", "#E69F00", "pink")
 
 # Controls everything in the graph
 # base_size = 25
@@ -104,6 +142,22 @@ ggplot(results2 %>% filter(Calculation=="Type I Error", MAF==0.001, Scenario==sc
   facet_grid(~Data, scales="free", space="free") +
   labs(y='Type I Error', x='Method', title='Scenario 1: Type I Error 100% vs 99% (10k cc) \nMAF=0.001') +
   theme_bw(base_size = 23)
+
+#Pruning NFE plot
+p2 <- ggplot(results, aes(x=Pruning, y=Value, color=Scenario)) +
+        geom_point(shape=rep(c(16, 17), each=4), size=5, position=position_dodge(width=0.5)) +
+        geom_hline(yintercept=0.05, linetype=2, linewidth=1.5) +
+        scale_y_continuous(limits=c(0, 1)) +
+        geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1.5, width=.2, position=position_dodge(width=0.5)) +
+        scale_color_manual(values=colors_nfe) +
+        # facet_grid(~Data, scales="free", space="free") +
+        labs(y='Type I Error', x='Pruning', title='Type I Error for Various Pruning Scenarios of Internal Cases \nand External Controls \nPop=100% NFE, MAF=0.001') +
+        guides(color = guide_legend(override.aes=list(shape = rep(c(16, 17), each=4)))) +
+        # guides(fill=guide_legend(title="Pruning Scenario for Internal Cases vs External Controls")) +
+        theme_bw(base_size = 23)
+p2
+ggsave(file = paste0(dir, 't1e_', Pop2, '_all_pruning_scenarios.jpg'),
+       plot = p2, height = 8, width = 12, units = 'in')
 
 
 # Proportion estimate plots

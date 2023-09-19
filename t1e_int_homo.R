@@ -136,8 +136,12 @@ for (i in 1:100){
   proxEcounts[i, 'Ratio-Case'] <- proxEcounts[i, 1]/proxEcounts[i, 2] # calc case ratios
   proxEcounts[i, 'Ratio-Control'] <- proxEcounts[i, 3]/proxEcounts[i, 4] # calc ctrl ratios
   
-  proxEcounts[i, 'Control-Fun (E)'] <- proxEcounts[i, 'Case-Fun (O)']*2*(ext_prune/100) # calc E ctrl-fun
-  proxEcounts[i, 'Control-Syn (E)'] <- proxEcounts[i, 'Case-Syn (O)']*2*(ext_prune/100) # calc E ctrl-syn
+  # For testing 100% v ext_prune
+  # proxEcounts[i, 'Control-Fun (E)'] <- proxEcounts[i, 'Case-Fun (O)']*2*(ext_prune/100) # calc E ctrl-fun
+  # proxEcounts[i, 'Control-Syn (E)'] <- proxEcounts[i, 'Case-Syn (O)']*2*(ext_prune/100) # calc E ctrl-syn
+  # # For testing ext_prune v ext_prune
+  proxEcounts[i, 'Control-Fun (E)'] <- proxEcounts[i, 'Case-Fun (O)']*2 # calc E ctrl-fun
+  proxEcounts[i, 'Control-Syn (E)'] <- proxEcounts[i, 'Case-Syn (O)']*2 # calc E ctrl-syn
   
   proxEcounts[i, 'Control-Fun (O-E)'] <- proxEcounts[i, 'Control-Fun (O)']-proxEcounts[i, 'Control-Fun (E)'] # calc O-E ctrl-fun
   proxEcounts[i, 'Control-Syn (O-E)'] <- proxEcounts[i, 'Control-Syn (O)']-proxEcounts[i, 'Control-Syn (E)'] # calc O-E ctrl-syn
