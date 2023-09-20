@@ -16,27 +16,27 @@ scen = "s1"
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
-ext_prune = 80
+ext_prune = 100
 
-dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
+dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
 
 ### Type 1 error
 
-t1e = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
-t1e_adj = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_adj_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
+# t1e = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
+# t1e_adj = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_adj_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
 t1e_homo = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 
-t1e_out = apply(t1e, 2, my.power)
-t1e_adj_out = apply(t1e_adj, 2, my.power)
+# t1e_out = apply(t1e, 2, my.power)
+# t1e_adj_out = apply(t1e_adj, 2, my.power)
 t1e_homo_out = apply(t1e_homo, 2, my.power)
 
-write.csv(t(as.data.frame(t1e_out)), paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(t(as.data.frame(t1e_adj_out)), paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
+# write.csv(t(as.data.frame(t1e_out)), paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
+# write.csv(t(as.data.frame(t1e_adj_out)), paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 write.csv(t(as.data.frame(t1e_homo_out)), paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 
 
 # Recalculate p-values
-dir = 'C:/Users/sagee/Documents/GitHub/masters_project/'
+dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
 counts99 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_99.csv'), header = T, sep = ',')
 counts95 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_95.csv'), header = T, sep = ',')
 counts90 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_90.csv'), header = T, sep = ',')
@@ -50,17 +50,19 @@ pow[1, 4] <- my.power(counts80$P.Value)
 
 write.csv(pow, paste0(dir, "T1e_NFE_99-80_maf", maf, ".csv"), quote=F, row.names=F)
 
+counts100v100 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_100_v_100.csv'), header = T, sep = ',')
 counts99v99 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_99_v_99.csv'), header = T, sep = ',')
 counts95v95 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_95_v_95.csv'), header = T, sep = ',')
 counts90v90 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_90_v_90.csv'), header = T, sep = ',')
 counts80v80 = read.table(paste0(dir, 'proxECAT_counts_expanded_', Pop2, '_80_v_80.csv'), header = T, sep = ',')
 
-t1e_ext_v_ext <- data.frame(matrix(nrow = 1, ncol = 4))
-colnames(t1e_ext_v_ext) <- c('t1e_99v99', 't1e_95v95', 't1e_90v90', 't1e_80v80')
+t1e_ext_v_ext <- data.frame(matrix(nrow = 1, ncol = 5))
+colnames(t1e_ext_v_ext) <- c('t1e_100v100', 't1e_99v99', 't1e_95v95', 't1e_90v90', 't1e_80v80')
 
-t1e_ext_v_ext[1, 1] <- my.power(counts99v99$P.Value)
-t1e_ext_v_ext[1, 2] <- my.power(counts95v95$P.Value)
-t1e_ext_v_ext[1, 3] <- my.power(counts90v90$P.Value)
-t1e_ext_v_ext[1, 4] <- my.power(counts80v80$P.Value)
+t1e_ext_v_ext[1, 1] <- my.power(counts100v100$P.Value)
+t1e_ext_v_ext[1, 2] <- my.power(counts99v99$P.Value)
+t1e_ext_v_ext[1, 3] <- my.power(counts95v95$P.Value)
+t1e_ext_v_ext[1, 4] <- my.power(counts90v90$P.Value)
+t1e_ext_v_ext[1, 5] <- my.power(counts80v80$P.Value)
 
-write.csv(t1e_ext_v_ext, paste0(dir, "T1e_NFE_99v99-80v80_maf", maf, ".csv"), quote=F, row.names=F)
+write.csv(t1e_ext_v_ext, paste0(dir, "T1e_NFE_100v100-80v80_maf", maf, ".csv"), quote=F, row.names=F)

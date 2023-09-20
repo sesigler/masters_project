@@ -14,7 +14,7 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
 Pop = 'NFE'
 p_case = 120
-p_conf = 99
+p_conf = 100
 Nsim = 20000 
 
 # Number of individuals in each dataset
@@ -28,8 +28,8 @@ cols = 1:40000
 obs_MACbin_syn_exp <- data.frame(matrix(ncol = 9, nrow = 100))
 colnames(obs_MACbin_syn_exp) <- c('Singletons', 'Doubletons', 'MAC.3.5', 'MAC.6.10',
                                   'MAC.11.20', 'MAC.21.MAF0.5', 'MAF0.5.1', 'rep', 'data')
-obs_MACbin_fun_pcase = obs_MACbin_fun_exp = obs_MACbin_fun_pconf = obs_MACbin_syn_exp
-obs_MACbin_syn_pconf = obs_MACbin_syn_exp
+obs_MACbin_fun_pcase = obs_MACbin_fun_exp = obs_MACbin_syn_exp
+# obs_MACbin_fun_pconf = obs_MACbin_syn_pconf = obs_MACbin_syn_exp
 
 
 mac_dir = '/home/math/siglersa/mastersProject/Input/'
@@ -45,8 +45,8 @@ dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100v', p_conf
 exp_fun_case = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_fun_', p_case,  '.txt'), header=T, sep='\t')
 exp_syn = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_syn_100.txt'), header=T, sep='\t')
 exp_fun = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_fun_100.txt'), header=T, sep='\t')
-exp_fun_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_fun_', p_conf, '.txt'), header=T, sep='\t')
-exp_syn_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_syn_', p_conf, '.txt'), header=T, sep='\t')
+# exp_fun_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_fun_', p_conf, '.txt'), header=T, sep='\t')
+# exp_syn_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_syn_', p_conf, '.txt'), header=T, sep='\t')
 
 
 set.seed(1) # Will be different for each replicate but same for each run
@@ -178,56 +178,56 @@ for(j in 1:100){
   # fwrite(MAC_ests_fun_100, paste0(dir_out, 'MAC_bin_ests_sim', j, '_fun_100_', Ncc, '.csv'),
   #        quote=F, row.names=F, col.names=T, sep=',')
   
-  #### Prune back to 80% of the functional and synonymous variants
+  #### Prune back to p_conf% of the functional and synonymous variants
   
   # update the allele counts for just the common controls
-  leg_cc = leg
-  leg_cc$count = rowSums(hap_all_pruned)
-  leg_cc$MAC = ifelse(leg_cc$count>Nsim, 2*Nsim-leg_cc$count, leg_cc$count)
+  # leg_cc = leg
+  # leg_cc$count = rowSums(hap_all_pruned)
+  # leg_cc$MAC = ifelse(leg_cc$count>Nsim, 2*Nsim-leg_cc$count, leg_cc$count)
   
   # subset the variants
-  leg_fun_cc = leg_cc %>% filter(fun=="fun")
-  leg_syn_cc = leg_cc %>% filter(fun=="syn")
+  # leg_fun_cc = leg_cc %>% filter(fun=="fun")
+  # leg_syn_cc = leg_cc %>% filter(fun=="syn")
   
   # prune the functional and synonymous variants of the common controls to p_conf%
-  rem_cc_fun = select_var(leg_fun_cc, exp_fun_conf)
-  rem_cc_syn = select_var(leg_syn_cc, exp_syn_conf)
-  hap_cc_conf = prune_var(rbind(rem_cc_fun, rem_cc_syn), hap_all_pruned, Nsim)
+  # rem_cc_fun = select_var(leg_fun_cc, exp_fun_conf)
+  # rem_cc_syn = select_var(leg_syn_cc, exp_syn_conf)
+  # hap_cc_conf = prune_var(rbind(rem_cc_fun, rem_cc_syn), hap_all_pruned, Nsim)
   
   # subset the datasets for p_conf% pruning
-  hap_cc_pruned = hap_cc_conf[, cc]
-  hap_case_pconf = hap_cc_conf[, cases]
-  hap_int_pruned = hap_cc_conf[, int]
+  # hap_cc_pruned = hap_cc_conf[, cc]
+  # hap_case_pconf = hap_cc_conf[, cases]
+  # hap_int_pruned = hap_cc_conf[, int]
   
   # write the haplotype files for 80% pruned
-  fwrite(hap_cc_pruned, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.common.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
-  
-  fwrite(hap_case_pconf, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
-  
-  fwrite(hap_int_pruned, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.internal.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
+  # fwrite(hap_cc_pruned, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.common.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
+  # 
+  # fwrite(hap_case_pconf, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
+  # 
+  # fwrite(hap_int_pruned, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.internal.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
   
   # p_conf % Synonymous
-  hap_cc_syn = hap_cc_conf[leg_syn_cc$row, ]
-  hap_syn_sums = rowSums(hap_cc_syn)
-  
-  syn80_bins1 = which(hap_syn_sums==1)
-  syn80_bins2 = which(hap_syn_sums==2)
-  syn80_bins3 = which(hap_syn_sums>=3 & hap_syn_sums<=5)
-  syn80_bins4 = which(hap_syn_sums>=6 & hap_syn_sums<=exp_syn_conf[4, 2])
-  syn80_bins5 = which(hap_syn_sums>=exp_syn_conf[5, 1] & hap_syn_sums<=exp_syn_conf[5, 2])
-  syn80_bins6 = which(hap_syn_sums>=exp_syn_conf[6, 1] & hap_syn_sums<=exp_syn_conf[6, 2])
-  syn80_bins7 = which(hap_syn_sums>=exp_syn_conf[7, 1] & hap_syn_sums<=exp_syn_conf[7, 2])
-  
-  synBins_pconf = c(length(syn80_bins1), length(syn80_bins2),length(syn80_bins3),
-                    length(syn80_bins4), length(syn80_bins5), length(syn80_bins6),
-                    length(syn80_bins7))
-  
-  obs_MACbin_syn_pconf[j, 1:7] <- synBins_pconf
-  obs_MACbin_syn_pconf[j, 8] <- j
-  obs_MACbin_syn_pconf[j, 9] <- paste0('RAREsim synonymous-', p_conf, '%')
+  # hap_cc_syn = hap_cc_conf[leg_syn_cc$row, ]
+  # hap_syn_sums = rowSums(hap_cc_syn)
+  # 
+  # syn80_bins1 = which(hap_syn_sums==1)
+  # syn80_bins2 = which(hap_syn_sums==2)
+  # syn80_bins3 = which(hap_syn_sums>=3 & hap_syn_sums<=5)
+  # syn80_bins4 = which(hap_syn_sums>=6 & hap_syn_sums<=exp_syn_conf[4, 2])
+  # syn80_bins5 = which(hap_syn_sums>=exp_syn_conf[5, 1] & hap_syn_sums<=exp_syn_conf[5, 2])
+  # syn80_bins6 = which(hap_syn_sums>=exp_syn_conf[6, 1] & hap_syn_sums<=exp_syn_conf[6, 2])
+  # syn80_bins7 = which(hap_syn_sums>=exp_syn_conf[7, 1] & hap_syn_sums<=exp_syn_conf[7, 2])
+  # 
+  # synBins_pconf = c(length(syn80_bins1), length(syn80_bins2),length(syn80_bins3),
+  #                   length(syn80_bins4), length(syn80_bins5), length(syn80_bins6),
+  #                   length(syn80_bins7))
+  # 
+  # obs_MACbin_syn_pconf[j, 1:7] <- synBins_pconf
+  # obs_MACbin_syn_pconf[j, 8] <- j
+  # obs_MACbin_syn_pconf[j, 9] <- paste0('RAREsim synonymous-', p_conf, '%')
   
   # MAC_ests_syn_80 = exp_syn_conf
   # MAC_ests_syn_80$Observed = c(length(syn80_bins1), length(syn80_bins2),length(syn80_bins3),
@@ -237,24 +237,24 @@ for(j in 1:100){
   #        quote=F, row.names=F, col.names=T, sep=',')
   
   # p_conf % Functional
-  hap_cc_fun = hap_cc_conf[leg_fun_cc$row, ]
-  hap_fun_sums = rowSums(hap_cc_fun)
-  
-  fun80_bins1 = which(hap_fun_sums==1)
-  fun80_bins2 = which(hap_fun_sums==2)
-  fun80_bins3 = which(hap_fun_sums>=3 & hap_fun_sums<=5)
-  fun80_bins4 = which(hap_fun_sums>=6 & hap_fun_sums<=exp_fun_conf[4, 2])
-  fun80_bins5 = which(hap_fun_sums>=exp_fun_conf[5, 1] & hap_fun_sums<=exp_fun_conf[5, 2])
-  fun80_bins6 = which(hap_fun_sums>=exp_fun_conf[6, 1] & hap_fun_sums<=exp_fun_conf[6, 2])
-  fun80_bins7 = which(hap_fun_sums>=exp_fun_conf[7, 1] & hap_fun_sums<=exp_fun_conf[7, 2])
-  
-  funBins_pconf = c(length(fun80_bins1), length(fun80_bins2),length(fun80_bins3),
-                    length(fun80_bins4), length(fun80_bins5), length(fun80_bins6),
-                    length(fun80_bins7))
-  
-  obs_MACbin_fun_pconf[j, 1:7] <- funBins_pconf
-  obs_MACbin_fun_pconf[j, 8] <- j
-  obs_MACbin_fun_pconf[j, 9] <- paste0('RAREsim functional-', p_conf, '%')
+  # hap_cc_fun = hap_cc_conf[leg_fun_cc$row, ]
+  # hap_fun_sums = rowSums(hap_cc_fun)
+  # 
+  # fun80_bins1 = which(hap_fun_sums==1)
+  # fun80_bins2 = which(hap_fun_sums==2)
+  # fun80_bins3 = which(hap_fun_sums>=3 & hap_fun_sums<=5)
+  # fun80_bins4 = which(hap_fun_sums>=6 & hap_fun_sums<=exp_fun_conf[4, 2])
+  # fun80_bins5 = which(hap_fun_sums>=exp_fun_conf[5, 1] & hap_fun_sums<=exp_fun_conf[5, 2])
+  # fun80_bins6 = which(hap_fun_sums>=exp_fun_conf[6, 1] & hap_fun_sums<=exp_fun_conf[6, 2])
+  # fun80_bins7 = which(hap_fun_sums>=exp_fun_conf[7, 1] & hap_fun_sums<=exp_fun_conf[7, 2])
+  # 
+  # funBins_pconf = c(length(fun80_bins1), length(fun80_bins2),length(fun80_bins3),
+  #                   length(fun80_bins4), length(fun80_bins5), length(fun80_bins6),
+  #                   length(fun80_bins7))
+  # 
+  # obs_MACbin_fun_pconf[j, 1:7] <- funBins_pconf
+  # obs_MACbin_fun_pconf[j, 8] <- j
+  # obs_MACbin_fun_pconf[j, 9] <- paste0('RAREsim functional-', p_conf, '%')
   
   # MAC_ests_fun_80 = exp_fun_conf
   # MAC_ests_fun_80$Observed = c(length(fun80_bins1), length(fun80_bins2),length(fun80_bins3),
@@ -269,6 +269,6 @@ for(j in 1:100){
 # Save the obs MAC bin files
 fwrite(obs_MACbin_fun_pcase, paste0(dir_out, 'obs_MACbin_fun', p_case, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
 fwrite(obs_MACbin_fun_exp, paste0(dir_out, 'obs_MACbin_fun100.csv'), quote=F, row.names=F, col.names=T, sep=',')
-fwrite(obs_MACbin_fun_pconf, paste0(dir_out, 'obs_MACbin_fun', p_conf, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
+# fwrite(obs_MACbin_fun_pconf, paste0(dir_out, 'obs_MACbin_fun', p_conf, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
 fwrite(obs_MACbin_syn_exp, paste0(dir_out, 'obs_MACbin_syn100.csv'), quote=F, row.names=F, col.names=T, sep=',')
-fwrite(obs_MACbin_syn_pconf, paste0(dir_out, 'obs_MACbin_syn', p_conf, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
+# fwrite(obs_MACbin_syn_pconf, paste0(dir_out, 'obs_MACbin_syn', p_conf, '.csv'), quote=F, row.names=F, col.names=T, sep=',')

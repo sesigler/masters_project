@@ -13,10 +13,11 @@ scen = 's1'
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
-ext_prune = 99
+ext_prune = 100
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
-dir = 'C:/Users/sagee/Documents/GitHub/masters_project/'
+dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
+dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/Results/'
 
 # read in the results
 # Proportion Estimates 
@@ -25,31 +26,30 @@ dir = 'C:/Users/sagee/Documents/GitHub/masters_project/'
 # t1e_int_prop_ests = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_int_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
 
 # t1e
-t1e_all = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_all_adj = read.csv(paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+# t1e_all = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+# t1e_all_adj = read.csv(paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 t1e_all_homo = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 
+################################################################################
 # t1e 100% NFE
 t1e_int_v_ext = read.csv(paste0(dir, "T1e_NFE_99-80_maf", maf, ".csv"), header=T)
-t1e_ext_v_ext = read.csv(paste0(dir, "T1e_NFE_99v99-80v80_maf", maf, ".csv"), header=T)
+t1e_ext_v_ext = read.csv(paste0(dir, "T1e_NFE_100v100-80v80_maf", maf, ".csv"), header=T)
 
 t1e_int_v_ext = pivot_longer(t1e_int_v_ext, t1e_99:t1e_80, values_to="Value") %>%
   mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
          Scenario = c("100% v 99%", "100% v 95%", "100% v 90%", "100% v 80%"),
          Pruning = c("99%", "95%", "90%", "80%"))
 
-t1e_ext_v_ext = pivot_longer(t1e_ext_v_ext, t1e_99v99:t1e_80v80, values_to="Value") %>%
+t1e_ext_v_ext = pivot_longer(t1e_ext_v_ext, t1e_100v100:t1e_80v80, values_to="Value") %>%
   mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
-         Scenario = c("99% v 99%", "95% v 95%", "90% v 90%", "80% v 80%"),
-         Pruning = c("99%", "95%", "90%", "80%"))
+         Scenario = c("100% v 100%", "99% v 99%", "95% v 95%", "90% v 90%", "80% v 80%"),
+         Pruning = c("100%", "99%", "95%", "90%", "80%"))
 
 results = rbind(t1e_int_v_ext, t1e_ext_v_ext)
-results$Scenario = factor(results$Scenario, levels=c("100% v 99%", "100% v 95%", 
-                                                     "100% v 90%", "100% v 80%",
-                                                     "99% v 99%", "95% v 95%", 
-                                                     "90% v 90%", "80% v 80%"))
-results$Pruning = factor(results$Pruning, levels=c("99%", "95%", "90%", "80%"))
-results$`Internal Cases` = factor(results$`Internal Cases`, levels=c("100% Pruned", "Same as External Controls"))
+results$Scenario = factor(results$Scenario, levels=c("100% v 99%", "100% v 95%", "100% v 90%", 
+                                                     "100% v 80%", "100% v 100%",  "99% v 99%",
+                                                     "95% v 95%", "90% v 90%", "80% v 80%"))
+results$Pruning = factor(results$Pruning, levels=c("100%", "99%", "95%", "90%", "80%"))
 # get CI's
 results$Lower = '.'
 results$Upper = '.'
@@ -65,43 +65,51 @@ results$Upper = as.numeric(results$Upper)
 #############################################
 
 # puts in a format for ggplot
-t1e_all = pivot_longer(t1e_all, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "Admixed")
-t1e_all_adj = pivot_longer(t1e_all_adj, prox_p_adj:iecat_p_adj, names_to="Method", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "Admixed")
+# t1e_all = pivot_longer(t1e_all, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
+#   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "Admixed")
+# t1e_all_adj = pivot_longer(t1e_all_adj, prox_p_adj:iecat_p_adj, names_to="Method", values_to="Value") %>%
+#   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "Admixed")
 t1e_all_homo = pivot_longer(t1e_all_homo, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "Homogeneous")
+  mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 
-results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
+# results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
+results = t1e_all_homo
 
+# results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
+#                                        "Internal + External", "Internal", "External", "Internal + External",
+#                                        "External", "Internal", "External", "Internal + External", "Internal", 
+#                                        "Internal + External", "Internal", "External", "Internal + External",
+#                                        "External", "External", "Internal + External", "Internal + External")) %>%
+#   mutate(MACs = rep(c("Unadjusted", "Adjusted"), c(18, 4))) %>%
+#   mutate(Configuration = rep(c("Homogeneous-Unadjusted", "Admixed-Unadjusted", "Admixed-Adjusted"), c(9, 9, 4)))
 results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
-                                       "Internal + External", "Internal", "External", "Internal + External",
-                                       "External", "Internal", "External", "Internal + External", "Internal", 
-                                       "Internal + External", "Internal", "External", "Internal + External",
-                                       "External", "External", "Internal + External", "Internal + External")) %>%
-  mutate(MACs = rep(c("Unadjusted", "Adjusted"), c(18, 4))) %>%
-  mutate(Configuration = rep(c("Homogeneous-Unadjusted", "Admixed-Unadjusted", "Admixed-Adjusted"), c(9, 9, 4)))
+                                       "Internal + External", "Internal", "External", "Internal + External"))
 
+# results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
+#                                                    "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
+#                                                    "prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
+#                                                    "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
+#                                                    "prox_p_adj", "prox2_p_adj", "prox2_all_p_adj", "iecat_p_adj"),
+#                          labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
+#                                   "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O",
+#                                   "ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
+#                                   "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O",
+#                                   "ProxECAT", "LogProx", "LogProx", "iECAT-O"))
 results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
-                                                   "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
-                                                   "prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
-                                                   "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
-                                                   "prox_p_adj", "prox2_p_adj", "prox2_all_p_adj", "iecat_p_adj"),
+                                                   "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p"),
                          labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
-                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O",
-                                  "ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
-                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O",
-                                  "ProxECAT", "LogProx", "LogProx", "iECAT-O"))
+                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O"))
 
 
 #results2$MAF = factor(results2$MAF, levels = c(0.01, 0.001))
 results2$Calculation = factor(results2$Calculation)
 results2$Scenario = factor(results2$Scenario)
 results2$MAF = factor(results2$MAF)
-results2$Pop = factor(results2$Pop, levels=c("Admixed", "Homogeneous"))
+# results2$Pop = factor(results2$Pop, levels=c("Admixed", "Homogeneous"))
+results2$Pop = factor(results2$Pop)
 results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal + External"))
-results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Adjusted"))
-results2$Configuration = factor(results2$Configuration, levels=c("Homogeneous-Unadjusted", "Admixed-Unadjusted", "Admixed-Adjusted"))
+# results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Adjusted"))
+# results2$Configuration = factor(results2$Configuration, levels=c("Homogeneous-Unadjusted", "Admixed-Unadjusted", "Admixed-Adjusted"))
 
 # get CI's
 results2$Lower = '.'
@@ -125,38 +133,45 @@ results2$Upper = as.numeric(results2$Upper)
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 cbPalette2 = c("#999999", "#BC9F4C", "#56B4E9", "#009E73", "#0072B2")
 colors = c("#009E73", "#0072B2", "#D55E00")
-colors_nfe = c("#009E73", "#0072B2", "#D55E00", "#CC79A7",
+colors_nfe = c("#009E73", "#0072B2", "#D55E00", "#CC79A7", "#999999",
                "lightgreen", "#56B4E9", "#E69F00", "pink")
+colors_all_nfe = "#009E73"
 
 # Controls everything in the graph
 # base_size = 25
 
 # Type I error graph
-ggplot(results2 %>% filter(Calculation=="Type I Error", MAF==0.001, Scenario==scen),  
-       aes(x=Method, y=Value, color=Configuration)) +
-  geom_point(aes(shape=Configuration), size=5, position=position_dodge(width=0.5)) +
-  geom_hline(yintercept=0.05, linetype=2, linewidth=1.5) +
-  scale_y_continuous(limits=c(0, 1)) +
-  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1.5, width=.2, position=position_dodge(width=0.5)) +
-  scale_color_manual(values=colors) +
-  facet_grid(~Data, scales="free", space="free") +
-  labs(y='Type I Error', x='Method', title='Scenario 1: Type I Error 100% vs 99% (10k cc) \nMAF=0.001') +
-  theme_bw(base_size = 23)
+p1 <- ggplot(results2, aes(x=Method, y=Value, color=Pop)) +
+        geom_point(aes(shape=Pop), size=5, position=position_dodge(width=0.5)) +
+        geom_hline(yintercept=0.05, linetype=2, linewidth=1.5) +
+        geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+        # scale_y_continuous(limits=c(0, 1)) +
+        scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+        geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1.5, width=.2, position=position_dodge(width=0.5)) +
+        scale_color_manual(values=colors_all_nfe) +
+        facet_grid(~Data, scales="free", space="free") +
+        labs(y='Type I Error', x='Method', title=paste0('Scenario 1: Type I Error 100% vs ', ext_prune, '% (10k cc) \nMAF=0.001')) +
+        theme_bw(base_size = 20)
+p1
+ggsave(file = paste0(dir_out, 't1e_', Pop2, '_', int_prune, '_v_', ext_prune, '.jpg'),
+       plot = p1, height = 8, width = 15, units = 'in')
 
 #Pruning NFE plot
 p2 <- ggplot(results, aes(x=Pruning, y=Value, color=Scenario)) +
-        geom_point(shape=rep(c(16, 17), each=4), size=5, position=position_dodge(width=0.5)) +
+        geom_point(shape=rep(c(16, 17), times=c(4, 5)), size=5, position=position_dodge(width=0.5)) +
         geom_hline(yintercept=0.05, linetype=2, linewidth=1.5) +
-        scale_y_continuous(limits=c(0, 1)) +
+        geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+        # scale_y_continuous(limits=c(0, 1)) +
+        scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
         geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1.5, width=.2, position=position_dodge(width=0.5)) +
         scale_color_manual(values=colors_nfe) +
         # facet_grid(~Data, scales="free", space="free") +
         labs(y='Type I Error', x='Pruning', title='Type I Error for Various Pruning Scenarios of Internal Cases \nand External Controls \nPop=100% NFE, MAF=0.001') +
-        guides(color = guide_legend(override.aes=list(shape = rep(c(16, 17), each=4)))) +
+        guides(color = guide_legend(override.aes=list(shape = rep(c(16, 17), times=c(4, 5))))) +
         # guides(fill=guide_legend(title="Pruning Scenario for Internal Cases vs External Controls")) +
-        theme_bw(base_size = 23)
+        theme_bw(base_size = 20)
 p2
-ggsave(file = paste0(dir, 't1e_', Pop2, '_all_pruning_scenarios.jpg'),
+ggsave(file = paste0(dir_out, 't1e_', Pop2, '_all_pruning_scenarios.jpg'),
        plot = p2, height = 8, width = 12, units = 'in')
 
 

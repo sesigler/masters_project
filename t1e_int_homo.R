@@ -44,20 +44,20 @@ dir_out = '/home/math/siglersa/mastersProject/Output/'
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/output/'
 
 # create empty vectors to store the p-values from each replicate
-# prox_p = prox_int_p = c()
-# prox2_p = prox2_all_p = prox2_int_p =  c()
-# iecat_p = c()
-# skat_int_p = skat_ext_p = skat_all_p = c()
+prox_p = prox_int_p = c()
+prox2_p = prox2_all_p = prox2_int_p =  c()
+iecat_p = c()
+skat_int_p = skat_ext_p = skat_all_p = c()
 
 # Create dataframe to store counts and ratios of fun:syn alleles for each dataset 
 # ratios <- data.frame(matrix(ncol = 4, nrow = 3))
 # colnames(ratios) <- c('Dataset', 'Functional', 'Synonymous', 'Ratio')
 # ratios[, "Dataset"] <- c("Cases", "Internal Controls", "External Controls")
 
-proxEcounts <- data.frame(matrix(ncol = 11, nrow = 100))
-colnames(proxEcounts) <- c('Case-Fun (O)', 'Case-Syn (O)', 'Control-Fun (O)', 'Control-Syn (O)', 
-                           'Control-Fun (E)', 'Control-Syn (E)', 'Control-Fun (O-E)',
-                           'Control-Syn (O-E)', 'Ratio-Case', 'Ratio-Control', 'P-Value')
+# proxEcounts <- data.frame(matrix(ncol = 11, nrow = 100))
+# colnames(proxEcounts) <- c('Case-Fun (O)', 'Case-Syn (O)', 'Control-Fun (O)', 'Control-Syn (O)', 
+#                            'Control-Fun (E)', 'Control-Syn (E)', 'Control-Fun (O-E)',
+#                            'Control-Syn (O-E)', 'Ratio-Case', 'Ratio-Control', 'P-Value')
 
 
 set.seed(1) 
@@ -102,12 +102,12 @@ for (i in 1:100){
   count_cases = calc_allele_freqs(geno_cases, Ncase)
   count_int = calc_allele_freqs(geno_int, Nint)
   count_cc = calc_allele_freqs(geno_cc, Ncc)
-  # count_all = calc_allele_freqs_all(count_cases, count_int, count_cc, Ncase, Nint, Ncc)
+  count_all = calc_allele_freqs_all(count_cases, count_int, count_cc, Ncase, Nint, Ncc)
   
   # identify the common variants
-  # common_ext = leg[which(count_cases$maf > maf | count_cc$maf > maf),]
-  # common_all = leg[which(count_cases$maf > maf | count_int$maf > maf | count_cc$maf > maf),]
-  # common_int = leg[which(count_cases$maf > maf | count_int$maf > maf),]
+  common_ext = leg[which(count_cases$maf > maf | count_cc$maf > maf),]
+  common_all = leg[which(count_cases$maf > maf | count_int$maf > maf | count_cc$maf > maf),]
+  common_int = leg[which(count_cases$maf > maf | count_int$maf > maf),]
   
   ### CHECK COUNTS BEFORE PROXECAT
   # counts.prox = c()
@@ -122,69 +122,68 @@ for (i in 1:100){
   ################################
   
   ### Run proxECAT and extract p-value 
-  # prox = prox_data_prep(leg_fun, leg_syn, count_cases, count_cc, maf)
-  # prox_int = prox_data_prep(leg_fun, leg_syn, count_cases, count_int, maf)
-  counts.prox = c()
-  
-  case.fun = rare_counts(count_cases, leg_fun, leg_syn, maf)
-  counts.prox = c(counts.prox, c(case.fun[1], case.fun[2]))
-  
-  ctrl.fun = rare_counts(count_cc, leg_fun, leg_syn, maf)
-  counts.prox = c(counts.prox, c(ctrl.fun[1], ctrl.fun[2]))
-  
-  proxEcounts[i, 1:4] <- counts.prox # store counts
-  proxEcounts[i, 'Ratio-Case'] <- proxEcounts[i, 1]/proxEcounts[i, 2] # calc case ratios
-  proxEcounts[i, 'Ratio-Control'] <- proxEcounts[i, 3]/proxEcounts[i, 4] # calc ctrl ratios
+  prox = prox_data_prep(leg_fun, leg_syn, count_cases, count_cc, maf)
+  prox_int = prox_data_prep(leg_fun, leg_syn, count_cases, count_int, maf)
+  # counts.prox = c()
+  # 
+  # case.fun = rare_counts(count_cases, leg_fun, leg_syn, maf)
+  # counts.prox = c(counts.prox, c(case.fun[1], case.fun[2]))
+  # 
+  # ctrl.fun = rare_counts(count_cc, leg_fun, leg_syn, maf)
+  # counts.prox = c(counts.prox, c(ctrl.fun[1], ctrl.fun[2]))
+  # 
+  # proxEcounts[i, 1:4] <- counts.prox # store counts
+  # proxEcounts[i, 'Ratio-Case'] <- proxEcounts[i, 1]/proxEcounts[i, 2] # calc case ratios
+  # proxEcounts[i, 'Ratio-Control'] <- proxEcounts[i, 3]/proxEcounts[i, 4] # calc ctrl ratios
   
   # For testing 100% v ext_prune
   # proxEcounts[i, 'Control-Fun (E)'] <- proxEcounts[i, 'Case-Fun (O)']*2*(ext_prune/100) # calc E ctrl-fun
   # proxEcounts[i, 'Control-Syn (E)'] <- proxEcounts[i, 'Case-Syn (O)']*2*(ext_prune/100) # calc E ctrl-syn
   # # For testing ext_prune v ext_prune
-  proxEcounts[i, 'Control-Fun (E)'] <- proxEcounts[i, 'Case-Fun (O)']*2 # calc E ctrl-fun
-  proxEcounts[i, 'Control-Syn (E)'] <- proxEcounts[i, 'Case-Syn (O)']*2 # calc E ctrl-syn
-  
-  proxEcounts[i, 'Control-Fun (O-E)'] <- proxEcounts[i, 'Control-Fun (O)']-proxEcounts[i, 'Control-Fun (E)'] # calc O-E ctrl-fun
-  proxEcounts[i, 'Control-Syn (O-E)'] <- proxEcounts[i, 'Control-Syn (O)']-proxEcounts[i, 'Control-Syn (E)'] # calc O-E ctrl-syn
+  # proxEcounts[i, 'Control-Fun (E)'] <- proxEcounts[i, 'Case-Fun (O)']*2 # calc E ctrl-fun
+  # proxEcounts[i, 'Control-Syn (E)'] <- proxEcounts[i, 'Case-Syn (O)']*2 # calc E ctrl-syn
+  # 
+  # proxEcounts[i, 'Control-Fun (O-E)'] <- proxEcounts[i, 'Control-Fun (O)']-proxEcounts[i, 'Control-Fun (E)'] # calc O-E ctrl-fun
+  # proxEcounts[i, 'Control-Syn (O-E)'] <- proxEcounts[i, 'Control-Syn (O)']-proxEcounts[i, 'Control-Syn (E)'] # calc O-E ctrl-syn
   
   # Run proxECAT
-  prox = proxecat(counts.prox[1], counts.prox[2], counts.prox[3], counts.prox[4])
+  # prox = proxecat(counts.prox[1], counts.prox[2], counts.prox[3], counts.prox[4])
   
   # store proxECAT p-values
-  # prox_p = c(prox_p, prox)
-  # prox_int_p = c(prox_int_p, prox_int)
-  proxEcounts[i, 'P-Value'] <- prox$p.value
+  prox_p = c(prox_p, prox)
+  prox_int_p = c(prox_int_p, prox_int)
+  # proxEcounts[i, 'P-Value'] <- prox$p.value
   
   ### Run LogProx and extract p-value
-  # p_prox2 = logprox_data_prep(leg, count_cases, count_int, count_cc, common_ext, common_all, adj=FALSE)
-  # p_prox2_int = logprox_int_prep(leg, count_cases, count_int, common_int)
+  p_prox2 = logprox_data_prep(leg, count_cases, count_int, count_cc, common_ext, common_all, adj=FALSE)
+  p_prox2_int = logprox_int_prep(leg, count_cases, count_int, common_int)
   
-  # NEED TO CHECK INDEXING
   # Store LogProx p-values
-  # prox2_p = c(prox2_p, p_prox2[[1]])
-  # prox2_all_p = c(prox2_all_p, p_prox2[[2]])
-  # prox2_int_p = c(prox2_int_p, p_prox2_int)
+  prox2_p = c(prox2_p, p_prox2[[1]])
+  prox2_all_p = c(prox2_all_p, p_prox2[[2]])
+  prox2_int_p = c(prox2_int_p, p_prox2_int)
   
   ### Run iECAT and extract p-value
-  # run_iecat = iecat_data_prep(geno_cases, geno_int, leg, common_all, count_cc, Ncc)
+  run_iecat = iecat_data_prep(geno_cases, geno_int, leg, common_all, count_cc, Ncc)
   
   # Store iECAT p-values
-  # iecat_p = c(iecat_p, run_iecat[[1]])
+  iecat_p = c(iecat_p, run_iecat[[1]])
   
   # Run SKAT-O and extract p-values
-  # run_skat = skat_data_prep(geno_cases, geno_int, geno_cc, leg, common_ext, common_all)
+  run_skat = skat_data_prep(geno_cases, geno_int, geno_cc, leg, common_ext, common_all)
   
   # Store SKAT p-values
-  # skat_int_p = c(skat_int_p, run_iecat[[2]])
-  # skat_ext_p = c(skat_ext_p, run_skat[[1]])
-  # skat_all_p = c(skat_all_p, run_skat[[2]])
+  skat_int_p = c(skat_int_p, run_iecat[[2]])
+  skat_ext_p = c(skat_ext_p, run_skat[[1]])
+  skat_all_p = c(skat_all_p, run_skat[[2]])
   
   print(i)
 }
 
 # Combine p-values from each method into one dataframe
-# results = data.frame(prox_p, prox_int_p, prox2_p, prox2_all_p, prox2_int_p, 
-#                      iecat_p, skat_int_p, skat_ext_p, skat_all_p)
+results = data.frame(prox_p, prox_int_p, prox2_p, prox2_all_p, prox2_int_p,
+                     iecat_p, skat_int_p, skat_ext_p, skat_all_p)
 
 # Save results
-# write.table(results, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
-fwrite(proxEcounts, paste0(dir_out, 'proxECAT_counts_expanded_', Pop, '_', int_prune, "_v_", ext_prune, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
+write.table(results, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
+# fwrite(proxEcounts, paste0(dir_out, 'proxECAT_counts_expanded_', Pop, '_', int_prune, "_v_", ext_prune, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
