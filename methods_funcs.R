@@ -158,6 +158,8 @@ logprox_int_prep = function(leg, counts.cases, counts.int, common) {
 
 
 # Function for formatting data and running statistical test for iECAT-O
+# Changed so that I can filter by either fun or syn variants
+# NOTE: Whichever leg I input is what gets filtered out
 iecat_data_prep = function(geno.cases, geno.int, leg, common, counts.cc, Ncc) {
   
   # create case/control phenotype matrices for iECAT/SKAT
@@ -165,12 +167,13 @@ iecat_data_prep = function(geno.cases, geno.int, leg, common, counts.cc, Ncc) {
   pheno.int[1:ncol(geno.cases)] = 1
   
   # subset the synonymous variants from the legend file
-  leg.syn = leg %>% filter(fun=="syn")
+  # leg.syn = leg %>% filter(fun=="syn")
   
   # create combined genotype matrices and remove the synonymous & common variants
-  geno.int.all = cbind(geno.cases, geno.int)[-union(leg.syn$row, common$row),]
-  
-  geno.ext = counts.cc[-union(leg.syn$row, common$row),]
+  # geno.int.all = cbind(geno.cases, geno.int)[-union(leg.syn$row, common$row),]
+  # geno.ext = counts.cc[-union(leg.syn$row, common$row),]
+  geno.int.all = cbind(geno.cases, geno.int)[-union(leg$row, common$row),]
+  geno.ext = counts.cc[-union(leg$row, common$row),]
   
   # null model object
   # distinguishes between cases and internal controls
@@ -193,6 +196,8 @@ iecat_data_prep = function(geno.cases, geno.int, leg, common, counts.cc, Ncc) {
 
 
 # Function for formatting data and running statistical test for SKAT-O
+# Changed so that I can filter by either fun or syn variants
+# NOTE: Whichever leg I input is what gets filtered out
 skat_data_prep = function(geno.cases, geno.int, geno.cc, leg, common.ext, common.all) {
   
   # create case/control phenotype matrices for SKAT
@@ -203,11 +208,13 @@ skat_data_prep = function(geno.cases, geno.int, geno.cc, leg, common.ext, common
   pheno.all[1:ncol(geno.cases)] = 1
   
   # subset the synonymous variants from the legend file
-  leg.syn = leg %>% filter(fun=="syn")
+  # leg.syn = leg %>% filter(fun=="syn")
   
   # create combined genotype matrices and remove the synonymous & common variants
-  geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg.syn$row, common.ext$row),] # SKAT (just cases & external controls)
-  geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg.syn$row, common.all$row),] # SKAT (all)
+  # geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg.syn$row, common.ext$row),] # SKAT (just cases & external controls)
+  # geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg.syn$row, common.all$row),] # SKAT (all)
+  geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg$row, common.ext$row),] # SKAT (just cases & external controls)
+  geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg$row, common.all$row),] # SKAT (all)
   
   # null model object
   obj.ext = SKAT_Null_Model(as.numeric(pheno.ext) ~ 1, out_type="D") # D-dichotomous

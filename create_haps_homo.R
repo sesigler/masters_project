@@ -13,7 +13,8 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
 
 Pop = 'NFE'
-p_case = 120
+p_case = 100
+p_exp = 100
 p_conf = 100
 Nsim = 20000 
 
@@ -28,13 +29,15 @@ cols = 1:40000
 obs_MACbin_syn_exp <- data.frame(matrix(ncol = 9, nrow = 100))
 colnames(obs_MACbin_syn_exp) <- c('Singletons', 'Doubletons', 'MAC.3.5', 'MAC.6.10',
                                   'MAC.11.20', 'MAC.21.MAF0.5', 'MAF0.5.1', 'rep', 'data')
-obs_MACbin_fun_pcase = obs_MACbin_fun_exp = obs_MACbin_syn_exp
-# obs_MACbin_fun_pconf = obs_MACbin_syn_pconf = obs_MACbin_syn_exp
+obs_MACbin_fun_exp = obs_MACbin_syn_exp
+# obs_MACbin_fun_pcase = obs_MACbin_fun_pconf = obs_MACbin_syn_pconf = obs_MACbin_syn_exp
 
 
 mac_dir = '/home/math/siglersa/mastersProject/Input/'
-dir_in = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
-dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100v', p_conf, '/')
+# dir_in = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
+dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
+# dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100v', p_conf, '/')
+dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
 
 # mac_dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
 # dir_in = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
@@ -42,11 +45,11 @@ dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100v', p_conf
 
 
 ### read in the expected number of functional and synonymous variants from RAREsim
-exp_fun_case = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_fun_', p_case,  '.txt'), header=T, sep='\t')
-exp_syn = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_syn_100.txt'), header=T, sep='\t')
-exp_fun = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_fun_100.txt'), header=T, sep='\t')
-# exp_fun_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_fun_', p_conf, '.txt'), header=T, sep='\t')
-# exp_syn_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, "_", Pop, '_syn_', p_conf, '.txt'), header=T, sep='\t')
+# exp_fun_case = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_case,  '.txt'), header=T, sep='\t')
+exp_syn = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_syn_', p_exp,  '.txt'), header=T, sep='\t')
+exp_fun = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_exp,  '.txt'), header=T, sep='\t')
+# exp_fun_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_conf, '.txt'), header=T, sep='\t')
+# exp_syn_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_syn_', p_conf, '.txt'), header=T, sep='\t')
 
 
 set.seed(1) # Will be different for each replicate but same for each run
@@ -58,7 +61,7 @@ for(j in 1:100){
   leg$row = 1:nrow(leg)
   
   # read in the haplotype file
-  hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.100syn.haps.gz'))
+  hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.', p_case, 'syn.haps.gz'))
   hap = as.data.frame(hap)
   
   # add allele counts to the haplotypes
@@ -77,28 +80,28 @@ for(j in 1:100){
   cc = sort(sample(x=cols[! cols %in% c(cases, int)], size = 2*Ncc, replace = FALSE))
   
   # subset the case haplotypes (120% fun and 100% syn)
-  hap_cases_pcase = hap[, cases]
+  # hap_cases_pcase = hap[, cases]
   
   # write the haplotype file for the cases (power)
-  fwrite(hap_cases_pcase, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_case, 'fun.100syn.haps.gz'),
-         quote=F, row.names=F, col.names=F, sep=' ')
+  # fwrite(hap_cases_pcase, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_case, 'fun.100syn.haps.gz'),
+  #        quote=F, row.names=F, col.names=F, sep=' ')
   
   # 120% Functional
-  fun120_bins1 = which(leg_fun$MAC==1)
-  fun120_bins2 = which(leg_fun$MAC==2)
-  fun120_bins3 = which(leg_fun$MAC>=3 & leg_fun$MAC<=5)
-  fun120_bins4 = which(leg_fun$MAC>=6 & leg_fun$MAC<=exp_fun_case[4, 2])
-  fun120_bins5 = which(leg_fun$MAC>=exp_fun_case[5, 1] & leg_fun$MAC<=exp_fun_case[5, 2])
-  fun120_bins6 = which(leg_fun$MAC>=exp_fun_case[6, 1] & leg_fun$MAC<=exp_fun_case[6, 2])
-  fun120_bins7 = which(leg_fun$MAC>=exp_fun_case[7, 1] & leg_fun$MAC<=exp_fun_case[7, 2])
-  
-  funBins_pcase = c(length(fun120_bins1), length(fun120_bins2),length(fun120_bins3),
-                    length(fun120_bins4), length(fun120_bins5), length(fun120_bins6),
-                    length(fun120_bins7))
-  
-  obs_MACbin_fun_pcase[j, 1:7] <- funBins_pcase
-  obs_MACbin_fun_pcase[j, 8] <- j
-  obs_MACbin_fun_pcase[j, 9] <- paste0('RAREsim functional-', p_case, '%')
+  # fun120_bins1 = which(leg_fun$MAC==1)
+  # fun120_bins2 = which(leg_fun$MAC==2)
+  # fun120_bins3 = which(leg_fun$MAC>=3 & leg_fun$MAC<=5)
+  # fun120_bins4 = which(leg_fun$MAC>=6 & leg_fun$MAC<=exp_fun_case[4, 2])
+  # fun120_bins5 = which(leg_fun$MAC>=exp_fun_case[5, 1] & leg_fun$MAC<=exp_fun_case[5, 2])
+  # fun120_bins6 = which(leg_fun$MAC>=exp_fun_case[6, 1] & leg_fun$MAC<=exp_fun_case[6, 2])
+  # fun120_bins7 = which(leg_fun$MAC>=exp_fun_case[7, 1] & leg_fun$MAC<=exp_fun_case[7, 2])
+  # 
+  # funBins_pcase = c(length(fun120_bins1), length(fun120_bins2),length(fun120_bins3),
+  #                   length(fun120_bins4), length(fun120_bins5), length(fun120_bins6),
+  #                   length(fun120_bins7))
+  # 
+  # obs_MACbin_fun_pcase[j, 1:7] <- funBins_pcase
+  # obs_MACbin_fun_pcase[j, 8] <- j
+  # obs_MACbin_fun_pcase[j, 9] <- paste0('RAREsim functional-', p_case, '%')
   
   # MAC_ests_fun_120 = exp_fun_case
   # MAC_ests_fun_120$Observed = c(length(fun120_bins1), length(fun120_bins2),length(fun120_bins3),
@@ -133,26 +136,30 @@ for(j in 1:100){
   
   
   # prune the functional variants back to 100%
-  rem_fun = select_var(leg_fun, exp_fun)
-  hap_all_pruned = prune_var(rem_fun, hap, Nsim)
+  # rem_fun = select_var(leg_fun, exp_fun)
+  # hap_all_pruned = prune_var(rem_fun, hap, Nsim)
   
   # subset the pruned haplotypes for 100% pruned
-  hap_cases = hap_all_pruned[, cases]
-  hap_int = hap_all_pruned[, int]
-  hap_cc = hap_all_pruned[, cc]
+  # hap_cases = hap_all_pruned[, cases]
+  # hap_int = hap_all_pruned[, int]
+  # hap_cc = hap_all_pruned[, cc]
+  hap_cases = hap[, cases]
+  hap_int = hap[, int]
+  hap_cc = hap[, cc]
   
   # write the haplotype file for the cases (type I error), internal and common controls
-  fwrite(hap_cases, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.100fun.100syn.haps.gz'),
+  fwrite(hap_cases, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_exp, 'fun.', p_exp, 'syn.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
 
-  fwrite(hap_int, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.internal.controls.100fun.100syn.haps.gz'),
+  fwrite(hap_int, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.internal.controls.', p_exp, 'fun.', p_exp, 'syn.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
 
-  fwrite(hap_cc, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.common.controls.100fun.100syn.haps.gz'),
+  fwrite(hap_cc, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.common.controls.', p_exp, 'fun.', p_exp, 'syn.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
   
   # 100% Functional
-  ap_fun = hap_all_pruned[leg_fun$row, ]
+  # ap_fun = hap_all_pruned[leg_fun$row, ]
+  ap_fun = hap[leg_fun$row, ]
   ap_fun_sums = rowSums(ap_fun)
   
   fun100_bins1 = which(ap_fun_sums==1)
@@ -267,8 +274,8 @@ for(j in 1:100){
 }
 
 # Save the obs MAC bin files
-fwrite(obs_MACbin_fun_pcase, paste0(dir_out, 'obs_MACbin_fun', p_case, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
-fwrite(obs_MACbin_fun_exp, paste0(dir_out, 'obs_MACbin_fun100.csv'), quote=F, row.names=F, col.names=T, sep=',')
+# fwrite(obs_MACbin_fun_pcase, paste0(dir_out, 'obs_MACbin_fun', p_case, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
+fwrite(obs_MACbin_fun_exp, paste0(dir_out, 'obs_MACbin_fun', p_exp, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
 # fwrite(obs_MACbin_fun_pconf, paste0(dir_out, 'obs_MACbin_fun', p_conf, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
-fwrite(obs_MACbin_syn_exp, paste0(dir_out, 'obs_MACbin_syn100.csv'), quote=F, row.names=F, col.names=T, sep=',')
+fwrite(obs_MACbin_syn_exp, paste0(dir_out, 'obs_MACbin_syn', p_exp, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
 # fwrite(obs_MACbin_syn_pconf, paste0(dir_out, 'obs_MACbin_syn', p_conf, '.csv'), quote=F, row.names=F, col.names=T, sep=',')

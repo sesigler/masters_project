@@ -13,7 +13,7 @@ scen = 's1'
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
-ext_prune = 100
+ext_prune = 99
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
 dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
@@ -29,6 +29,7 @@ dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/Results/'
 # t1e_all = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_all_adj = read.csv(paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 t1e_all_homo = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+t1e_all_skat = read.csv(paste0(dir, "T1e_all_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 
 ################################################################################
 # t1e 100% NFE
@@ -72,8 +73,12 @@ results$Upper = as.numeric(results$Upper)
 t1e_all_homo = pivot_longer(t1e_all_homo, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 
+t1e_all_skat = pivot_longer(t1e_all_skat, iecat_p_syn:skat_all_p_syn, names_to="Method", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
+
 # results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
-results = t1e_all_homo
+# results = t1e_all_homo
+results = rbind(t1e_all_homo, t1e_all_skat)
 
 # results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
 #                                        "Internal + External", "Internal", "External", "Internal + External",
@@ -82,8 +87,14 @@ results = t1e_all_homo
 #                                        "External", "External", "Internal + External", "Internal + External")) %>%
 #   mutate(MACs = rep(c("Unadjusted", "Adjusted"), c(18, 4))) %>%
 #   mutate(Configuration = rep(c("Homogeneous-Unadjusted", "Admixed-Unadjusted", "Admixed-Adjusted"), c(9, 9, 4)))
+
+# results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
+#                                        "Internal + External", "Internal", "External", "Internal + External"))
+
 results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
-                                       "Internal + External", "Internal", "External", "Internal + External"))
+                                       "Internal + External", "Internal", "External", "Internal + External",
+                                       "Internal + External", "Internal", "External", "Internal + External")) %>% 
+  mutate(Variants_Used = rep(c("Functional and Synonymous", "Functional Only", "Synonymous Only"), times=c(5, 4, 4)))
 
 # results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
 #                                                    "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
@@ -95,11 +106,18 @@ results2 = results %>% mutate(Data = c("External", "Internal", "External", "Inte
 #                                   "ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
 #                                   "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O",
 #                                   "ProxECAT", "LogProx", "LogProx", "iECAT-O"))
-results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
-                                                   "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p"),
-                         labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
-                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O"))
 
+# results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
+#                                                    "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p"),
+#                          labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
+#                                   "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O"))
+
+results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
+                                                   "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
+                                                   "iecat_p_syn", "skat_int_p_syn", "skat_ext_p_syn", "skat_all_p_syn"),
+                         labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
+                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O",
+                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O"))
 
 #results2$MAF = factor(results2$MAF, levels = c(0.01, 0.001))
 results2$Calculation = factor(results2$Calculation)
@@ -110,6 +128,7 @@ results2$Pop = factor(results2$Pop)
 results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal + External"))
 # results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Adjusted"))
 # results2$Configuration = factor(results2$Configuration, levels=c("Homogeneous-Unadjusted", "Admixed-Unadjusted", "Admixed-Adjusted"))
+results2$Variants_Used = factor(results2$Variants_Used, levels=c("Functional and Synonymous", "Functional Only", "Synonymous Only"))
 
 # get CI's
 results2$Lower = '.'
@@ -132,7 +151,7 @@ results2$Upper = as.numeric(results2$Upper)
 # colorblind friendly palette
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 cbPalette2 = c("#999999", "#BC9F4C", "#56B4E9", "#009E73", "#0072B2")
-colors = c("#009E73", "#0072B2", "#D55E00")
+colors3 = c("#009E73", "#0072B2", "#D55E00")
 colors_nfe = c("#009E73", "#0072B2", "#D55E00", "#CC79A7", "#999999",
                "lightgreen", "#56B4E9", "#E69F00", "pink")
 colors_all_nfe = "#009E73"
@@ -173,6 +192,22 @@ p2 <- ggplot(results, aes(x=Pruning, y=Value, color=Scenario)) +
 p2
 ggsave(file = paste0(dir_out, 't1e_', Pop2, '_all_pruning_scenarios.jpg'),
        plot = p2, height = 8, width = 12, units = 'in')
+
+# Fun or syn variants used all methods
+p3 <- ggplot(results2, aes(x=Method, y=Value, color=Variants_Used)) +
+        geom_point(aes(shape=Variants_Used), size=5, position=position_dodge(width=0.5)) +
+        geom_hline(yintercept=0.05, linetype=2, linewidth=1.5) +
+        geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+        # scale_y_continuous(limits=c(0, 1)) +
+        scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+        geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1.5, width=.2, position=position_dodge(width=0.5)) +
+        scale_color_manual(values=colors3) +
+        facet_grid(~Data, scales="free", space="free") +
+        labs(y='Type I Error', x='Method', title=paste0('Type I Error: 100% vs ', ext_prune, '% (10k cc) \nPop=100% NFE, MAF=0.001')) +
+        theme_bw(base_size = 20)
+p3
+ggsave(file = paste0(dir_out, 't1e_', Pop2, '_', int_prune, '_v_', ext_prune, '_variants_used.jpg'),
+       plot = p3, height = 8, width = 15, units = 'in')
 
 
 # Proportion estimate plots
