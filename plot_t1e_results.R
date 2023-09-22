@@ -13,7 +13,7 @@ scen = 's1'
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
-ext_prune = 99
+ext_prune = 100
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
 dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
@@ -30,6 +30,7 @@ dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/Results/'
 # t1e_all_adj = read.csv(paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 t1e_all_homo = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 t1e_all_skat = read.csv(paste0(dir, "T1e_all_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+t1e_all_og_hap = read.csv(paste0(dir, "T1e_all_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 
 ################################################################################
 # t1e 100% NFE
@@ -76,9 +77,13 @@ t1e_all_homo = pivot_longer(t1e_all_homo, prox_p:skat_all_p, names_to="Method", 
 t1e_all_skat = pivot_longer(t1e_all_skat, iecat_p_syn:skat_all_p_syn, names_to="Method", values_to="Value") %>%
   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 
+t1e_all_og_hap = pivot_longer(t1e_all_og_hap, prox_p:skat_all_p_syn, names_to="Method", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
+
 # results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
 # results = t1e_all_homo
 results = rbind(t1e_all_homo, t1e_all_skat)
+results = t1e_all_og_hap
 
 # results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
 #                                        "Internal + External", "Internal", "External", "Internal + External",
@@ -208,6 +213,22 @@ p3 <- ggplot(results2, aes(x=Method, y=Value, color=Variants_Used)) +
 p3
 ggsave(file = paste0(dir_out, 't1e_', Pop2, '_', int_prune, '_v_', ext_prune, '_variants_used.jpg'),
        plot = p3, height = 8, width = 15, units = 'in')
+
+# t1e for OG hap pruning straight down to 100% fun and 100% syn
+p4 <- ggplot(results2, aes(x=Method, y=Value, color=Variants_Used)) +
+        geom_point(aes(shape=Variants_Used), size=5, position=position_dodge(width=0.5)) +
+        geom_hline(yintercept=0.05, linetype=2, linewidth=1.5) +
+        geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+        # scale_y_continuous(limits=c(0, 1)) +
+        scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+        geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1.5, width=.2, position=position_dodge(width=0.5)) +
+        scale_color_manual(values=colors3) +
+        facet_grid(~Data, scales="free", space="free") +
+        labs(y='Type I Error', x='Method', title=paste0('Type I Error: 100% vs ', ext_prune, '% (10k cc) \nOriginal Hapgen Haplotype Pruned Down\nPop=100% NFE, MAF=0.001')) +
+        theme_bw(base_size = 20)
+p4
+ggsave(file = paste0(dir_out, 't1e_og_hap_', Pop2, '_', int_prune, '_v_', ext_prune, '_variants_used.jpg'),
+       plot = p4, height = 8, width = 15, units = 'in')
 
 
 # Proportion estimate plots

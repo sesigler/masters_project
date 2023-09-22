@@ -3,6 +3,9 @@
 # the type I error and power calculations for proxECAT, LogProx, and iECAT-O
 # on a homogeneous population
 ##############################################################################
+# Current set-up: Prune OG Hap file straight down to 100% fun and 100% syn
+# using R raresim pipeline
+##############################################################################
 
 library(data.table)
 library(dplyr)
@@ -35,9 +38,11 @@ obs_MACbin_fun_exp = obs_MACbin_syn_exp
 
 mac_dir = '/home/math/siglersa/mastersProject/Input/'
 # dir_in = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
-dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
+dir_in = '/storage/math/projects/RAREsim/Cases/Sim_20k/NFE/data/' #For pruning OG hap file
+# dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100v', p_conf, '/')
-dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
+# dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
+dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneRPL/100v', p_conf, '/') #For pruning OG hap file
 
 # mac_dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
 # dir_in = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
@@ -57,11 +62,13 @@ set.seed(1) # Will be different for each replicate but same for each run
 for(j in 1:100){
   
   # read in the legend file
-  leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.legend'), header=T, sep='\t')
+  # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.legend'), header=T, sep='\t')
+  leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.copy.legend'), header=T, sep='\t') #For pruning OG hap file
   leg$row = 1:nrow(leg)
   
   # read in the haplotype file
-  hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.', p_case, 'syn.haps.gz'))
+  # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.', p_case, 'syn.haps.gz'))
+  hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.controls.haps.gz')) #For pruning OG hap file
   hap = as.data.frame(hap)
   
   # add allele counts to the haplotypes
@@ -110,22 +117,22 @@ for(j in 1:100){
   # fwrite(MAC_ests_fun_120, paste0(dir_out, 'MAC_bin_ests_sim', j, '_fun_', p_case, '_', Ncc, '.csv'),
   #        quote=F, row.names=F, col.names=T, sep=',')
   
-  # 100% Synonymous
-  syn100_bins1 = which(leg_syn$MAC==1)
-  syn100_bins2 = which(leg_syn$MAC==2)
-  syn100_bins3 = which(leg_syn$MAC>=3 & leg_syn$MAC<=5)
-  syn100_bins4 = which(leg_syn$MAC>=6 & leg_syn$MAC<=exp_syn[4, 2])
-  syn100_bins5 = which(leg_syn$MAC>=exp_syn[5, 1] & leg_syn$MAC<=exp_syn[5, 2])
-  syn100_bins6 = which(leg_syn$MAC>=exp_syn[6, 1] & leg_syn$MAC<=exp_syn[6, 2])
-  syn100_bins7 = which(leg_syn$MAC>=exp_syn[7, 1] & leg_syn$MAC<=exp_syn[7, 2])
-  
-  synBins_exp = c(length(syn100_bins1), length(syn100_bins2),length(syn100_bins3),
-                  length(syn100_bins4), length(syn100_bins5), length(syn100_bins6),
-                  length(syn100_bins7))
-  
-  obs_MACbin_syn_exp[j, 1:7] <- synBins_exp
-  obs_MACbin_syn_exp[j, 8] <- j
-  obs_MACbin_syn_exp[j, 9] <- paste0('RAREsim synonymous-100%')
+  # # 100% Synonymous
+  # syn100_bins1 = which(leg_syn$MAC==1)
+  # syn100_bins2 = which(leg_syn$MAC==2)
+  # syn100_bins3 = which(leg_syn$MAC>=3 & leg_syn$MAC<=5)
+  # syn100_bins4 = which(leg_syn$MAC>=6 & leg_syn$MAC<=exp_syn[4, 2])
+  # syn100_bins5 = which(leg_syn$MAC>=exp_syn[5, 1] & leg_syn$MAC<=exp_syn[5, 2])
+  # syn100_bins6 = which(leg_syn$MAC>=exp_syn[6, 1] & leg_syn$MAC<=exp_syn[6, 2])
+  # syn100_bins7 = which(leg_syn$MAC>=exp_syn[7, 1] & leg_syn$MAC<=exp_syn[7, 2])
+  # 
+  # synBins_exp = c(length(syn100_bins1), length(syn100_bins2),length(syn100_bins3),
+  #                 length(syn100_bins4), length(syn100_bins5), length(syn100_bins6),
+  #                 length(syn100_bins7))
+  # 
+  # obs_MACbin_syn_exp[j, 1:7] <- synBins_exp
+  # obs_MACbin_syn_exp[j, 8] <- j
+  # obs_MACbin_syn_exp[j, 9] <- paste0('RAREsim synonymous-100%')
   
   # MAC_ests_syn_100 = exp_syn
   # MAC_ests_syn_100$Observed = c(length(syn100_bins1), length(syn100_bins2),length(syn100_bins3),
@@ -139,13 +146,18 @@ for(j in 1:100){
   # rem_fun = select_var(leg_fun, exp_fun)
   # hap_all_pruned = prune_var(rem_fun, hap, Nsim)
   
+  # PRUNE OG Hap file to 100% fun and 100% syn
+  rem_fun = select_var(leg_fun, exp_fun)
+  rem_syn = select_var(leg_syn, exp_syn)
+  hap_exp = prune_var(rbind(rem_fun, rem_syn), hap, Nsim)
+  
   # subset the pruned haplotypes for 100% pruned
   # hap_cases = hap_all_pruned[, cases]
   # hap_int = hap_all_pruned[, int]
   # hap_cc = hap_all_pruned[, cc]
-  hap_cases = hap[, cases]
-  hap_int = hap[, int]
-  hap_cc = hap[, cc]
+  hap_cases = hap_exp[, cases]
+  hap_int = hap_exp[, int]
+  hap_cc = hap_exp[, cc]
   
   # write the haplotype file for the cases (type I error), internal and common controls
   fwrite(hap_cases, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_exp, 'fun.', p_exp, 'syn.haps.gz'),
@@ -159,7 +171,7 @@ for(j in 1:100){
   
   # 100% Functional
   # ap_fun = hap_all_pruned[leg_fun$row, ]
-  ap_fun = hap[leg_fun$row, ]
+  ap_fun = hap_exp[leg_fun$row, ]
   ap_fun_sums = rowSums(ap_fun)
   
   fun100_bins1 = which(ap_fun_sums==1)
@@ -184,6 +196,26 @@ for(j in 1:100){
   #                               length(fun100_bins7))
   # fwrite(MAC_ests_fun_100, paste0(dir_out, 'MAC_bin_ests_sim', j, '_fun_100_', Ncc, '.csv'),
   #        quote=F, row.names=F, col.names=T, sep=',')
+  
+  # 100% Synonymous
+  ap_syn = hap_exp[leg_syn$row, ]
+  ap_syn_sums = rowSums(ap_syn)
+  
+  syn100_bins1 = which(ap_syn_sums==1)
+  syn100_bins2 = which(ap_syn_sums==2)
+  syn100_bins3 = which(ap_syn_sums>=3 & ap_syn_sums<=5)
+  syn100_bins4 = which(ap_syn_sums>=6 & ap_syn_sums<=exp_syn[4, 2])
+  syn100_bins5 = which(ap_syn_sums>=exp_syn[5, 1] & ap_syn_sums<=exp_syn[5, 2])
+  syn100_bins6 = which(ap_syn_sums>=exp_syn[6, 1] & ap_syn_sums<=exp_syn[6, 2])
+  syn100_bins7 = which(ap_syn_sums>=exp_syn[7, 1] & ap_syn_sums<=exp_syn[7, 2])
+  
+  synBins_exp = c(length(syn100_bins1), length(syn100_bins2),length(syn100_bins3),
+                  length(syn100_bins4), length(syn100_bins5), length(syn100_bins6),
+                  length(syn100_bins7))
+  
+  obs_MACbin_syn_exp[j, 1:7] <- synBins_exp
+  obs_MACbin_syn_exp[j, 8] <- j
+  obs_MACbin_syn_exp[j, 9] <- paste0('RAREsim synonymous-100%')
   
   #### Prune back to p_conf% of the functional and synonymous variants
   
