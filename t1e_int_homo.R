@@ -25,6 +25,7 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 # source("C:/Users/sagee/Documents/GitHub/masters_project/create_haps_funcs.R")
 
 Pop = 'NFE'
+pruning = 'pruneSequentially' #Options: pruneSeparately, pruneSequentially, pruneTogether
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
 p_cc_fun = p_cc_syn = ext_prune = 100
 Ncase = Nint = 5000
@@ -34,13 +35,15 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 
 # Set appropriate directories
 # dir_leg = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
-dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', ext_prune, '/')
-dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', ext_prune, '/')
+dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
+dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
 # dir_out ='/home/math/siglersa/mastersProject/Results/cc10k/'
 dir_out = '/home/math/siglersa/mastersProject/Output/'
 
-# dir_leg = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
-# dir_in = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
+# dir_leg = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/pruneSequentially/'
+# dir_in = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/pruneSequentially/'
+# dir_leg = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/pruneTogether/'
+# dir_in = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/pruneTogether/'
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/output/'
 
 # create empty vectors to store the p-values from each replicate
@@ -69,7 +72,9 @@ set.seed(1)
 for (i in 1:100){
   
   # read in the legend file
-  leg = read_leg_homo(dir_leg, Pop, i)
+  # leg = read_leg_homo(dir_leg, Pop, i)
+  leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', i, '.s_only.legend'), header=T, sep='\t') # prune sequentially
+  leg$row = 1:nrow(leg) # prune sequentially
   
   leg_fun = leg %>% filter(fun=="fun")
   leg_syn = leg %>% filter(fun=="syn")
@@ -207,5 +212,5 @@ results = data.frame(prox_p, prox_int_p, prox2_p, prox2_all_p, prox2_int_p,
 
 # Save results
 # write.table(results, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
-write.table(results, paste0(dir_out, "T1e_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
+write.table(results, paste0(dir_out, "T1e_",  pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
 # fwrite(proxEcounts, paste0(dir_out, 'proxECAT_counts_expanded_', Pop, '_', int_prune, "_v_", ext_prune, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
