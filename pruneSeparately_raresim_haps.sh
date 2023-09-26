@@ -16,14 +16,14 @@
 
 pop=NFE
 nsim=20000
-pfun=100
-psyn=100
-int_prune=100
-ext_prune=100
+pfun=80
+psyn=80
+int_prune=80
+ext_prune=80
 
 
 # define parameters
-end=100 
+end=100
 start=$(($end-99))
 
 #WD=/storage/math/projects/compinfo/simulations
@@ -44,11 +44,11 @@ cd /storage/math/projects/RAREsim/Cases/Sim_20k/${pop}/data
 ### calculate the necessary expected variants (already did for NFE)
 #/storage/singularity/mixtures.sif Rscript ${WD}/code/expected_MAC_bins_cases.R
 
-### use RAREsim to prune to 120% functional and 100% synonymous
+### use RAREsim to prune to pfun % functional and psyn % synonymous
 for rep in $(eval echo "{$start..$end}")
-do 
+do
 
-#/storage/singularity/mixtures.sif 
+#/storage/singularity/mixtures.sif
 # For pruning Separately
 python3 ${WD}/raresim/sim.py \
     -m chr19.block37.${pop}.sim${rep}.controls.haps.sm \

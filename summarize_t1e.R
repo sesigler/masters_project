@@ -17,6 +17,7 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
 ext_prune = 100
+pruning = "pruneSequentially" #Options: pruneSeparately, pruneSequentially, pruneTogether
 
 dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
 
@@ -25,20 +26,23 @@ dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
 # t1e = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
 # t1e_adj = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", scen, "_adj_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
 t1e_homo = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
-t1e_skat = read.table(paste0(dir, "T1e_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
-t1e_og_hap = read.table(paste0(dir, "T1e_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+# t1e_skat = read.table(paste0(dir, "T1e_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+# t1e_og_hap = read.table(paste0(dir, "T1e_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+t1e_pruning = read.table(paste0(dir, "T1e_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 
 # t1e_out = apply(t1e, 2, my.power)
 # t1e_adj_out = apply(t1e_adj, 2, my.power)
 t1e_homo_out = apply(t1e_homo, 2, my.power)
-t1e_skat_out = apply(t1e_skat, 2, my.power)
-t1e_og_hap_out = apply(t1e_og_hap, 2, my.power)
+# t1e_skat_out = apply(t1e_skat, 2, my.power)
+# t1e_og_hap_out = apply(t1e_og_hap, 2, my.power)
+t1e_pruning_out = apply(t1e_pruning, 2, my.power)
 
 # write.csv(t(as.data.frame(t1e_out)), paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 # write.csv(t(as.data.frame(t1e_adj_out)), paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 write.csv(t(as.data.frame(t1e_homo_out)), paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(t(as.data.frame(t1e_skat_out)), paste0(dir, "T1e_all_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(t(as.data.frame(t1e_og_hap_out)), paste0(dir, "T1e_all_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
+# write.csv(t(as.data.frame(t1e_skat_out)), paste0(dir, "T1e_all_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
+# write.csv(t(as.data.frame(t1e_og_hap_out)), paste0(dir, "T1e_all_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
+write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 
 # Recalculate p-values
 dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'

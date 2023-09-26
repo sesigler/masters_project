@@ -3,7 +3,7 @@
 # the type I error and power calculations for proxECAT, LogProx, and iECAT-O
 # on a homogeneous population
 ##############################################################################
-# Current set-up: Prune OG Hap file Sequentially to p_conf % using python
+# Current set-up: Prune OG Hap file Separately to p_conf % using python
 ##############################################################################
 
 library(data.table)
@@ -14,12 +14,12 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
 
 Pop = 'NFE'
-p_case = 100
-p_exp = 100
-p_conf = 100
+# p_case = 100
+# p_exp = 100
+p_conf = 80
 Nsim = 20000 
-pruning = 'pruneSequentially'
-int_prune = ext_prune = 100
+pruning = 'pruneSeparately' #Options: pruneSeparately, pruneSequentially, pruneTogether
+int_prune = ext_prune = 80
 
 # Number of individuals in each dataset
 Ncase = Nint = 5000
@@ -63,16 +63,16 @@ set.seed(1) # Will be different for each replicate but same for each run
 for(j in 1:100){
   
   # read in the legend file 
-  # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.legend'), header=T, sep='\t')
+  leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.legend'), header=T, sep='\t')
   # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.copy.legend'), header=T, sep='\t') #For pruning OG hap file
-  leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.s_only.legend'), header=T, sep='\t') # prune sequentially
+  # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.s_only.legend'), header=T, sep='\t') # prune sequentially
   leg$row = 1:nrow(leg)
   
   # read in the haplotype file
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.', p_case, 'syn.haps.gz'))
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.controls.haps.gz')) #For pruning OG hap file
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_conf, '.haps.gz')) #prune together
-  hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_conf, 'fun.', p_conf, 'syn.haps.gz')) # prune sequentially
+  hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_conf, 'fun.', p_conf, 'syn.haps.gz')) # prune separately, sequentially
   hap = as.data.frame(hap)
   
   # add allele counts to the haplotypes

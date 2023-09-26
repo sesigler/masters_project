@@ -1,0 +1,13 @@
+Dataset,Functional,Synonymous,Ratio
+Cases-Hap,742,362,2.04972375690608
+Internal Controls-Hap,696,404,1.72277227722772
+External Controls-Hap,1413,780,1.81153846153846
+Cases-ProxECAT,742,362,2.04972375690608
+Internal Controls-ProxECAT,696,404,1.72277227722772
+External Controls-ProxECAT,1413,780,1.81153846153846
+Cases-LogProx Internal,715,353,2.02549575070822
+Internal Controls-LogProx Internal,679,368,1.84510869565217
+Cases-LogProx External,716,345,2.07536231884058
+External Controls-LogProx External,1381,702,1.96723646723647
+Cases-Logprox Internal + External,1408,690,2.04057971014493
+Controls-Logprox Internal + External,2012,1063,1.89275634995296

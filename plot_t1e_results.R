@@ -14,6 +14,7 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
 ext_prune = 100
+pruning = "pruneSequentially" #Options: pruneSeparately, pruneSequentially, pruneTogether
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
 dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
@@ -29,42 +30,9 @@ dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/Results/'
 # t1e_all = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_all_adj = read.csv(paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 t1e_all_homo = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_all_skat = read.csv(paste0(dir, "T1e_all_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_all_og_hap = read.csv(paste0(dir, "T1e_all_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-
-################################################################################
-# t1e 100% NFE
-t1e_int_v_ext = read.csv(paste0(dir, "T1e_NFE_99-80_maf", maf, ".csv"), header=T)
-t1e_ext_v_ext = read.csv(paste0(dir, "T1e_NFE_100v100-80v80_maf", maf, ".csv"), header=T)
-
-t1e_int_v_ext = pivot_longer(t1e_int_v_ext, t1e_99:t1e_80, values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
-         Scenario = c("100% v 99%", "100% v 95%", "100% v 90%", "100% v 80%"),
-         Pruning = c("99%", "95%", "90%", "80%"))
-
-t1e_ext_v_ext = pivot_longer(t1e_ext_v_ext, t1e_100v100:t1e_80v80, values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
-         Scenario = c("100% v 100%", "99% v 99%", "95% v 95%", "90% v 90%", "80% v 80%"),
-         Pruning = c("100%", "99%", "95%", "90%", "80%"))
-
-results = rbind(t1e_int_v_ext, t1e_ext_v_ext)
-results$Scenario = factor(results$Scenario, levels=c("100% v 99%", "100% v 95%", "100% v 90%", 
-                                                     "100% v 80%", "100% v 100%",  "99% v 99%",
-                                                     "95% v 95%", "90% v 90%", "80% v 80%"))
-results$Pruning = factor(results$Pruning, levels=c("100%", "99%", "95%", "90%", "80%"))
-# get CI's
-results$Lower = '.'
-results$Upper = '.'
-# default level is 95% confidence
-nsim = 100
-for(i in 1:nrow(results)){
-  results$Lower[i] = binom.confint(nsim*results$Value[i], nsim, method=c("wilson"), type="central")$lower
-  results$Upper[i] = binom.confint(nsim*results$Value[i], nsim, method=c("wilson"), type="central")$upper
-}
-
-results$Lower = as.numeric(results$Lower)
-results$Upper = as.numeric(results$Upper)
-#############################################
+# t1e_all_skat = read.csv(paste0(dir, "T1e_all_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+# t1e_all_og_hap = read.csv(paste0(dir, "T1e_all_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 
 # puts in a format for ggplot
 # t1e_all = pivot_longer(t1e_all, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
@@ -74,16 +42,18 @@ results$Upper = as.numeric(results$Upper)
 t1e_all_homo = pivot_longer(t1e_all_homo, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 
-t1e_all_skat = pivot_longer(t1e_all_skat, iecat_p_syn:skat_all_p_syn, names_to="Method", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
+# t1e_all_skat = pivot_longer(t1e_all_skat, iecat_p_syn:skat_all_p_syn, names_to="Method", values_to="Value") %>%
+#   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
+# t1e_all_og_hap = pivot_longer(t1e_all_og_hap, prox_p:skat_all_p_syn, names_to="Method", values_to="Value") %>%
+#   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 
-t1e_all_og_hap = pivot_longer(t1e_all_og_hap, prox_p:skat_all_p_syn, names_to="Method", values_to="Value") %>%
+t1e_all_pruning = pivot_longer(t1e_all_pruning, prox_p:skat_all_p_syn, names_to="Method", values_to="Value") %>%
   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 
 # results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
 # results = t1e_all_homo
 results = rbind(t1e_all_homo, t1e_all_skat)
-results = t1e_all_og_hap
+results = t1e_all_pruning
 
 # results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
 #                                        "Internal + External", "Internal", "External", "Internal + External",
@@ -229,6 +199,58 @@ p4 <- ggplot(results2, aes(x=Method, y=Value, color=Variants_Used)) +
 p4
 ggsave(file = paste0(dir_out, 't1e_og_hap_', Pop2, '_', int_prune, '_v_', ext_prune, '_variants_used.jpg'),
        plot = p4, height = 8, width = 15, units = 'in')
+
+# t1e for different pruning scenarios
+p5 <- ggplot(results2, aes(x=Method, y=Value, color=Variants_Used)) +
+        geom_point(aes(shape=Variants_Used), size=5, position=position_dodge(width=0.5)) +
+        geom_hline(yintercept=0.05, linetype=2, linewidth=1.5) +
+        geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+        # scale_y_continuous(limits=c(0, 1)) +
+        scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+        geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1.5, width=.2, position=position_dodge(width=0.5)) +
+        scale_color_manual(values=colors3) +
+        facet_grid(~Data, scales="free", space="free") +
+        labs(y='Type I Error', x='Method', title=paste0('Type I Error: ', int_prune, '% vs ', ext_prune, '% (10k cc) \nPruning: ', pruning, '\nPop=100% NFE, MAF=0.001')) +
+        theme_bw(base_size = 20)
+p5
+ggsave(file = paste0(dir_out, 't1e_', Pop2, '_', pruning, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
+       plot = p5, height = 8, width = 15, units = 'in')
+
+
+
+################################################################################
+# t1e 100% NFE-proxECAT only
+t1e_int_v_ext = read.csv(paste0(dir, "T1e_NFE_99-80_maf", maf, ".csv"), header=T)
+t1e_ext_v_ext = read.csv(paste0(dir, "T1e_NFE_100v100-80v80_maf", maf, ".csv"), header=T)
+
+t1e_int_v_ext = pivot_longer(t1e_int_v_ext, t1e_99:t1e_80, values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
+         Scenario = c("100% v 99%", "100% v 95%", "100% v 90%", "100% v 80%"),
+         Pruning = c("99%", "95%", "90%", "80%"))
+
+t1e_ext_v_ext = pivot_longer(t1e_ext_v_ext, t1e_100v100:t1e_80v80, values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
+         Scenario = c("100% v 100%", "99% v 99%", "95% v 95%", "90% v 90%", "80% v 80%"),
+         Pruning = c("100%", "99%", "95%", "90%", "80%"))
+
+results = rbind(t1e_int_v_ext, t1e_ext_v_ext)
+results$Scenario = factor(results$Scenario, levels=c("100% v 99%", "100% v 95%", "100% v 90%", 
+                                                     "100% v 80%", "100% v 100%",  "99% v 99%",
+                                                     "95% v 95%", "90% v 90%", "80% v 80%"))
+results$Pruning = factor(results$Pruning, levels=c("100%", "99%", "95%", "90%", "80%"))
+# get CI's
+results$Lower = '.'
+results$Upper = '.'
+# default level is 95% confidence
+nsim = 100
+for(i in 1:nrow(results)){
+  results$Lower[i] = binom.confint(nsim*results$Value[i], nsim, method=c("wilson"), type="central")$lower
+  results$Upper[i] = binom.confint(nsim*results$Value[i], nsim, method=c("wilson"), type="central")$upper
+}
+
+results$Lower = as.numeric(results$Lower)
+results$Upper = as.numeric(results$Upper)
+#############################################
 
 
 # Proportion estimate plots
