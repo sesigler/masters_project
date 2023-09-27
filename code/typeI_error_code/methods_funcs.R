@@ -13,7 +13,7 @@
 # Ncc: Number of individuals in the common controls
 ##############################################################################
 
-### Determine the number of rare fun and syn minor alleles in a dataset
+### Determine the number of rare fun and syn minor alleles in a dataset FROM THE COUNTS DF
 rare_counts = function(counts, leg.fun, leg.syn, maf){
   
   fun.counts = counts[leg.fun$row, ]
@@ -31,72 +31,74 @@ rare_counts = function(counts, leg.fun, leg.syn, maf){
 
 
 # Function for formatting data and running statistical test for ProxECAT
-prox_data_prep = function(leg.fun, leg.syn, counts.cases, counts.ctrl, maf) {
-  
-  counts.prox = c()
-  
-  case.fun = rare_counts(counts.cases, leg.fun, leg.syn, maf)
-  counts.prox = c(counts.prox, c(case.fun[1], case.fun[2]))
-  
-  ctrl.fun = rare_counts(counts.ctrl, leg.fun, leg.syn, maf)
-  counts.prox = c(counts.prox, c(ctrl.fun[1], ctrl.fun[2]))
-  
-  # Run proxECAT
-  prox = proxecat(counts.prox[1], counts.prox[2], counts.prox[3], counts.prox[4])
-  
-  # return p-value
-  return(prox$p.value)
-}
-
-# # Function for formatting data and running statistical test for ProxECAT
-# prox_data_prep = function(leg, counts.cases, counts.cc, common, adj) {
+# NOTE: This version does not filter out variants that are common in at least
+# one of the datasets
+# prox_data_prep = function(leg.fun, leg.syn, counts.cases, counts.ctrl, maf) {
 #   
-#   # convert genotypes into long format for ProxECAT v2
-#   data.cases = make_long(counts.cases, leg, "case", "int")
-#   if (adj){
-#     data.cc = make_long_adj(counts.cc, leg, "control", "ext") #doesn't have count column
-#   }
-#   else{
-#     data.cc = make_long(counts.cc, leg, "control", "ext")
-#   }
+#   counts.prox = c()
 #   
-#   # combine the data together AND REMOVE COMMON VARIANTS
-#   data.prox = data.frame(lapply(rbind(data.cases, data.cc), factor)) %>% 
-#     filter(!(id %in% common$id))
+#   case.fun = rare_counts(counts.cases, leg.fun, leg.syn, maf)
+#   counts.prox = c(counts.prox, c(case.fun[1], case.fun[2]))
 #   
-#   # getting overall counts for functional & case status
-#   # data for proxECAT method
-#   counts.prox = data.prox %>% count(case, fun)
+#   ctrl.fun = rare_counts(counts.ctrl, leg.fun, leg.syn, maf)
+#   counts.prox = c(counts.prox, c(ctrl.fun[1], ctrl.fun[2]))
 #   
 #   # Run proxECAT
-#   prox = proxecat(counts.prox$n[1], counts.prox$n[2], counts.prox$n[3], counts.prox$n[4])
+#   prox = proxecat(counts.prox[1], counts.prox[2], counts.prox[3], counts.prox[4])
 #   
 #   # return p-value
-#   return(prox$p)
+#   return(prox$p.value)
 # }
+
+# # Function for formatting data and running statistical test for ProxECAT
+prox_data_prep = function(leg, counts.cases, counts.cc, common, adj) {
+
+  # convert genotypes into long format for ProxECAT v2
+  data.cases = make_long(counts.cases, leg, "case", "int")
+  if (adj){
+    data.cc = make_long_adj(counts.cc, leg, "control", "ext") #doesn't have count column
+  }
+  else{
+    data.cc = make_long(counts.cc, leg, "control", "ext")
+  }
+
+  # combine the data together AND REMOVE COMMON VARIANTS
+  data.prox = data.frame(lapply(rbind(data.cases, data.cc), factor)) %>%
+    filter(!(id %in% common$id))
+
+  # getting overall counts for functional & case status
+  # data for proxECAT method
+  counts.prox = data.prox %>% count(case, fun)
+
+  # Run proxECAT
+  prox = proxecat(counts.prox$n[1], counts.prox$n[2], counts.prox$n[3], counts.prox$n[4])
+
+  # return p-value
+  return(prox$p)
+}
 
 # Function for formatting data and running statistical test for ProxECAT
 # for testing cases vs internal controls only
-# prox_int_prep = function(leg, counts.cases, counts.int, common) {
-#   
-#   # convert genotypes into long format for ProxECAT v2
-#   data.cases = make_long(counts.cases, leg, "case", "int")
-#   data.int = make_long(counts.int, leg, "control", "int")
-#  
-#   # combine the data together AND REMOVE COMMON VARIANTS
-#   data.prox = data.frame(lapply(rbind(data.cases, data.int), factor)) %>% 
-#     filter(!(id %in% common$id))
-#   
-#   # getting overall counts for functional & case status
-#   # data for proxECAT method
-#   counts.prox = data.prox %>% count(case, fun)
-#   
-#   # Run proxECAT
-#   prox = proxecat(counts.prox$n[1], counts.prox$n[2], counts.prox$n[3], counts.prox$n[4])
-#   
-#   # return p-value
-#   return(prox$p)
-# }
+prox_int_prep = function(leg, counts.cases, counts.int, common) {
+
+  # convert genotypes into long format for ProxECAT v2
+  data.cases = make_long(counts.cases, leg, "case", "int")
+  data.int = make_long(counts.int, leg, "control", "int")
+
+  # combine the data together AND REMOVE COMMON VARIANTS
+  data.prox = data.frame(lapply(rbind(data.cases, data.int), factor)) %>%
+    filter(!(id %in% common$id))
+
+  # getting overall counts for functional & case status
+  # data for proxECAT method
+  counts.prox = data.prox %>% count(case, fun)
+
+  # Run proxECAT
+  prox = proxecat(counts.prox$n[1], counts.prox$n[2], counts.prox$n[3], counts.prox$n[4])
+
+  # return p-value
+  return(prox$p)
+}
 
 
 # Function for formatting data and running statistical test for LogProx

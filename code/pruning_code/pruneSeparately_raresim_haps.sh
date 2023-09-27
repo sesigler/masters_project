@@ -16,9 +16,9 @@
 
 pop=NFE
 nsim=20000
-pfun=80
-psyn=80
-int_prune=80
+pfun=100
+psyn=100
+int_prune=100
 ext_prune=80
 
 
