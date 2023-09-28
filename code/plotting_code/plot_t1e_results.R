@@ -14,11 +14,11 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
 ext_prune = 100
-pruning = "pruneSequentially" #Options: pruneSeparately, pruneSequentially, pruneTogether
+pruning = "pruneSeparately" #Options: pruneSeparately, pruneSequentially, pruneTogether
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
-dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
-dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/Results/'
+dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
+dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/')
 
 # read in the results
 # Proportion Estimates 
@@ -29,7 +29,7 @@ dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/Results/'
 # t1e
 # t1e_all = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_all_adj = read.csv(paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_all_homo = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+# t1e_all_homo = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_all_skat = read.csv(paste0(dir, "T1e_all_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_all_og_hap = read.csv(paste0(dir, "T1e_all_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
@@ -39,8 +39,8 @@ t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", int_prune, "_v_
 #   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "Admixed")
 # t1e_all_adj = pivot_longer(t1e_all_adj, prox_p_adj:iecat_p_adj, names_to="Method", values_to="Value") %>%
 #   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "Admixed")
-t1e_all_homo = pivot_longer(t1e_all_homo, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
+# t1e_all_homo = pivot_longer(t1e_all_homo, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
+#   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 
 # t1e_all_skat = pivot_longer(t1e_all_skat, iecat_p_syn:skat_all_p_syn, names_to="Method", values_to="Value") %>%
 #   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
@@ -52,7 +52,7 @@ t1e_all_pruning = pivot_longer(t1e_all_pruning, prox_p:skat_all_p_syn, names_to=
 
 # results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
 # results = t1e_all_homo
-results = rbind(t1e_all_homo, t1e_all_skat)
+# results = rbind(t1e_all_homo, t1e_all_skat)
 results = t1e_all_pruning
 
 # results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
