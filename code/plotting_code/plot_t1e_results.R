@@ -15,9 +15,11 @@ Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
 ext_prune = 100
 pruning = "pruneSeparately" #Options: pruneSeparately, pruneSequentially, pruneTogether
+folder = '100v90'
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
-dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
+# dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
+dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', folder, '/')
 dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/')
 
 # read in the results
@@ -215,6 +217,22 @@ p5 <- ggplot(results2, aes(x=Method, y=Value, color=Variants_Used)) +
 p5
 ggsave(file = paste0(dir_out, 't1e_', Pop2, '_', pruning, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
        plot = p5, height = 8, width = 15, units = 'in')
+
+# t1e for different pruning scenarios for 100vX%
+p6 <- ggplot(results2, aes(x=Method, y=Value, color=Variants_Used)) +
+        geom_point(aes(shape=Variants_Used), size=5, position=position_dodge(width=0.5)) +
+        geom_hline(yintercept=0.05, linetype=2, linewidth=1.5) +
+        geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+        # scale_y_continuous(limits=c(0, 1)) +
+        scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+        geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1.5, width=.2, position=position_dodge(width=0.5)) +
+        scale_color_manual(values=colors3) +
+        facet_grid(~Data, scales="free", space="free") +
+        labs(y='Type I Error', x='Method', title=paste0('Type I Error: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning, '\nPop=100% NFE, MAF=0.001')) +
+        theme_bw(base_size = 20)
+p6
+ggsave(file = paste0(dir_out, 't1e_', Pop2, '_', pruning, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
+       plot = p6, height = 8, width = 15, units = 'in')
 
 
 

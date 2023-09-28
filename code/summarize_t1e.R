@@ -18,8 +18,9 @@ Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
 ext_prune = 100
 pruning = "pruneSeparately" #Options: pruneSeparately, pruneSequentially, pruneTogether
+folder = '100v90'
 
-dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
+dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', folder, '/')
 
 ### Type 1 error
 
@@ -28,8 +29,8 @@ dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '
 # t1e_homo = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 # t1e_skat = read.table(paste0(dir, "T1e_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 # t1e_og_hap = read.table(paste0(dir, "T1e_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
-# t1e_pruning = read.table(paste0(dir, "T1e_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
-t1e_pruning = read.table(paste0(dir, "T1e_fixed_proxecat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+t1e_pruning = read.table(paste0(dir, "T1e_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+# t1e_pruning = read.table(paste0(dir, "T1e_fixed_proxecat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 
 # t1e_out = apply(t1e, 2, my.power)
 # t1e_adj_out = apply(t1e_adj, 2, my.power)

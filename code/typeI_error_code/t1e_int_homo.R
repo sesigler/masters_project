@@ -26,6 +26,7 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
 Pop = 'NFE'
 pruning = 'pruneSeparately' #Options: pruneSeparately, pruneSequentially, pruneTogether
+folder = '100v80' # For testing 100v100, 100v80, and 80v80 from the 100v80 data
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
 p_cc_fun = p_cc_syn = ext_prune = 100
 Ncase = Nint = 5000
@@ -35,10 +36,12 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 
 # Set appropriate directories
 # dir_leg = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
-dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
-dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
+# dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
+# dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
+dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
 # dir_out ='/home/math/siglersa/mastersProject/Results/cc10k/'
-dir_out = '/home/math/siglersa/mastersProject/Output/'
+dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', folder, '/')
 
 # dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/pruneSeparately/', int_prune, 'v', ext_prune, '/')
 # dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/pruneSeparately/', int_prune, 'v', ext_prune, '/')
@@ -308,5 +311,5 @@ results = data.frame(prox_p, prox_int_p, prox2_p, prox2_all_p, prox2_int_p,
 
 # Save results
 # write.table(results, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
-write.table(results, paste0(dir_out, "T1e_fixed_proxecat_",  pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
+write.table(results, paste0(dir_out, "T1e_",  pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
 # fwrite(proxEcounts, paste0(dir_out, 'proxECAT_counts_expanded_', Pop, '_', int_prune, "_v_", ext_prune, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
