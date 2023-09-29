@@ -15,7 +15,7 @@ Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
 ext_prune = 100
 pruning = "pruneSeparately" #Options: pruneSeparately, pruneSequentially, pruneTogether
-folder = '100v90'
+folder = '100v99'
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
