@@ -68,8 +68,8 @@ python3 ${WD}/raresim/convert.py \
 # Prune fun and syn variants down again to pconf %
 python3 ${WD}/raresim/sim.py \
     -m ${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pcase}fun.${pcase}syn.haps.sm \
-    --functional_bins ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop}_fun_${pconf}.txt \
-    --synonymous_bins ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop}_syn_${pconf}.txt \
+    --functional_bins ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop}_fun_${pconf}_6bins.txt \
+    --synonymous_bins ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop}_syn_${pconf}_6bins.txt \
     -l ${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.${pcase}fun.${pcase}syn.legend \
     -L ${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.${pconf}fun.${pconf}syn.legend \
     -H ${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pconf}fun.${pconf}syn.haps.gz
