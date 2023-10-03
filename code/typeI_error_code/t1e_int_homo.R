@@ -19,16 +19,16 @@ source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
 source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
-# source("C:/Users/sagee/Documents/GitHub/masters_project/read_in_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/general_data_manip.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/methods_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/create_haps_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/pruning_code/create_haps_funcs.R")
 
 Pop = 'NFE'
-pruning = 'pruneSeparately' #Options: pruneSeparately, pruneSequentially, pruneTogether
+pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim
 folder = '100v80' # For testing 100v100, 100v80, and 80v80 from the 100v80 data
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
-p_cc_fun = p_cc_syn = ext_prune = 100
+p_cc_fun = p_cc_syn = ext_prune = 80
 Ncase = Nint = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
@@ -39,12 +39,12 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 # dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
 # dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
 dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
-dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/datasets/')
 # dir_out ='/home/math/siglersa/mastersProject/Results/cc10k/'
 dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', folder, '/')
 
-# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/pruneSeparately/', int_prune, 'v', ext_prune, '/')
-# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/pruneSeparately/', int_prune, 'v', ext_prune, '/')
+dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 # dir_leg = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/pruneTogether/'
 # dir_in = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/pruneTogether/'
 # dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
@@ -80,7 +80,7 @@ skat_int_p_syn = skat_ext_p_syn = skat_all_p_syn = c()
 
 
 set.seed(1) 
-# i=1
+i=1
 # loop through the simulation replicates
 for (i in 1:100){
   

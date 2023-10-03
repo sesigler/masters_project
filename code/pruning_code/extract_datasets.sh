@@ -23,23 +23,23 @@ do
 
 # Extract cases from pconf % pruned haplotype file
 python3 ${WD}/raresim/extract.py \
-    -i ${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pconf}fun.${pconf}syn.haps.gz \
-    -o ${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/datasets/chr19.block37.${pop}.sim${rep}.cases.${pconf}fun.${pconf}syn.haps.gz \
-    -n Ncase \
+    -i "${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pconf}fun.${pconf}syn.haps.gz" \
+    -o "${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/datasets/chr19.block37.${pop}.sim${rep}.cases.${pconf}fun.${pconf}syn.haps.gz" \
+    -n ${Ncase} \
     --seed 13
 
 # Extract internal controls from pconf % pruned haplotype REMAINDER file
 python3 ${WD}/raresim/extract.py \
     -i ${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/datasets/chr19.block37.${pop}.sim${rep}.cases.${pconf}fun.${pconf}syn.haps.gz-remainder \
     -o ${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/datasets/chr19.block37.${pop}.sim${rep}.internal.controls.${pconf}fun.${pconf}syn.haps.gz \
-    -n Nint \
+    -n ${Nint} \
     --seed 13
 
 # Extract external controls from internal controls REMAINDER file-should be all that's leftover
 python3 ${WD}/raresim/extract.py \
     -i ${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/datasets/chr19.block37.${pop}.sim${rep}.internal.controls.${pconf}fun.${pconf}syn.haps.gz-remainder \
     -o ${WD}/mastersProject/20K_${pop}/${pruning}/${int_prune}v${ext_prune}/datasets/chr19.block37.${pop}.sim${rep}.common.controls.${pconf}fun.${pconf}syn.haps.gz \
-    -n Ncc \
+    -n ${Ncc} \
     --seed 13
 
 done
