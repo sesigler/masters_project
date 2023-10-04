@@ -3,7 +3,8 @@
 # the type I error and power calculations for proxECAT, LogProx, and iECAT-O
 # on a homogeneous population
 ##############################################################################
-# Current set-up: Subset the datasets from a pconf % pruned haplotype file
+# Current set-up: Prune variants from 100% fun (RAREsimv2.1.1) to 100% syn
+# (RAREsim R) and subset datasets
 ##############################################################################
 
 library(data.table)
@@ -14,13 +15,13 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
 
 Pop = 'NFE'
-# p_case = 100
-# p_exp = 100
+p_case = 100
+p_exp = 100
 p_conf = 100
 Nsim = 20000 
-pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether
+pruning = 'pruneSequentially' #Options: pruneSeparately, pruneSequentially, pruneTogether
 int_prune = 100
-ext_prune = 80
+ext_prune = 100
 
 # Number of individuals in each dataset
 Ncase = Nint = 5000
@@ -44,7 +45,8 @@ mac_dir = '/home/math/siglersa/mastersProject/Input/'
 dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/') #For pruning OG hap file
 # dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100v', p_conf, '/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
-dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/datasets/') #For pruning OG hap file
+dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/') #For pruning OG hap file
+# dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/datasets/') #For pruning OG hap file
 
 # mac_dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
 # dir_in = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
@@ -53,7 +55,7 @@ dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', in
 
 ### read in the expected number of functional and synonymous variants from RAREsim
 # exp_fun_case = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_case,  '.txt'), header=T, sep='\t')
-# exp_syn = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_syn_', p_exp,  '.txt'), header=T, sep='\t')
+exp_syn = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_syn_', p_exp,  '.txt'), header=T, sep='\t')
 # exp_fun = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_exp,  '.txt'), header=T, sep='\t')
 # exp_fun_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_conf, '.txt'), header=T, sep='\t')
 # exp_syn_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_syn_', p_conf, '.txt'), header=T, sep='\t')
@@ -64,27 +66,28 @@ set.seed(1) # Will be different for each replicate but same for each run
 for(j in 1:100){
   
   # read in the legend file 
-  # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.legend'), header=T, sep='\t')
+  leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.legend'), header=T, sep='\t')
   # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.copy.legend'), header=T, sep='\t') #For pruning OG hap file
   # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.s_only.legend'), header=T, sep='\t') # prune sequentially
-  # leg$row = 1:nrow(leg)
+  leg$row = 1:nrow(leg)
   
   # read in the haplotype file
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.', p_case, 'syn.haps.gz'))
+  hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.haps.gz'))
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.controls.haps.gz')) #For pruning OG hap file
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_conf, '.haps.gz')) #prune together
-  hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_conf, 'fun.', p_conf, 'syn.haps.gz')) # prune separately, sequentially
+  # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_conf, 'fun.', p_conf, 'syn.haps.gz')) # prune separately, sequentially
   hap = as.data.frame(hap)
   
   # add allele counts to the haplotypes
-  # leg$count = rowSums(hap)
+  leg$count = rowSums(hap)
   
   # convert to minor allele counts
-  # leg$MAC = ifelse(leg$count>Nsim, 2*Nsim-leg$count, leg$count)
+  leg$MAC = ifelse(leg$count>Nsim, 2*Nsim-leg$count, leg$count)
   
   # subset the legend file to the functional variants (those are the only ones we'll prune)
-  # leg_fun = leg %>% filter(fun=="fun")
-  # leg_syn = leg %>% filter(fun=="syn")
+  leg_fun = leg %>% filter(fun=="fun")
+  leg_syn = leg %>% filter(fun=="syn")
   
   # Select the columns for necessary data sets
   cases = sort(sample(x=cols, size = 2*Ncase, replace = FALSE))
@@ -168,21 +171,25 @@ for(j in 1:100){
   # rem_fun = select_var(leg_fun, exp_fun)
   # hap_all_pruned = prune_var(rem_fun, hap, Nsim)
   
+  # prune the synonymous variants to 100%
+  rem_syn = select_var(leg_syn, exp_syn)
+  hap_all_pruned = prune_var(rem_syn, hap, Nsim)
+  
   # PRUNE OG Hap file to 100% fun and 100% syn
   # rem_fun = select_var(leg_fun, exp_fun)
   # rem_syn = select_var(leg_syn, exp_syn)
   # hap_exp = prune_var(rbind(rem_fun, rem_syn), hap, Nsim)
   
   # subset the pruned haplotypes for 100% pruned
-  # hap_cases = hap_all_pruned[, cases]
-  # hap_int = hap_all_pruned[, int]
-  # hap_cc = hap_all_pruned[, cc]
+  hap_cases = hap_all_pruned[, cases]
+  hap_int = hap_all_pruned[, int]
+  hap_cc = hap_all_pruned[, cc]
   # hap_cases = hap_exp[, cases]
   # hap_int = hap_exp[, int]
   # hap_cc = hap_exp[, cc]
-  hap_cases = hap[, cases]
-  hap_int = hap[, int]
-  hap_cc = hap[, cc]
+  # hap_cases = hap[, cases]
+  # hap_int = hap[, int]
+  # hap_cc = hap[, cc]
   
   # hap_all_pruned = hap # just need if going from 100% to 80%
   

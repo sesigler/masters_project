@@ -1,23 +1,14 @@
 #!/bin/bash
 
-# The scenarios
-
-#################################################################
-###############   Cases   # Internal Controls # Common Controls
-#################################################################
-#T1E          # 100% all  # 100% all	      # 100% all
-#	      #		  #		      #
-#	      #		  # 		      #
-#################################################################
-#Power	      # 120% fun  # 100% all	      #	100% all
-#	      # 100% syn  #		      #
-#	      #		  #		      #
-#################################################################
+##################################################################
+# Current set-up: Prune hapgen hap to 100% fun using RAREsimv2.1.1
+# Then use RAREsim R to prune to 100% syn
+##################################################################
 
 pop=NFE
 nsim=20000
 pfun=100
-psyn=100
+#psyn=100
 int_prune=100
 ext_prune=100
 
@@ -57,23 +48,24 @@ python3 ${WD}/raresim/sim.py \
     -L ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.f_only.legend \
     -H ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pfun}fun.haps.gz
 
+done
 
 # For pruning Sequentially: convert f_only hap file to sm
-python3 ${WD}/raresim/convert.py \
-    -i ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pfun}fun.haps.gz \
-    -o ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pfun}fun.haps.sm \
+#python3 ${WD}/raresim/convert.py \
+#    -i ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pfun}fun.haps.gz \
+#    -o ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pfun}fun.haps.sm \
 
 
 # For pruning Sequentially: --s_only
 # Will want to change -L output to just .legend in the future
-python3 ${WD}/raresim/sim.py \
-    -m ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pfun}fun.haps.sm \
-    --s_only ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop}_syn_${psyn}.txt \
-    -l ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.f_only.legend \
-    -L ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.s_only.legend \
-    -H ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pfun}fun.${psyn}syn.haps.gz
+#python3 ${WD}/raresim/sim.py \
+#    -m ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pfun}fun.haps.sm \
+#    --s_only ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop}_syn_${psyn}.txt \
+#    -l ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.f_only.legend \
+#    -L ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.s_only.legend \
+#    -H ${WD}/mastersProject/20K_${pop}/pruneSequentially/${int_prune}v${ext_prune}/chr19.block37.${pop}.sim${rep}.all.${pfun}fun.${psyn}syn.haps.gz
 
-done
+#done
 
 ### replace the first lines of the Create Haplotypes R script with the necessary variables
 #Ncase="Ncase = $ncase"
