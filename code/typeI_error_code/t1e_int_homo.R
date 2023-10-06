@@ -27,7 +27,8 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 Pop = 'NFE'
 pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim
 folder = '100v80' # For testing 100v100, 100v80, and 80v80 from the 100v80 data
-p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
+p_case = 100
+p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 80
 p_cc_fun = p_cc_syn = ext_prune = 80
 Ncase = Nint = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
@@ -87,7 +88,7 @@ for (i in 1:100){
   # read in the legend file
   # leg = read_leg_homo(dir_leg, Pop, i)
   # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', i, '.s_only.legend'), header=T, sep='\t') # prune sequentially
-  leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', i, '.', p_case_fun, 'fun.', p_case_syn, 'syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
+  leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', i, '.', p_case, 'fun.', p_case, 'syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
   leg$row = 1:nrow(leg)
   
   leg_fun = leg %>% filter(fun=="fun")

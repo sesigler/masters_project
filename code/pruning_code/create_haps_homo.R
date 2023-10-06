@@ -3,8 +3,8 @@
 # the type I error and power calculations for proxECAT, LogProx, and iECAT-O
 # on a homogeneous population
 ##############################################################################
-# Current set-up: Prune fun and syn variants to 100% and then 80% using only
-# R pipeline and extract datasets
+# Current set-up: Add pruned variants back into 80% pruned haplotype file as 
+# rows of zero (RAREsim v2.1.1 used to do 100% and 80% pruning)
 ##############################################################################
 
 library(data.table)
@@ -19,7 +19,7 @@ p_case = 100
 # p_exp = 100
 p_conf = 80
 Nsim = 20000 
-pruning = 'pruneSepR' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim,pruneSepR
+pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim,pruneSepR
 folder = '100v80'
 int_prune = 100
 ext_prune = 80
@@ -39,15 +39,15 @@ cols = 1:40000
 # obs_MACbin_fun_pcase = obs_MACbin_fun_exp = obs_MACbin_syn_pconf = obs_MACbin_syn_exp
 
 
-mac_dir = '/home/math/siglersa/mastersProject/Input/'
+# mac_dir = '/home/math/siglersa/mastersProject/Input/'
 # dir_in = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
-dir_in = '/storage/math/projects/RAREsim/Cases/Sim_20k/NFE/data/' #For pruning OG hap file
+# dir_in = '/storage/math/projects/RAREsim/Cases/Sim_20k/NFE/data/' #For pruning OG hap file
 # dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
 # dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/') 
-# dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/') 
+dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100v', p_conf, '/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
-dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/') 
+dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/datasets/') 
 
 # mac_dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/'
@@ -57,35 +57,32 @@ dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', fo
 
 ### read in the expected number of functional and synonymous variants from RAREsim
 # exp_fun_case = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_case,  '.txt'), header=T, sep='\t')
-exp_syn = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_syn_', p_exp,  '.txt'), header=T, sep='\t')
-exp_fun = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_exp,  '.txt'), header=T, sep='\t')
-exp_fun_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_conf, '.txt'), header=T, sep='\t')
-exp_syn_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_syn_', p_conf, '.txt'), header=T, sep='\t')
+# exp_syn = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_syn_', p_exp,  '.txt'), header=T, sep='\t')
+# exp_fun = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_exp,  '.txt'), header=T, sep='\t')
+# exp_fun_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_fun_', p_conf, '.txt'), header=T, sep='\t')
+# exp_syn_conf = read.table(paste0(mac_dir, 'MAC_bin_estimates_', Nsim, '_', Pop, '_syn_', p_conf, '.txt'), header=T, sep='\t')
 
 
 set.seed(1) # Will be different for each replicate but same for each run
-# j = 1
+# j = 3
 for(j in 1:100){
   
   # read in the legend file 
   # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.legend'), header=T, sep='\t')
-  leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.copy.legend'), header=T, sep='\t') #For pruning OG hap file
+  # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.copy.legend'), header=T, sep='\t') #For pruning OG hap file
   # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.s_only.legend'), header=T, sep='\t') # prune sequentially
-  leg$row = 1:nrow(leg)
+  # leg$row = 1:nrow(leg)
   
   # For RAREsim v2.1.1 only pruning pipeline
-  # leg_pcase = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.', p_case, 'fun.', p_case, 'syn.legend'), header=T, sep='\t')
-  # leg_pcase$row = 1:nrow(leg_pcase)
-  # 
-  # leg_pconf = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.', p_conf, 'fun.', p_conf, 'syn.legend'), header=T, sep='\t')
-  # 
-  # leg_pv = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.', p_conf, 'fun.', p_conf, 'syn.legend-pruned-variants'), header=F, sep='\t')
-  # colnames(leg_pv) <- colnames(leg_pconf)
+  leg_pcase = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.', p_case, 'fun.', p_case, 'syn.legend'), header=T, sep='\t')
+  leg_pcase$row = 1:nrow(leg_pcase)
+
+  leg_pconf = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.', p_conf, 'fun.', p_conf, 'syn.legend'), header=T, sep='\t')
   
   # read in the haplotype file
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.', p_case, 'syn.haps.gz'))
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.haps.gz'))
-  hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.controls.haps.gz')) #For pruning OG hap file
+  # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.controls.haps.gz')) #For pruning OG hap file
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_conf, '.haps.gz')) #prune together
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_conf, 'fun.', p_conf, 'syn.haps.gz')) # prune separately, sequentially
   # hap = as.data.frame(hap)
@@ -98,10 +95,12 @@ for(j in 1:100){
   hap_pconf = as.data.frame(hap_pconf)
   
   # Add rows of zeros back into p_conf % pruned hap file
-  hap_all_pruned = add_prune_var(leg_pcase, leg_pconf, leg_pv, hap_pconf, Nsim)
+  hap_all_pruned = add_prune_var(leg_pcase, leg_pconf, hap_pconf, Nsim)
   
   # add allele counts to the haplotypes
   # leg$count = rowSums(hap)
+  # leg_pcase$count = rowSums(hap_pcase)
+  # leg_pcase$count_out = rowSums(hap_all_pruned)
   
   # convert to minor allele counts
   # leg$MAC = ifelse(leg$count>Nsim, 2*Nsim-leg$count, leg$count)

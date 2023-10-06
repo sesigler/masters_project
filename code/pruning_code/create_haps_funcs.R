@@ -11,7 +11,6 @@
 # maf: the minor allele frequency
 # leg_pcase: legend file for haplotype of 1st RAREsim v2.1.1 pruning step
 # leg_pconf: legend file for haplotype of 2nd RAREsim v2.1.1 pruning step
-# leg_pv: legend file of haplotypes that were pruned between 1st and 2nd RAREsim v2.1.1 pruning steps 
 # hap_pconf: haplotype file of the second RAREsim v2.1.1 pruning step
 ##############################################################################
 
@@ -66,21 +65,21 @@ prune_var = function(remove, haplotype, nsim){
 
 ### function to add rows of zeros back into the pruned haplotype file in the correct 
 # order. Haplotype pruned using RAREsim v2.1.1
-add_prune_var = function(leg_pcase, leg_pconf, leg_pv, hap_pconf, nsim){
+add_prune_var = function(leg_pcase, leg_pconf, hap_pconf, nsim){
   
-  # Add row number to pconf legend files based on variant id in pcase legend file
+  # Add row number to pconf legend file based on variant id in pcase legend file
   pconf_rows = subset(leg_pcase, id %in% leg_pconf$id)
   leg_pconf$row = pconf_rows$row
   
-  pv_rows = subset(leg_pcase, id %in% leg_pv$id)
-  leg_pv$row = pv_rows$row
+  # Subset rows that were pruned from pcase legend file
+  pruned_rows = subset(leg_pcase, !(id %in% leg_pconf$id))
   
   # create rows of zeros to add back in to hap.pconf
-  add =  data.frame(matrix(0, nrow=nrow(leg_pv), ncol=(2*nsim)))
+  add =  data.frame(matrix(0, nrow=nrow(pruned_rows), ncol=(2*nsim)))
   colnames(add) = colnames(hap_pconf)
   
   # add row numbers to the haplotypes
-  add$row = leg_pv$row
+  add$row = pruned_rows$row
   hap_pconf$row = leg_pconf$row
   
   # add rows of zeros to the p_conf pruned haplotype
