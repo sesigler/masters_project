@@ -12,10 +12,11 @@ Pop2 = 'NFE'
 scen = 's1'
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
-int_prune = 100
-ext_prune = 100
-pruning = "pruneSequentially" #Options: pruneSeparately, pruneSequentially, pruneTogether
-folder = '100v100'
+int_prune = 80
+ext_prune = 80
+pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
+folder = '100v80'
+pruning_plot = 'Separately-RAREsim v2.1.1'
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
@@ -228,7 +229,7 @@ p6 <- ggplot(results2, aes(x=Method, y=Value, color=Variants_Used)) +
         geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1.5, width=.2, position=position_dodge(width=0.5)) +
         scale_color_manual(values=colors3) +
         facet_grid(~Data, scales="free", space="free") +
-        labs(y='Type I Error', x='Method', title=paste0('Type I Error: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning, '\nPop=100% NFE, MAF=0.001')) +
+        labs(y='Type I Error', x='Method', title=paste0('Type I Error: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
         theme_bw(base_size = 20)
 p6
 ggsave(file = paste0(dir_out, 't1e_', Pop2, '_', pruning, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
