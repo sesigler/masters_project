@@ -3,6 +3,11 @@
 # scenario of using proxECAT and LogProx to test cases vs internal controls
 # on a homogeneous population
 ##############################################################################
+# Current set-up: Test type I error for 99% internal v 99% external using
+# RAREsim v2.1.1 but using two separate 99% pruned hap files to extract internal
+# samples and external samples, but both 99% pruned hap files coming from same
+# 100% pruned hap file
+##############################################################################
 
 # load libraries
 library(dplyr)
@@ -25,11 +30,11 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 # source("C:/Users/sagee/Documents/GitHub/masters_project/code/pruning_code/create_haps_funcs.R")
 
 Pop = 'NFE'
-pruning = 'pruneSepR' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
-folder = '100v80' # For testing 100v100, 100v80, and 80v80 from the 100v80 data
-# p_case = 100 # for pruneSepRaresim leg file
-p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
-p_cc_fun = p_cc_syn = ext_prune = 80
+pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
+folder = 'int_v_ext' # For testing 100v100, 100v80, and 80v80 from the 100v80 data
+p_case = 100 # for pruneSepRaresim leg file
+p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 99
+p_cc_fun = p_cc_syn = ext_prune = 99
 Ncase = Nint = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
@@ -40,9 +45,11 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 # dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
 # dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
 # dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
-# dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
-dir_leg = '/storage/math/projects/RAREsim/Cases/Sim_20k/NFE/data/' #For pruning OG hap file
-dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+# dir_leg = '/storage/math/projects/RAREsim/Cases/Sim_20k/NFE/data/' #For pruning OG hap file
+# dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+dir_int = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/internal_data/')
+dir_ext = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/external_data/')
 # dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/datasets/')
 # dir_out ='/home/math/siglersa/mastersProject/Results/cc10k/'
 dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', folder, '/')
@@ -90,17 +97,17 @@ for (i in 1:100){
   # read in the legend file
   # leg = read_leg_homo(dir_leg, Pop, i)
   # leg = read.table(paste0(dir_in, 'chr19.block37.', Pop, '.sim', i, '.s_only.legend'), header=T, sep='\t') # prune sequentially
-  # leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', i, '.', p_case, 'fun.', p_case, 'syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
-  leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', i, '.copy.legend'), header=T, sep='\t') #For pruning OG hap file
+  leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', i, '.', p_case, 'fun.', p_case, 'syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
+  # leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', i, '.copy.legend'), header=T, sep='\t') #For pruning OG hap file
   leg$row = 1:nrow(leg)
   
   leg_fun = leg %>% filter(fun=="fun")
   leg_syn = leg %>% filter(fun=="syn")
   
   # read in the haplotype and reference files
-  hap_cases = read_hap_homo(dir_in, Pop, i, "cases", p_case_fun, p_case_syn)
-  hap_int = read_hap_homo(dir_in, Pop, i, "internal.controls", p_int_fun, p_int_syn)
-  hap_cc = read_hap_homo(dir_in, Pop, i, "common.controls", p_cc_fun, p_cc_syn)
+  hap_cases = read_hap_homo(dir_int, Pop, i, "cases", p_case_fun, p_case_syn)
+  hap_int = read_hap_homo(dir_int, Pop, i, "internal.controls", p_int_fun, p_int_syn)
+  hap_cc = read_hap_homo(dir_ext, Pop, i, "common.controls", p_cc_fun, p_cc_syn)
   
   ### CHECK COUNTS
   ### Check ratio of fun to syn rare alleles in cases
