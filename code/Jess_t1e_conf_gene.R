@@ -163,8 +163,11 @@ for (i in 1:100){
    prox2_genes = iecat_genes = skat_int_genes = skat_ext_genes = c()
    genes = levels(droplevels(as.factor(leg$gene)))
    g = 1
+   gene_counts = leg %>% count(gene)
    for(g in 1:length(genes)){ # loop through the genes
 
+     print(paste0('current gene: ', genes[g]))
+     
      # subset the data by gene
      data_gene = data_all %>% filter(gene==genes[g])
 
@@ -200,6 +203,9 @@ for (i in 1:100){
         # Z_ext = geno_cases_cc[which(leg_fun$gene==genes[g]), ]
         Z_int = geno_int_all[which(leg_fun_all_rare$gene==genes[g]), ]
         Z_ext = geno_cases_cc[which(leg_fun_ext_rare$gene==genes[g]), ]
+        
+        print(paste0("Length of Z_int: ", nrow(Z_int)))
+        print(paste0("Length of Z_ext: ", nrow(Z_int)))
 
         # subset the MAC matrix for the external controls
         # tbl_gene = tbl[which(leg_fun$gene==genes[g]), ]
