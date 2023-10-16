@@ -12,12 +12,12 @@ Pop2 = 'NFE'
 scen = 's1'
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
-int_prune = 99
-ext_prune = 99
+int_prune = 80
+ext_prune = 80
 pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 folder = 'int_v_ext'
 pruning_plot = 'Separately-RAREsim v2.1.1' #Separately-RAREsim v2.1.1, Separately-R
-data = 'int_v_int'
+data = 'ext_v_ext'
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
