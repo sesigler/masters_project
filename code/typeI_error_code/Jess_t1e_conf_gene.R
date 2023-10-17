@@ -76,10 +76,12 @@ for (i in 1:100){
    # combine the data together
    data_all = data.frame(lapply(rbind(data_cases, data_int, data_cc), factor)) %>%
      filter(!(id %in% common_all$id))
-   # data_prox = data.frame(lapply(rbind(data_cases, data_cc), factor)) %>% 
-   #   filter(!(id %in% common_ext$id))
-   # data_int = data.frame(lapply(rbind(data_cases, data_int), factor)) %>% 
-   #   filter(!(id %in% common_int$id))
+   
+   data_prox = data.frame(lapply(rbind(data_cases, data_cc), factor)) %>%
+     filter(!(id %in% common_ext$id))
+   
+   data_int = data.frame(lapply(rbind(data_cases, data_int), factor)) %>%
+     filter(!(id %in% common_int$id))
    
    # count the number of alleles per gene per status (case/control & fun/syn)
    #counts.gene = data.all %>% filter(!(case=="control" & group=="int")) %>% count(gene, case, fun)
@@ -112,24 +114,25 @@ for (i in 1:100){
 
    pheno_ext = rep(0, (ncol(geno_cases) + ncol(geno_cc)))
    pheno_ext[1:ncol(geno_cases)] = 1
-   # 
-   # pheno.all = rep(0, (ncol(geno.cases) + ncol(geno.int) + ncol(geno.cc))) 
-   # pheno.all[1:ncol(geno.cases)] = 1
+
+   pheno_all = rep(0, (ncol(geno_cases) + ncol(geno_int) + ncol(geno_cc)))
+   pheno_all[1:ncol(geno_cases)] = 1
    
    # subset the synonymous variants from the legend file
    leg_syn = leg %>% filter(fun=="syn")
    leg_fun = leg %>% filter(fun=="fun")
    
    # create combined genotype matrices
-   geno_int_all = cbind(geno_cases, geno_int)[-union(leg_syn$row, common_all$row),]
+   geno_int_all = cbind(geno_cases, geno_int)[-union(leg_syn$row, common_all$row),] # for iECAT
    geno_cases_cc = cbind(geno_cases, geno_cc)[-union(leg_syn$row, common_ext$row),] # SKAT (just cases & external controls)
-   geno_ext = geno_cc[-union(leg_syn$row, common_all$row),] #will need to change geno_cc to counts_cc for admixed
-   # geno_all = cbind(geno_cases, geno_int, geno_cc)[-union(leg_syn$row, common_all$row),] # SKAT (all)
+   # geno_ext = geno_cc[-union(leg_syn$row, common_all$row),] #will need to change geno_cc to counts_cc for admixed
+   geno_ext = count_cc[-union(leg_syn$row, common_all$row),] # need MAC for tbl object for iECAT
+   geno_all = cbind(geno_cases, geno_int, geno_cc)[-union(leg_syn$row, common_all$row),] # SKAT (all)
 
    # null model object
    obj_int = SKAT_Null_Model(as.numeric(pheno_int) ~ 1, out_type="D") # D-dichotomous
    obj_ext = SKAT_Null_Model(as.numeric(pheno_ext) ~ 1, out_type="D") # D-dichotomous
-   # obj.all = SKAT_Null_Model(as.numeric(pheno.all) ~ 1, out_type="D") # D-dichotomous
+   obj_all = SKAT_Null_Model(as.numeric(pheno_all) ~ 1, out_type="D") # D-dichotomous
 
    # fit the ProxECATv2 model
    #glm.prox = glm(fun ~ case + group, data=data.all, family="binomial") 
@@ -143,7 +146,8 @@ for (i in 1:100){
    # p.prox.int = summary(glm.int.prox)$coefficients[2,4]
    
    # create MAC matrix for external controls
-   tbl = data.frame(a0=rowSums(geno_ext)) %>% mutate(a1=2*ncol(geno_ext)-a0)
+   # tbl = data.frame(a0=rowSums(geno_ext)) %>% mutate(a1=2*ncol(geno_ext)-a0)
+   tbl = data.frame(a0=geno_ext$mac) %>% mutate(a1=2*Ncc-a0) # need to use MAC
    
    # call the iECAT function
    # re = iECAT(t(geno.int.all), obj.int, as.matrix(tbl), method="optimal")
@@ -160,7 +164,7 @@ for (i in 1:100){
    # skat.all.p = c(skat.all.p, re.all$p.value)
    
    # call ProxECATv2/iECAT/SKAT once per gene
-   prox2_genes = iecat_genes = skat_int_genes = skat_ext_genes = c()
+   prox2_all_genes = prox2_ext_genes = prox2_int_genes = iecat_genes = skat_int_genes = skat_ext_genes = skat_all_genes = c()
    genes = levels(droplevels(as.factor(leg$gene)))
    g = 1
    gene_counts = leg %>% count(gene)
@@ -169,12 +173,14 @@ for (i in 1:100){
      print(paste0('current gene: ', genes[g]))
      
      # subset the data by gene
-     data_gene = data_all %>% filter(gene==genes[g])
+     data_all_gene = data_all %>% filter(gene==genes[g])
+     data_ext_gene = data_prox %>% filter(gene==genes[g])
+     data_int_gene = data_int %>% filter(gene==genes[g])
 
      # return NA if there are no minor alleles in any of the groups
-     if(summary(data_gene$group)[[2]]==0 | summary(data_gene$group)[[1]]==0 | #internal or external
-        summary(data_gene$case)[[2]]==0 | summary(data_gene$case)[[1]]==0 |   #control or case
-        summary(data_gene$fun)[[2]]==0 | summary(data_gene$fun)[[1]]==0){     #syn or fun
+     if(summary(data_all_gene$group)[[2]]==0 | summary(data_all_gene$group)[[1]]==0 | #internal or external
+        summary(data_all_gene$case)[[2]]==0 | summary(data_all_gene$case)[[1]]==0 |   #control or case
+        summary(data_all_gene$fun)[[2]]==0 | summary(data_all_gene$fun)[[1]]==0){     #syn or fun
 
        prox2.genes = c(prox2.genes, NA)
        iecat.genes = c(iecat.genes, NA)
@@ -184,10 +190,14 @@ for (i in 1:100){
      } else {
 
         # fit the ProxECATv2 model
-        glm_prox = glm(fun ~ case + group, data=data_gene, family="binomial")
+        glm_all_prox = glm(fun ~ case + group, data=data_all_gene, family="binomial")
+        glm_ext_prox = glm(fun ~ case + group, data=data_ext_gene, family="binomial")
+        glm_int_prox = glm(fun ~ case + group, data=data_int_gene, family="binomial")
 
         # save the p-value for case/control status
-        pvalue_genes = summary(glm_prox)$coefficients[2,4]
+        pvalue_all_genes = summary(glm_all_prox)$coefficients[2,4]
+        pvalue_ext_genes = summary(glm_ext_prox)$coefficients[2,4]
+        pvalue_int_genes = summary(glm_int_prox)$coefficients[2,4]
 
         # subset the genotype matrices
         # LAST FEW ROWS ARE NA FOR THE FIRST GENE, NEED TO FIGURE OUT WHY
@@ -203,6 +213,7 @@ for (i in 1:100){
         # Z_ext = geno_cases_cc[which(leg_fun$gene==genes[g]), ]
         Z_int = geno_int_all[which(leg_fun_all_rare$gene==genes[g]), ]
         Z_ext = geno_cases_cc[which(leg_fun_ext_rare$gene==genes[g]), ]
+        Z_all = geno_all[which(leg_fun_all_rare$gene==genes[g]), ]
         
         print(paste0("Length of Z_int: ", nrow(Z_int)))
         print(paste0("Length of Z_ext: ", nrow(Z_int)))
@@ -211,14 +222,18 @@ for (i in 1:100){
         # tbl_gene = tbl[which(leg_fun$gene==genes[g]), ]
         tbl_gene = tbl[which(leg_fun_all_rare$gene==genes[g]), ]
 
-        # call the iECAT function
-        re_gene = iECAT(t(Z_int), obj_int, as.matrix(tbl_gene), method="optimal")
-        re_skat_gene = SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O based on the unified approach
+        # call the iECAT and SKAT functions
+        re_gene = iECAT(t(Z_int), obj_int, as.matrix(tbl_gene), method="optimal") # iECAT and SKAT-O internal
+        skat_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O external
+        skat_all_gene = SKATBinary(t(Z_all), obj_all, method="SKATO") # SKAT-O internal+external
 
-        prox2_genes = c(prox2_genes, pvalue_genes)
+        prox2_all_genes = c(prox2_all_genes, pvalue_all_genes)
+        prox2_ext_genes = c(prox2_ext_genes, pvalue_ext_genes)
+        prox2_int_genes = c(prox2_int_genes, pvalue_int_genes)
         iecat_genes = c(iecat_genes, re_gene$p.value)
         skat_int_genes = c(skat_int_genes, re_gene$p.value.internal)
-        skat_ext_genes = c(skat_ext_genes, re_skat_gene$p.value)
+        skat_ext_genes = c(skat_ext_genes, skat_ext_gene$p.value)
+        skat_all_genes = c(skat_all_genes, skat_all_gene$p.value)
      }
    }
    
