@@ -200,7 +200,7 @@ iecat_data_prep = function(geno.cases, geno.int, leg, common, counts.cc, Ncc) {
 # Function for formatting data and running statistical test for SKAT-O
 # Changed so that I can filter by either fun or syn variants
 # NOTE: Whichever leg I input is what gets filtered out
-skat_data_prep = function(geno.cases, geno.int, geno.cc, leg, common.ext, common.all) {
+skato_data_prep = function(geno.cases, geno.int, geno.cc, leg, common.ext, common.all) {
   
   # create case/control phenotype matrices for SKAT
   pheno.ext = rep(0, (ncol(geno.cases) + ncol(geno.cc))) 
@@ -222,12 +222,54 @@ skat_data_prep = function(geno.cases, geno.int, geno.cc, leg, common.ext, common
   obj.ext = SKAT_Null_Model(as.numeric(pheno.ext) ~ 1, out_type="D") # D-dichotomous
   obj.all = SKAT_Null_Model(as.numeric(pheno.all) ~ 1, out_type="D") # D-dichotomous
   
-  # call the iECAT function
+  # call the SKAT function
   re.skat = SKATBinary(t(geno.cases.cc), obj.ext, method="SKATO") # SKAT-O based on the unified approach
   re.all = SKATBinary(t(geno.all), obj.all, method="SKATO") # SKAT-O based on the unified approach   
   
   # extract the p-valus
   out = list(re.skat$p.value, re.all$p.value)
+  
+  return(out)
+}
+
+# Function for formatting data and running statistical test for SKAT or Burden tests
+# Changed so that I can filter by either fun or syn variants
+# NOTE: Whichever leg I input is what gets filtered out
+skat_data_prep = function(geno.cases, geno.int, geno.cc, leg, common.int, common.ext, common.all, meth) {
+  
+  # create case/control phenotype matrices for SKAT
+  pheno.int = rep(0, (ncol(geno.cases) + ncol(geno.int))) 
+  pheno.int[1:ncol(geno.cases)] = 1 
+  
+  pheno.ext = rep(0, (ncol(geno.cases) + ncol(geno.cc))) 
+  pheno.ext[1:ncol(geno.cases)] = 1
+  
+  pheno.all = rep(0, (ncol(geno.cases) + ncol(geno.int) + ncol(geno.cc))) 
+  pheno.all[1:ncol(geno.cases)] = 1
+  
+  # subset the synonymous variants from the legend file
+  # leg.syn = leg %>% filter(fun=="syn")
+  
+  # create combined genotype matrices and remove the synonymous & common variants
+  # geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg.syn$row, common.ext$row),] # SKAT (just cases & external controls)
+  # geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg.syn$row, common.all$row),] # SKAT (all)
+  geno.cases.int = cbind(geno.cases, geno.int)[-union(leg$row, common.int$row),] # SKAT internal 
+  geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg$row, common.ext$row),] # SKAT external
+  geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg$row, common.all$row),] # SKAT (all)
+  
+  # null model object
+  obj.int = SKAT_Null_Model(as.numeric(pheno.int) ~ 1, out_type="D") # D-dichotomous
+  obj.ext = SKAT_Null_Model(as.numeric(pheno.ext) ~ 1, out_type="D") # D-dichotomous
+  obj.all = SKAT_Null_Model(as.numeric(pheno.all) ~ 1, out_type="D") # D-dichotomous
+  
+  # call the SKAT function
+  re.int = SKATBinary(t(geno.cases.int), obj.int, method=meth) # internal
+  re.ext = SKATBinary(t(geno.cases.cc), obj.ext, method=meth) # external
+  re.all = SKATBinary(t(geno.all), obj.all, method=meth) # all
+  
+  
+  # extract the p-valus
+  out = list(re.int$p.value, re.ext$p.value, re.all$p.value)
   
   return(out)
 }
