@@ -32,6 +32,8 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 Pop = 'NFE'
 pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 folder = 'int_v_ext' # For testing 100v100, 100v80, and 80v80 from the 100v80 data
+data = '100v99'
+scen = '_int_v_ext_'
 p_case = 100 # for pruneSepRaresim leg file
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 99
 p_cc_fun = p_cc_syn = ext_prune = 99
@@ -45,7 +47,7 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 # dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
 # dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
 # dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
-dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/', data, '/')
 # dir_leg = '/storage/math/projects/RAREsim/Cases/Sim_20k/NFE/data/' #For pruning OG hap file
 # dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
 dir_int = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/internal_data/')
@@ -61,13 +63,17 @@ dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', fol
 # dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/'
 
 # create empty vectors to store the p-values from each replicate
-prox_p = prox_int_p = c()
-prox2_p = prox2_all_p = prox2_int_p =  c()
-iecat_p = c()
-skat_int_p = skat_ext_p = skat_all_p = c()
-# skat_int_p_fun = skat_ext_p_fun = skat_all_p_fun = c()
-iecat_p_syn = c()
-skat_int_p_syn = skat_ext_p_syn = skat_all_p_syn = c()
+# prox_p = prox_int_p = c() #proxECAT
+# prox2_p = prox2_all_p = prox2_int_p =  c() #LogProx
+# iecat_p = c() #iECAT-O
+# skato_int_p = skato_ext_p = skato_all_p = c() #SKAT-O
+skat_int_p = skat_ext_p = skat_all_p = c() #SKAT
+burden_int_p = burden_ext_p = burden_all_p = c() #Burden
+
+# iecat_p_syn = c() # iECAT-O syn variants
+# skato_int_p_syn = skato_ext_p_syn = skato_all_p_syn = c() #SKAT-O syn variants
+skat_int_p_syn = skat_ext_p_syn = skat_all_p_syn = c() #SKAT syn variants
+burden_int_p_syn = burden_ext_p_syn = burden_all_p_syn = c() # Burden syn variants
 
 # Create dataframe to store counts and ratios of fun:syn alleles for each dataset 
 # ratios <- data.frame(matrix(ncol = 4, nrow = 13))
@@ -145,12 +151,12 @@ for (i in 1:100){
   ### Run proxECAT and extract p-value 
   # prox = prox_data_prep(leg_fun, leg_syn, count_cases, count_cc, maf)
   # prox_int = prox_data_prep(leg_fun, leg_syn, count_cases, count_int, maf)
-  prox = prox_data_prep(leg, count_cases, count_cc, common_ext, adj=FALSE)
-  prox_int = prox_int_prep(leg, count_cases, count_int, common_int)
+  # prox = prox_data_prep(leg, count_cases, count_cc, common_ext, adj=FALSE)
+  # prox_int = prox_int_prep(leg, count_cases, count_int, common_int)
   
   # store proxECAT p-values
-  prox_p = c(prox_p, prox)
-  prox_int_p = c(prox_int_p, prox_int)
+  # prox_p = c(prox_p, prox)
+  # prox_int_p = c(prox_int_p, prox_int)
 
   ##############################################################################
   ### Checks
@@ -214,13 +220,13 @@ for (i in 1:100){
   ##############################################################################
   
   ### Run LogProx and extract p-value
-  p_prox2 = logprox_data_prep(leg, count_cases, count_int, count_cc, common_ext, common_all, adj=FALSE)
-  p_prox2_int = logprox_int_prep(leg, count_cases, count_int, common_int)
+  # p_prox2 = logprox_data_prep(leg, count_cases, count_int, count_cc, common_ext, common_all, adj=FALSE)
+  # p_prox2_int = logprox_int_prep(leg, count_cases, count_int, common_int)
   
   # Store LogProx p-values
-  prox2_p = c(prox2_p, p_prox2[[1]])
-  prox2_all_p = c(prox2_all_p, p_prox2[[2]])
-  prox2_int_p = c(prox2_int_p, p_prox2_int)
+  # prox2_p = c(prox2_p, p_prox2[[1]])
+  # prox2_all_p = c(prox2_all_p, p_prox2[[2]])
+  # prox2_int_p = c(prox2_int_p, p_prox2_int)
   
   ##############################################################################
   #### Check LogProx Counts
@@ -284,29 +290,52 @@ for (i in 1:100){
   
   ### Run iECAT and extract p-value
   # run_iecat = iecat_data_prep(geno_cases, geno_int, leg, common_all, count_cc, Ncc)
-  run_iecat = iecat_data_prep(geno_cases, geno_int, leg_syn, common_all, count_cc, Ncc)
-  run_iecat_syn = iecat_data_prep(geno_cases, geno_int, leg_fun, common_all, count_cc, Ncc)
+  # run_iecat = iecat_data_prep(geno_cases, geno_int, leg_syn, common_all, count_cc, Ncc)
+  # run_iecat_syn = iecat_data_prep(geno_cases, geno_int, leg_fun, common_all, count_cc, Ncc)
   
   # Store iECAT p-values
-  iecat_p = c(iecat_p, run_iecat[[1]])
-  # iecat_p_fun = c(iecat_p_fun, run_iecat_fun[[1]])
-  iecat_p_syn = c(iecat_p_syn, run_iecat_syn[[1]])
+  # iecat_p = c(iecat_p, run_iecat[[1]])
+  # iecat_p_syn = c(iecat_p_syn, run_iecat_syn[[1]])
   
   # Run SKAT-O and extract p-values
   # run_skat = skat_data_prep(geno_cases, geno_int, geno_cc, leg, common_ext, common_all)
-  run_skat = skat_data_prep(geno_cases, geno_int, geno_cc, leg_syn, common_ext, common_all)
-  run_skat_syn = skat_data_prep(geno_cases, geno_int, geno_cc, leg_fun, common_ext, common_all)
+  # run_skato = skato_data_prep(geno_cases, geno_int, geno_cc, leg_syn, common_ext, common_all)
+  # run_skato_syn = skato_data_prep(geno_cases, geno_int, geno_cc, leg_fun, common_ext, common_all)
   
-  # Store SKAT p-values
-  skat_int_p = c(skat_int_p, run_iecat[[2]])
-  skat_ext_p = c(skat_ext_p, run_skat[[1]])
-  skat_all_p = c(skat_all_p, run_skat[[2]])
-  # skat_int_p_fun = c(skat_int_p_fun, run_iecat_fun[[2]])
-  # skat_ext_p_fun = c(skat_ext_p_fun, run_skat_fun[[1]])
-  # skat_all_p_fun = c(skat_all_p_fun, run_skat_fun[[2]])
-  skat_int_p_syn = c(skat_int_p_syn, run_iecat_syn[[2]])
-  skat_ext_p_syn = c(skat_ext_p_syn, run_skat_syn[[1]])
-  skat_all_p_syn = c(skat_all_p_syn, run_skat_syn[[2]])
+  # Store SKAT-O p-values
+  # skato_int_p = c(skato_int_p, run_iecat[[2]])
+  # skato_ext_p = c(skato_ext_p, run_skato[[1]])
+  # skato_all_p = c(skato_all_p, run_skato[[2]])
+  # 
+  # skato_int_p_syn = c(skato_int_p_syn, run_iecat_syn[[2]])
+  # skato_ext_p_syn = c(skato_ext_p_syn, run_skato_syn[[1]])
+  # skato_all_p_syn = c(skato_all_p_syn, run_skato_syn[[2]])
+  
+  # Run SKAT and extract p-value
+  run_skat = skat_data_prep(geno_cases, geno_int, geno_cc, leg_syn, common_int, common_ext, common_all, "SKAT")
+  run_skat_syn = skat_data_prep(geno_cases, geno_int, geno_cc, leg_fun, common_int, common_ext, common_all, "SKAT")
+  
+  #Store SKAT p-value
+  skat_int_p = c(skat_int_p, run_skat[[1]])
+  skat_ext_p = c(skat_ext_p, run_skat[[2]])
+  skat_all_p = c(skat_all_p, run_skat[[3]])
+  
+  skat_int_p_syn = c(skat_int_p_syn, run_skat_syn[[1]])
+  skat_ext_p_syn = c(skat_ext_p_syn, run_skat_syn[[2]])
+  skat_all_p_syn = c(skat_all_p_syn, run_skat_syn[[3]])
+  
+  # Run Burden and extract p-value
+  run_burden = skat_data_prep(geno_cases, geno_int, geno_cc, leg_syn, common_int, common_ext, common_all, "Burden")
+  run_burden_syn = skat_data_prep(geno_cases, geno_int, geno_cc, leg_fun, common_int, common_ext, common_all, "Burden")
+  
+  # Store Burden p-value
+  burden_int_p = c(burden_int_p, run_burden[[1]])
+  burden_ext_p = c(burden_ext_p, run_burden[[2]])
+  burden_all_p = c(burden_all_p, run_burden[[3]])
+  
+  burden_int_p_syn = c(burden_int_p_syn, run_burden_syn[[1]])
+  burden_ext_p_syn = c(burden_ext_p_syn, run_burden_syn[[2]])
+  burden_all_p_syn = c(burden_all_p_syn, run_burden_syn[[3]])
   
   print(i)
 }
@@ -317,11 +346,21 @@ for (i in 1:100){
 
 # results = data.frame(iecat_p_syn, skat_int_p_syn, skat_ext_p_syn, skat_all_p_syn)
 
-results = data.frame(prox_p, prox_int_p, prox2_p, prox2_all_p, prox2_int_p,
-                     iecat_p, skat_int_p, skat_ext_p, skat_all_p,
-                     iecat_p_syn, skat_int_p_syn, skat_ext_p_syn, skat_all_p_syn)
+# results = data.frame(prox_p, prox_int_p, prox2_p, prox2_all_p, prox2_int_p,
+#                      iecat_p, skato_int_p, skato_ext_p, skato_all_p,
+#                      skat_int_p, skat_ext_p, skat_all_p,
+#                      burden_int_p, burden_ext_p, burden_all_p,
+#                      iecat_p_syn, skato_int_p_syn, skato_ext_p_syn, skato_all_p_syn,
+#                      skat_int_p_syn, skat_ext_p_syn, skat_all_p_syn,
+#                      burden_int_p_syn, burden_ext_p_syn, burden_all_p_syn)
+
+results = data.frame(skat_int_p, skat_ext_p, skat_all_p,
+                     burden_int_p, burden_ext_p, burden_all_p,
+                     skat_int_p_syn, skat_ext_p_syn, skat_all_p_syn,
+                     burden_int_p_syn, burden_ext_p_syn, burden_all_p_syn)
 
 # Save results
 # write.table(results, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
-write.table(results, paste0(dir_out, "T1e_",  pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
+# write.table(results, paste0(dir_out, "T1e_",  pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
+write.table(results, paste0(dir_out, "T1e_skat_",  pruning, scen, int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
 # fwrite(proxEcounts, paste0(dir_out, 'proxECAT_counts_expanded_', Pop, '_', int_prune, "_v_", ext_prune, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
