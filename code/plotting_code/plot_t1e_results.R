@@ -17,11 +17,12 @@ ext_prune = 80
 pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 folder = 'int_v_ext'
 pruning_plot = 'Separately-RAREsim v2.1.1' #Separately-RAREsim v2.1.1, Separately-R
-data = 'ext_v_ext'
+data = 'int_v_int'
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
-dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', folder, '/')
+# dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', folder, '/')
+dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', folder, '/', int_prune, 'v', ext_prune, '/')
 dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/')
 
 # read in the results
@@ -38,6 +39,7 @@ dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_
 # t1e_all_og_hap = read.csv(paste0(dir, "T1e_all_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 
 # puts in a format for ggplot
 # t1e_all = pivot_longer(t1e_all, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
@@ -54,11 +56,16 @@ t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", data, "_", int_
 
 t1e_all_pruning = pivot_longer(t1e_all_pruning, prox_p:skat_all_p_syn, names_to="Method", values_to="Value") %>%
   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
+t1e_skat_pruning = pivot_longer(t1e_skat_pruning, skat_int_p:burden_all_p_syn, names_to="Method", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 
 # results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
 # results = t1e_all_homo
 # results = rbind(t1e_all_homo, t1e_all_skat)
-results = t1e_all_pruning
+# results = t1e_all_pruning
+# results = rbind(t1e_all_pruning, t1e_skat_pruning)
+results_all = t1e_all_pruning
+results_skat = t1e_skat_pruning
 
 # results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
 #                                        "Internal + External", "Internal", "External", "Internal + External",
@@ -71,10 +78,18 @@ results = t1e_all_pruning
 # results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
 #                                        "Internal + External", "Internal", "External", "Internal + External"))
 
-results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
-                                       "Internal + External", "Internal", "External", "Internal + External",
-                                       "Internal + External", "Internal", "External", "Internal + External")) %>% 
+# results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
+#                                        "Internal + External", "Internal", "External", "Internal + External",
+#                                        "Internal + External", "Internal", "External", "Internal + External")) %>% 
+#   mutate(Variants_Used = rep(c("Functional and Synonymous", "Functional Only", "Synonymous Only"), times=c(5, 4, 4)))
+
+results_all = results_all %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
+                                              "Internal + External", "Internal", "External", "Internal + External",
+                                              "Internal + External", "Internal", "External", "Internal + External")) %>% 
   mutate(Variants_Used = rep(c("Functional and Synonymous", "Functional Only", "Synonymous Only"), times=c(5, 4, 4)))
+
+results_skat = results_skat%>% mutate(Data = rep(c("Internal", "External", "Internal + External"), 4)) %>% 
+  mutate(Variants_Used = rep(c("Functional Only", "Synonymous Only"), times=c(6, 6)))
 
 # results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
 #                                                    "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
@@ -92,12 +107,27 @@ results2 = results %>% mutate(Data = c("External", "Internal", "External", "Inte
 #                          labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
 #                                   "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O"))
 
-results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
-                                                   "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
-                                                   "iecat_p_syn", "skat_int_p_syn", "skat_ext_p_syn", "skat_all_p_syn"),
-                         labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
-                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O",
-                                  "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O"))
+# results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
+#                                                    "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
+#                                                    "iecat_p_syn", "skat_int_p_syn", "skat_ext_p_syn", "skat_all_p_syn"),
+#                          labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
+#                                   "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O",
+#                                   "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O"))
+
+results_all$Method = factor(results_all$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
+                                                         "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
+                                                         "iecat_p_syn", "skat_int_p_syn", "skat_ext_p_syn", "skat_all_p_syn"),
+                            labels=c("ProxECAT", "ProxECAT", "LogProx", "LogProx", "LogProx", 
+                                     "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O",
+                                     "iECAT-O", "SKAT-O", "SKAT-O", "SKAT-O"))
+
+results_skat$Method = factor(results_skat$Method, levels = c("skat_int_p", "skat_ext_p", "skat_all_p",
+                                                             "burden_int_p", "burden_ext_p", "burden_all_p",
+                                                             "skat_int_p_syn", "skat_ext_p_syn", "skat_all_p_syn",
+                                                             "burden_int_p_syn", "burden_ext_p_syn", "burden_all_p_syn"),
+                             labels=rep(c("SKAT", "SKAT", "SKAT", "Burden", "Burden", "Burden"), 2))
+
+results2 = rbind(results_all, results_skat)
 
 #results2$MAF = factor(results2$MAF, levels = c(0.01, 0.001))
 results2$Calculation = factor(results2$Calculation)
@@ -233,12 +263,12 @@ p6 <- ggplot(results2, aes(x=Method, y=Value, color=Variants_Used)) +
         facet_grid(~Data, scales="free", space="free") +
         # labs(y='Type I Error', x='Method', title=paste0('Type I Error: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
   labs(y='Type I Error', x='Method', title=paste0('Type I Error: ', int_prune, '% vs ', ext_prune, '% from ', data, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
-        theme_bw(base_size = 20)
+        theme_bw(base_size = 15)
 p6
 # ggsave(file = paste0(dir_out, 't1e_', Pop2, '_', pruning, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
 #        plot = p6, height = 8, width = 15, units = 'in')
-ggsave(file = paste0(dir_out, 't1e_', Pop2, '_', pruning, '_', data, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
-       plot = p6, height = 8, width = 15, units = 'in')
+ggsave(file = paste0(dir_out, 't1e_all_', Pop2, '_', pruning, '_', data, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
+       plot = p6, height = 8, width = 16, units = 'in')
 
 
 

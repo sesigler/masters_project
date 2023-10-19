@@ -15,11 +15,11 @@ Pop2 = "NFE"
 scen = "s1"
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
-int_prune = 80
-ext_prune = 80
+int_prune = 99
+ext_prune = 99
 pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 folder = 'int_v_ext'
-data = 'int_v_ext'
+data = 'ext_v_ext'
 
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', folder, '/')
 
@@ -30,8 +30,8 @@ dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '
 # t1e_homo = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 # t1e_skat = read.table(paste0(dir, "T1e_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 # t1e_og_hap = read.table(paste0(dir, "T1e_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
-t1e_pruning = read.table(paste0(dir, "T1e_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
-# t1e_pruning = read.table(paste0(dir, "T1e_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+# t1e_pruning = read.table(paste0(dir, "T1e_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+t1e_pruning = read.table(paste0(dir, "T1e_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 # t1e_pruning = read.table(paste0(dir, "T1e_fixed_proxecat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 
 # t1e_out = apply(t1e, 2, my.power)
@@ -47,7 +47,7 @@ t1e_pruning_out = apply(t1e_pruning, 2, my.power)
 # write.csv(t(as.data.frame(t1e_skat_out)), paste0(dir, "T1e_all_skat_syn_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 # write.csv(t(as.data.frame(t1e_og_hap_out)), paste0(dir, "T1e_all_OG_hap_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 # write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
+write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 
 
 
