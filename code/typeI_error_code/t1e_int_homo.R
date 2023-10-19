@@ -3,10 +3,8 @@
 # scenario of using proxECAT and LogProx to test cases vs internal controls
 # on a homogeneous population
 ##############################################################################
-# Current set-up: Test type I error for 99% internal v 99% external using
-# RAREsim v2.1.1 but using two separate 99% pruned hap files to extract internal
-# samples and external samples, but both 99% pruned hap files coming from same
-# 100% pruned hap file
+# Current set-up: Test type I error for int_prune v ext_prune using
+# RAREsim v2.1.1 to prune to 100% then p_conf% but only testing SKAT and Burden
 ##############################################################################
 
 # load libraries
@@ -31,12 +29,12 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
 Pop = 'NFE'
 pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
-folder = 'int_v_ext' # For testing 100v100, 100v80, and 80v80 from the 100v80 data
-data = '100v99'
-scen = '_int_v_ext_'
+folder = '100v80' # which data are being used
+# data = '100v99'
+# scen = '_int_v_ext_'
 p_case = 100 # for pruneSepRaresim leg file
-p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 99
-p_cc_fun = p_cc_syn = ext_prune = 99
+p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
+p_cc_fun = p_cc_syn = ext_prune = 80
 Ncase = Nint = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
@@ -46,12 +44,13 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 # dir_leg = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
 # dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
 # dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/')
-# dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
-dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/', data, '/')
+dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
+# dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/', data, '/')
+# dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
 # dir_leg = '/storage/math/projects/RAREsim/Cases/Sim_20k/NFE/data/' #For pruning OG hap file
-# dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
-dir_int = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/internal_data/')
-dir_ext = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/external_data/')
+dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+# dir_int = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/internal_data/')
+# dir_ext = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/external_data/')
 # dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/datasets/')
 # dir_out ='/home/math/siglersa/mastersProject/Results/cc10k/'
 dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', folder, '/')
@@ -111,9 +110,9 @@ for (i in 1:100){
   leg_syn = leg %>% filter(fun=="syn")
   
   # read in the haplotype and reference files
-  hap_cases = read_hap_homo(dir_int, Pop, i, "cases", p_case_fun, p_case_syn)
-  hap_int = read_hap_homo(dir_int, Pop, i, "internal.controls", p_int_fun, p_int_syn)
-  hap_cc = read_hap_homo(dir_ext, Pop, i, "common.controls", p_cc_fun, p_cc_syn)
+  hap_cases = read_hap_homo(dir_in, Pop, i, "cases", p_case_fun, p_case_syn)
+  hap_int = read_hap_homo(dir_in, Pop, i, "internal.controls", p_int_fun, p_int_syn)
+  hap_cc = read_hap_homo(dir_in, Pop, i, "common.controls", p_cc_fun, p_cc_syn)
   
   ### CHECK COUNTS
   ### Check ratio of fun to syn rare alleles in cases
@@ -361,6 +360,6 @@ results = data.frame(skat_int_p, skat_ext_p, skat_all_p,
 
 # Save results
 # write.table(results, paste0(dir_out, "T1e_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
-# write.table(results, paste0(dir_out, "T1e_",  pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
-write.table(results, paste0(dir_out, "T1e_skat_",  pruning, scen, int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
+write.table(results, paste0(dir_out, "T1e_skat_",  pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
+# write.table(results, paste0(dir_out, "T1e_skat_",  pruning, scen, int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F)
 # fwrite(proxEcounts, paste0(dir_out, 'proxECAT_counts_expanded_', Pop, '_', int_prune, "_v_", ext_prune, '.csv'), quote=F, row.names=F, col.names=T, sep=',')
