@@ -179,11 +179,11 @@ for (i in 1:100){
    prox2_int_genes = prox2_ext_genes = prox2_all_genes = c()
    iecat_genes = skato_int_genes = skato_ext_genes = skato_all_genes = c()
    skat_int_genes = skat_ext_genes = skat_all_genes = c()
-   burden_int_genes = burden_ext_genes = burden_all_genes =c()
+   burden_int_genes = burden_ext_genes = burden_all_genes = c()
    
    genes = levels(droplevels(as.factor(leg$gene)))
-   g = 1
-   gene_counts = leg %>% count(gene)
+   # g = 1
+   # gene_counts = leg %>% count(gene)
    # loop through the genes
    for(g in 1:length(genes)){ 
 
