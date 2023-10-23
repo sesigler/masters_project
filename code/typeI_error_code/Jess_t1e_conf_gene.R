@@ -6,13 +6,13 @@ library(proxecat)
 library(SKAT)
 library(iECAT)
 
+source("/home/math/siglersa/mastersProject/Input/read_in_funcs.R")
+source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
+source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
+
 # source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
 # source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
 # source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
-
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
 
 Pop = 'NFE'
 pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
@@ -27,8 +27,12 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 # dir = '/storage/math/projects/compinfo/simulations/'
 # setwd(paste0(dir, 'output/20K_', Pop, '/'))
 
-dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
+dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', folder, '/')
+
+# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 
 # create empty vectors to store the p-values from each replicate
 # prox.p = prox.int.p = prox.all.p = c()
@@ -45,7 +49,7 @@ burden_ext_genes_p = burden_int_genes_p = burden_all_genes_p = c() #Burden
 
 # loop through the simulation replicates
 set.seed(1) 
-i=1
+# i=1
 for (i in 1:100){
   
    # read in the legend file
@@ -183,12 +187,12 @@ for (i in 1:100){
    burden_int_genes = burden_ext_genes = burden_all_genes = c()
    
    genes = levels(droplevels(as.factor(leg$gene)))
-   g = 1
+   # g = 1
    # gene_counts = leg %>% count(gene)
    # loop through the genes
    for(g in 1:length(genes)){ 
 
-     print(paste0('current gene: ', genes[g]))
+     # print(paste0('current gene: ', genes[g]))
      
      # subset the data by gene
      # ProxECAT
@@ -359,10 +363,11 @@ results = data.frame(prox_ext_genes_p, prox_int_genes_p,
                      iecat_genes_p, skato_int_genes_p, skato_ext_genes_p, skato_all_genes_p,
                      skat_int_genes_p, skat_ext_genes_p, skat_all_genes_p,
                      burden_int_genes_p, burden_ext_genes_p, burden_all_genes_p)
+colnames(results) = genes
 
 # setwd(paste0(dir, 'results/20K_', Pop, '/'))
 
-write.table(results, paste0(dir_out, "T1e_gene_", Pop, "_maf", maf, "_", end, ".txt"), quote=F, row.names=F)
+write.table(results, paste0(dir_out, "T1e_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 
 #write.table(prox.p, paste0("T1e_Confounding_ProxECAT_MAF", maf, ".txt"), quote=F, row.names=F)
 #write.table(prox2.p, paste0("T1e_Confounding_ProxECATv2_MAF", maf, ".txt"), quote=F, row.names=F)
