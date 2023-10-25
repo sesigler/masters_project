@@ -10,9 +10,9 @@ source("/home/math/siglersa/mastersProject/Input/read_in_funcs.R")
 source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
 
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
 
 Pop = 'NFE'
 pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
@@ -33,9 +33,9 @@ dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', fo
 dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
 dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/', folder, '/')
 
-dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+# dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 
 # create empty vectors to store the p-values from each replicate
 # prox.p = prox.int.p = prox.all.p = c()
@@ -53,7 +53,7 @@ burden_ext_genes_p = burden_int_genes_p = burden_all_genes_p = c() #Burden
 
 # loop through the simulation replicates
 set.seed(1) 
-i=1
+# i=1
 for (i in 1:100){
   
    # read in the legend file
@@ -106,12 +106,23 @@ for (i in 1:100){
    counts_ext_gene = data_prox %>% count(gene, case, fun)
    counts_ext_wide = tidyr::pivot_wider(counts_ext_gene, names_from=c(case, fun), values_from=n,
                                         values_fill=0, names_sep="_")
-   counts_ext_wide = counts_ext_wide %>% mutate(case_ratio = case_fun/case_syn) %>% mutate(control_ratio = control_fun/control_syn)
+   counts_ext_wide = counts_ext_wide %>% mutate(case_ratio = case_fun/case_syn, 
+                                                control_ratio = control_fun/control_syn,
+                                                case_fun_w = case_fun/median(case_ratio),
+                                                control_fun_w = control_fun/median(control_ratio)) %>%
+     mutate(prox_ext = proxecat(case_fun, case_syn, control_fun, control_syn)$p.value,
+            prox_ext_w = proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value)
    
    counts_int_gene = data_int %>% count(gene, case, fun)
    counts_int_wide = tidyr::pivot_wider(counts_int_gene, names_from=c(case, fun), values_from=n,
                                         values_fill=0, names_sep="_")
-   counts_int_wide = counts_int_wide %>% mutate(case_ratio = case_fun/case_syn) %>% mutate(control_ratio = control_fun/control_syn)
+   counts_int_wide = counts_int_wide %>% mutate(case_ratio = case_fun/case_syn, 
+                                                control_ratio = control_fun/control_syn,
+                                                case_fun_w = case_fun/median(case_ratio),
+                                                control_fun_w = control_fun/median(control_ratio)) %>%
+     mutate(prox_int = proxecat(case_fun, case_syn, control_fun, control_syn)$p.value,
+            prox_int_w = proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value)
+     
    # counts_all = colSums(counts_wide[,-1])
    # names(counts_all) = colnames(counts_wide)[-1]
 
@@ -163,10 +174,10 @@ for (i in 1:100){
    # Try creating a new fun leg file that has the common variants removed
    common_all_fun = common_all %>% filter(fun=="fun")
    leg_fun_all_rare = subset(leg_fun, !(id %in% common_all_fun$id))
-   
+
    common_ext_fun = common_ext %>% filter(fun=="fun")
    leg_fun_ext_rare = subset(leg_fun, !(id %in% common_ext_fun$id))
-   
+
    common_int_fun = common_int %>% filter(fun=="fun")
    leg_fun_int_rare = subset(leg_fun, !(id %in% common_int_fun$id))
 
@@ -200,25 +211,27 @@ for (i in 1:100){
    # skat.all.p = c(skat.all.p, re.all$p.value)
    
    # call ProxECATv2/iECAT/SKAT once per gene
-   prox_ext_genes = prox_int_genes = c()
+   # prox_ext_genes = prox_int_genes = c()
+   # COMMENTED OUT
    prox2_int_genes = prox2_ext_genes = prox2_all_genes = c()
    iecat_genes = skato_int_genes = skato_ext_genes = skato_all_genes = c()
    skat_int_genes = skat_ext_genes = skat_all_genes = c()
    burden_int_genes = burden_ext_genes = burden_all_genes = c()
    
+   
    genes = levels(droplevels(as.factor(leg$gene)))
-   g = 1
+   # g = 1
    # gene_counts = leg %>% count(gene)
    # loop through the genes
-   for(g in 1:length(genes)){ 
+   for(g in 1:length(genes)){
 
      print(paste0('current gene: ', genes[g], ' (', g, ' of ', length(genes), ')'))
-     
+
      # subset the data by gene
      # ProxECAT
-     counts_ext_wide_gene = counts_ext_wide %>% filter(gene==genes[g])
-     counts_int_wide_gene = counts_int_wide %>% filter(gene==genes[g])
-     
+     # counts_ext_wide_gene = counts_ext_wide %>% filter(gene==genes[g])
+     # counts_int_wide_gene = counts_int_wide %>% filter(gene==genes[g])
+
      # LogProx
      data_all_gene = data_all %>% filter(gene==genes[g])
      data_ext_gene = data_prox %>% filter(gene==genes[g])
@@ -232,12 +245,12 @@ for (i in 1:100){
        prox2_int_genes = c(prox2_int_genes, NA)
        prox2_ext_genes = c(prox2_ext_genes, NA)
        prox2_all_genes = c(prox2_all_genes, NA)
-       
+
        iecat_genes = c(iecat_genes, NA)
        skato_int_genes = c(skato_int_genes, NA)
        skato_ext_genes = c(skato_ext_genes, NA)
        skato_all_genes = c(skato_all_genes, NA)
-       
+
        skat_int_genes = c(skat_int_genes, NA)
        skat_ext_genes = c(skat_ext_genes, NA)
        skat_all_genes = c(skat_all_genes, NA)
@@ -248,15 +261,15 @@ for (i in 1:100){
      } else {
 
         # Run proxECAT
-        prox_ext_gene = proxecat(counts_ext_wide_gene$case_fun, counts_ext_wide_gene$case_syn,
-                                 counts_ext_wide_gene$control_fun, counts_ext_wide_gene$control_syn)
-        prox_int_gene = proxecat(counts_int_wide_gene$case_fun, counts_int_wide_gene$case_syn, 
-                                 counts_int_wide_gene$control_fun, counts_int_wide_gene$control_syn)
-        
+        # prox_ext_gene = proxecat(counts_ext_wide_gene$case_fun, counts_ext_wide_gene$case_syn,
+        #                          counts_ext_wide_gene$control_fun, counts_ext_wide_gene$control_syn)
+        # prox_int_gene = proxecat(counts_int_wide_gene$case_fun, counts_int_wide_gene$case_syn,
+        #                          counts_int_wide_gene$control_fun, counts_int_wide_gene$control_syn)
+
         # Save the proxECAT p-values
-        prox_ext_genes = c(prox_ext_genes, prox_ext_gene$p.value)
-        prox_int_genes = c(prox_int_genes, prox_int_gene$p.value)
-       
+        # prox_ext_genes = c(prox_ext_genes, prox_ext_gene$p.value)
+        # prox_int_genes = c(prox_int_genes, prox_int_gene$p.value)
+
         # fit the ProxECATv2 model
         glm_ext_prox = glm(fun ~ case, data=data_ext_gene, family="binomial")
         glm_int_prox = glm(fun ~ case, data=data_int_gene, family="binomial")
@@ -275,13 +288,13 @@ for (i in 1:100){
         # Try creating a new fun leg file that has the common variants removed
         # common_all_fun = common_all %>% filter(fun=="fun")
         # leg_fun_all_rare = subset(leg_fun, !(id %in% common_all_fun$id))
-        # 
+        #
         # common_ext_fun = common_ext %>% filter(fun=="fun")
         # leg_fun_ext_rare = subset(leg_fun, !(id %in% common_ext_fun$id))
-        # 
+        #
         # common_int_fun = common_int %>% filter(fun=="fun")
         # leg_fun_int_rare = subset(leg_fun, !(id %in% common_int_fun$id))
-        
+
         # Z_int = geno_int_all[which(leg_fun$gene==genes[g]), ]
         # Z_ext = geno_cases_cc[which(leg_fun$gene==genes[g]), ]
         Z_int_all = geno_int_all[which(leg_fun_all_rare$gene==genes[g]), ]
@@ -298,24 +311,24 @@ for (i in 1:100){
         skato_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O external
         skato_int_gene = SKATBinary(t(Z_int), obj_int, method="SKATO") # SKAT-O internal
         skato_all_gene = SKATBinary(t(Z_all), obj_all, method="SKATO") # SKAT-O internal+external
-        
+
         # Save the iECAT-O and SKAT-O p-values
         iecat_genes = c(iecat_genes, re_gene$p.value)
         # iecat_skato_int_genes = c(iecat_skato_int_genes, re_gene$p.value.internal) # Check this is the same as SKAT-O, NOT THE SAME
         skato_ext_genes = c(skato_ext_genes, skato_ext_gene$p.value)
         skato_int_genes = c(skato_int_genes, skato_int_gene$p.value)
         skato_all_genes = c(skato_all_genes, skato_all_gene$p.value)
-        
+
         # Call the SKAT functions
         skat_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKAT") # SKAT external
         skat_int_gene = SKATBinary(t(Z_int), obj_int, method="SKAT") # SKAT internal
         skat_all_gene = SKATBinary(t(Z_all), obj_all, method="SKAT") # SKAT external
-        
+
         # Save the SKAT p-values
         skat_ext_genes = c(skat_ext_genes, skat_ext_gene$p.value)
         skat_int_genes = c(skat_int_genes, skat_int_gene$p.value)
         skat_all_genes = c(skat_all_genes, skat_all_gene$p.value)
-        
+
         # Call the Burden functions
         burden_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="Burden") # Burden external
         burden_int_gene = SKATBinary(t(Z_int), obj_int, method="Burden") # Burden internal
@@ -325,23 +338,23 @@ for (i in 1:100){
         burden_ext_genes = c(burden_ext_genes, burden_ext_gene$p.value)
         burden_int_genes = c(burden_int_genes, burden_int_gene$p.value)
         burden_all_genes = c(burden_all_genes, burden_all_gene$p.value)
-        
+
      }
    }
-   
+
    # Check counts of MAC > 2 for internal and external samples
    # mac_df = data.frame(matrix(nrow = length(genes), ncol = 3))
    # colnames(mac_df) = c("Gene", "Internal ACs > 2", "External ACs > 2")
    # for (g in 1:length(genes)) {
    #   mac_df[g, 1] = genes[g]
-   #   
+   #
    #   Z_int = geno_int_all[which(leg_fun$gene==genes[g]),]
    #   mac_df[g, 2] = length(which(rowSums(Z_int) > 2))
-   #   
+   #
    #   tbl_gene = tbl[which(leg_fun$gene==genes[g]),]
    #   mac_df[g, 3] = length(which(tbl_gene$a0 > 2))
    # }
-   
+
    # for (g in 1:length(genes)) {
    #   Z_int = geno_int_all[which(leg_fun$gene==genes[g]), ]
    #   if (any(is.na(Z_int))) {
@@ -354,17 +367,20 @@ for (i in 1:100){
 
    # store the ProxECAT, LogProx, iECAT-O, SKAT gene p-values
    # Each col represents a gene and each row represents a sim rep
-   prox_ext_genes_p = rbind(prox_ext_genes_p, prox_ext_genes)
-   prox_int_genes_p = rbind(prox_int_genes_p, prox_int_genes)
+   prox_ext_genes_p = rbind(prox_ext_genes_p, counts_ext_wide$prox_ext)
+   prox_int_genes_p = rbind(prox_int_genes_p, counts_int_wide$prox_int)
+   prox_weighted_ext_genes_p = rbind(prox_weighted_ext_genes_p, counts_ext_wide$prox_ext_w)
+   prox_weighted_int_genes_p = rbind(prox_weighted_int_genes_p, counts_int_wide$prox_int_w)
+
    prox2_ext_genes_p = rbind(prox2_ext_genes_p, prox2_ext_genes)
    prox2_int_genes_p = rbind(prox2_int_genes_p, prox2_int_genes)
    prox2_all_genes_p = rbind(prox2_all_genes_p, prox2_all_genes)
-   
+
    iecat_genes_p = rbind(iecat_genes_p, iecat_genes)
    skato_int_genes_p = rbind(skato_int_genes_p, skato_int_genes)
    skato_ext_genes_p = rbind(skato_ext_genes_p, skato_ext_genes)
    skato_all_genes_p = rbind(skato_all_genes_p, skato_all_genes)
-   
+
    skat_ext_genes_p = rbind(skat_ext_genes_p, skat_ext_genes)
    skat_int_genes_p = rbind(skat_int_genes_p, skat_int_genes)
    skat_all_genes_p = rbind(skat_all_genes_p, skat_all_genes)
@@ -387,6 +403,7 @@ for (i in 1:100){
 #                      burden_int_genes_p, burden_ext_genes_p, burden_all_genes_p)
 
 colnames(prox_ext_genes_p) = colnames(prox_int_genes_p) = genes
+colnames(prox_weighted_ext_genes_p) = colnames(prox_weighted_int_genes_p) = genes
 colnames(prox2_ext_genes_p) = colnames(prox2_all_genes_p) = colnames(prox2_int_genes_p) = genes
 colnames(iecat_genes_p) = colnames(skato_int_genes_p) = colnames(skato_ext_genes_p) = colnames(skato_all_genes_p) = genes
 colnames(skat_int_genes_p) = colnames(skat_ext_genes_p) = colnames(skat_all_genes_p) = genes
@@ -395,12 +412,14 @@ colnames(burden_int_genes_p) = colnames(burden_ext_genes_p) = colnames(burden_al
 #ProxECAT
 write.table(prox_ext_genes_p, paste0(dir_out, "T1e_gene_prox_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 write.table(prox_int_genes_p, paste0(dir_out, "T1e_gene_prox_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(prox_weighted_ext_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(prox_weighted_int_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 # LogProx
 write.table(prox2_ext_genes_p, paste0(dir_out, "T1e_gene_prox2_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 write.table(prox2_all_genes_p, paste0(dir_out, "T1e_gene_prox2_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 write.table(prox2_int_genes_p, paste0(dir_out, "T1e_gene_prox2_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-#iECAT-O and SKAT-O
-write.table(iecat_genes_p, paste0(dir_out, "T1e_gene_iecat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+# iECAT-O and SKAT-O
+write.table(iecat_genes_p, paste0(dir_out, "T1e_gene_iecat_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 write.table(skato_int_genes_p, paste0(dir_out, "T1e_gene_skato_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 write.table(skato_ext_genes_p, paste0(dir_out, "T1e_gene_skato_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 write.table(skato_all_genes_p, paste0(dir_out, "T1e_gene_skato_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
