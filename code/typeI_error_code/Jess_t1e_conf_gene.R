@@ -53,13 +53,16 @@ burden_ext_genes_p = burden_int_genes_p = burden_all_genes_p = c() #Burden
 
 # loop through the simulation replicates
 set.seed(1) 
-# i=1
+# i=27
 for (i in 1:100){
   
    # read in the legend file
    # leg = read_leg_homo(dir_leg, Pop, i)
    leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', i, '.', p_case, 'fun.', p_case, 'syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
    leg$row = 1:nrow(leg)
+   
+   # Need to mutate so counts get added up correctly for ZNF333
+   leg = leg %>% mutate(gene = ifelse(gene == "ZNF333;ZNF333(NM_001352243:exon9:UTR5)", "ZNF333", gene))
    
    # subset the synonymous variants from the legend file
    leg_syn = leg %>% filter(fun=="syn")
@@ -110,8 +113,11 @@ for (i in 1:100){
                                                 control_ratio = control_fun/control_syn,
                                                 case_fun_w = case_fun/median(case_ratio),
                                                 control_fun_w = control_fun/median(control_ratio)) %>%
-     mutate(prox_ext = proxecat(case_fun, case_syn, control_fun, control_syn)$p.value,
-            prox_ext_w = proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value)
+     mutate(prox_ext = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
+                              proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+            prox_ext_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
+                                proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+   
    
    counts_int_gene = data_int %>% count(gene, case, fun)
    counts_int_wide = tidyr::pivot_wider(counts_int_gene, names_from=c(case, fun), values_from=n,
@@ -120,8 +126,10 @@ for (i in 1:100){
                                                 control_ratio = control_fun/control_syn,
                                                 case_fun_w = case_fun/median(case_ratio),
                                                 control_fun_w = control_fun/median(control_ratio)) %>%
-     mutate(prox_int = proxecat(case_fun, case_syn, control_fun, control_syn)$p.value,
-            prox_int_w = proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value)
+     mutate(prox_int = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
+                              proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+            prox_int_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
+                                proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
      
    # counts_all = colSums(counts_wide[,-1])
    # names(counts_all) = colnames(counts_wide)[-1]
@@ -166,7 +174,7 @@ for (i in 1:100){
    # geno_ext = geno_cc[-union(leg_syn$row, common_all$row),] #will need to change geno_cc to counts_cc for admixed
    geno_ext = count_cc[-union(leg_syn$row, common_all$row),] # need MAC for tbl object for iECAT
    geno_all = cbind(geno_cases, geno_int, geno_cc)[-union(leg_syn$row, common_all$row),] # SKAT (all)
-   
+
    # subset the genotype matrices
    # LAST FEW ROWS ARE NA FOR THE FIRST GENE, NEED TO FIGURE OUT WHY
    # I think it's because leg_fun still has the common variants in it
@@ -212,12 +220,10 @@ for (i in 1:100){
    
    # call ProxECATv2/iECAT/SKAT once per gene
    # prox_ext_genes = prox_int_genes = c()
-   # COMMENTED OUT
    prox2_int_genes = prox2_ext_genes = prox2_all_genes = c()
    iecat_genes = skato_int_genes = skato_ext_genes = skato_all_genes = c()
    skat_int_genes = skat_ext_genes = skat_all_genes = c()
    burden_int_genes = burden_ext_genes = burden_all_genes = c()
-   
    
    genes = levels(droplevels(as.factor(leg$gene)))
    # g = 1
