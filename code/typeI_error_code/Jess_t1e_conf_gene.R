@@ -231,121 +231,102 @@ for (i in 1:100){
    # loop through the genes
    for(g in 1:length(genes)){
 
-     print(paste0('current gene: ', genes[g], ' (', g, ' of ', length(genes), ')'))
-
-     # subset the data by gene
-     # ProxECAT
-     # counts_ext_wide_gene = counts_ext_wide %>% filter(gene==genes[g])
-     # counts_int_wide_gene = counts_int_wide %>% filter(gene==genes[g])
+     # print(paste0('current gene: ', genes[g], ' (', g, ' of ', length(genes), ')'))
 
      # LogProx
-     data_all_gene = data_all %>% filter(gene==genes[g])
-     data_ext_gene = data_prox %>% filter(gene==genes[g])
+     # Filter data by gene
      data_int_gene = data_int %>% filter(gene==genes[g])
+     data_ext_gene = data_prox %>% filter(gene==genes[g])
+     data_all_gene = data_all %>% filter(gene==genes[g])
+     # Count the number of fun and syn alleles by case status
+     counts_data_int_gene = data_int_gene %>% count(case, fun)
+     counts_data_ext_gene = data_ext_gene %>% count(case, fun)
+     counts_data_all_gene = data_all_gene %>% count(case, fun)
+     
+     # print(paste0("Counts for internal data: ", counts_data_int_gene$n[1], " ", counts_data_int_gene$n[2], " ", counts_data_int_gene$n[3], " ", counts_data_int_gene$n[4]))
+     # print(paste0("Counts for external data: ", counts_data_ext_gene$n[1], " ", counts_data_ext_gene$n[2], " ", counts_data_ext_gene$n[3], " ", counts_data_ext_gene$n[4]))
+     # print(paste0("Counts for all data: ", counts_data_all_gene$n[1], " ", counts_data_all_gene$n[2], " ", counts_data_all_gene$n[3], " ", counts_data_all_gene$n[4]))
+     
+     # If sum of fun alleles or sum of syn alleles is < 5, mark as NA, else run LogProx
+     prox2_int = ifelse(counts_data_int_gene$n[1] + counts_data_int_gene$n[3] < 5 |
+                    counts_data_int_gene$n[2] + counts_data_int_gene$n[4] < 5, NA,
+                  summary(glm(fun ~ case, data=data_int_gene, family="binomial"))$coefficients[2,4])
+     
+     prox2_ext = ifelse(counts_data_ext_gene$n[1] + counts_data_ext_gene$n[3] < 5 |
+                        counts_data_ext_gene$n[2] + counts_data_ext_gene$n[4] < 5, NA,
+                      summary(glm(fun ~ case, data=data_ext_gene, family="binomial"))$coefficients[2,4])
+     
+     prox2_all = ifelse(counts_data_all_gene$n[1] + counts_data_all_gene$n[3] < 5 |
+                        counts_data_all_gene$n[2] + counts_data_all_gene$n[4] < 5, NA,
+                      summary(glm(fun ~ case + group, data=data_all_gene, family="binomial"))$coefficients[2,4])
+     
+     # Save the LogProx p-values
+     prox2_int_genes = c(prox2_int_genes, prox2_int)
+     prox2_ext_genes = c(prox2_ext_genes, prox2_ext)
+     prox2_all_genes = c(prox2_all_genes, prox2_all)
 
-     # return NA if there are no minor alleles in any of the groups
-     if(summary(data_all_gene$group)[[2]]==0 | summary(data_all_gene$group)[[1]]==0 | #internal or external
-        summary(data_all_gene$case)[[2]]==0 | summary(data_all_gene$case)[[1]]==0 |   #control or case
-        summary(data_all_gene$fun)[[2]]==0 | summary(data_all_gene$fun)[[1]]==0){     #syn or fun
+     ### Prepare data for iECAT and SKAT methods
+     
+     # DON"T NEED TO DO THIS WITHIN THE GENE LOOP
+     # subset the genotype matrices
+     # LAST FEW ROWS ARE NA FOR THE FIRST GENE, NEED TO FIGURE OUT WHY
+     # I think it's because leg_fun still has the common variants in it
+     # but gen_int_all and geno_cases_cc already subset them out
+     # Try creating a new fun leg file that has the common variants removed
+     # common_all_fun = common_all %>% filter(fun=="fun")
+     # leg_fun_all_rare = subset(leg_fun, !(id %in% common_all_fun$id))
+     #
+     # common_ext_fun = common_ext %>% filter(fun=="fun")
+     # leg_fun_ext_rare = subset(leg_fun, !(id %in% common_ext_fun$id))
+     #
+     # common_int_fun = common_int %>% filter(fun=="fun")
+     # leg_fun_int_rare = subset(leg_fun, !(id %in% common_int_fun$id))
+     
+     # Z_int = geno_int_all[which(leg_fun$gene==genes[g]), ]
+     # Z_ext = geno_cases_cc[which(leg_fun$gene==genes[g]), ]
 
-       prox2_int_genes = c(prox2_int_genes, NA)
-       prox2_ext_genes = c(prox2_ext_genes, NA)
-       prox2_all_genes = c(prox2_all_genes, NA)
+     Z_int_all = geno_int_all[which(leg_fun_all_rare$gene==genes[g]), ]
+     Z_int = geno_cases_int[which(leg_fun_int_rare$gene==genes[g]), ]
+     Z_ext = geno_cases_cc[which(leg_fun_ext_rare$gene==genes[g]), ]
+     Z_all = geno_all[which(leg_fun_all_rare$gene==genes[g]), ]
+     
+     # subset the MAC matrix for the external controls
+     # tbl_gene = tbl[which(leg_fun$gene==genes[g]), ]
+     tbl_gene = tbl[which(leg_fun_all_rare$gene==genes[g]), ]
+     
+     # call the iECAT-O and SKAT-O functions
+     re_gene = iECAT(t(Z_int_all), obj_int, as.matrix(tbl_gene), method="optimal") # iECAT and SKAT-O internal
+     skato_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O external
+     skato_int_gene = SKATBinary(t(Z_int), obj_int, method="SKATO") # SKAT-O internal
+     skato_all_gene = SKATBinary(t(Z_all), obj_all, method="SKATO") # SKAT-O internal+external
+     
+     # Save the iECAT-O and SKAT-O p-values
+     # COMMENTED OUT
+     iecat_genes = c(iecat_genes, re_gene$p.value)
+     # iecat_skato_int_genes = c(iecat_skato_int_genes, re_gene$p.value.internal) # Check this is the same as SKAT-O, NOT THE SAME
+     skato_ext_genes = c(skato_ext_genes, skato_ext_gene$p.value)
+     skato_int_genes = c(skato_int_genes, skato_int_gene$p.value)
+     skato_all_genes = c(skato_all_genes, skato_all_gene$p.value)
+     
+     # Call the SKAT functions
+     skat_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKAT") # SKAT external
+     skat_int_gene = SKATBinary(t(Z_int), obj_int, method="SKAT") # SKAT internal
+     skat_all_gene = SKATBinary(t(Z_all), obj_all, method="SKAT") # SKAT external
 
-       iecat_genes = c(iecat_genes, NA)
-       skato_int_genes = c(skato_int_genes, NA)
-       skato_ext_genes = c(skato_ext_genes, NA)
-       skato_all_genes = c(skato_all_genes, NA)
+     # Save the SKAT p-values
+     skat_ext_genes = c(skat_ext_genes, skat_ext_gene$p.value)
+     skat_int_genes = c(skat_int_genes, skat_int_gene$p.value)
+     skat_all_genes = c(skat_all_genes, skat_all_gene$p.value)
 
-       skat_int_genes = c(skat_int_genes, NA)
-       skat_ext_genes = c(skat_ext_genes, NA)
-       skat_all_genes = c(skat_all_genes, NA)
-       burden_int_genes = c(burden_int_genes, NA)
-       burden_ext_genes = c(burden_ext_genes, NA)
-       burden_all_genes = c(burden_all_genes, NA)
+     # Call the Burden functions
+     burden_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="Burden") # Burden external
+     burden_int_gene = SKATBinary(t(Z_int), obj_int, method="Burden") # Burden internal
+     burden_all_gene = SKATBinary(t(Z_all), obj_all, method="Burden") # Burden external
 
-     } else {
-
-        # Run proxECAT
-        # prox_ext_gene = proxecat(counts_ext_wide_gene$case_fun, counts_ext_wide_gene$case_syn,
-        #                          counts_ext_wide_gene$control_fun, counts_ext_wide_gene$control_syn)
-        # prox_int_gene = proxecat(counts_int_wide_gene$case_fun, counts_int_wide_gene$case_syn,
-        #                          counts_int_wide_gene$control_fun, counts_int_wide_gene$control_syn)
-
-        # Save the proxECAT p-values
-        # prox_ext_genes = c(prox_ext_genes, prox_ext_gene$p.value)
-        # prox_int_genes = c(prox_int_genes, prox_int_gene$p.value)
-
-        # fit the ProxECATv2 model
-        glm_ext_prox = glm(fun ~ case, data=data_ext_gene, family="binomial")
-        glm_int_prox = glm(fun ~ case, data=data_int_gene, family="binomial")
-        glm_all_prox = glm(fun ~ case + group, data=data_all_gene, family="binomial")
-
-        # Save the LogProx p-values
-        prox2_ext_genes = c(prox2_ext_genes, summary(glm_ext_prox)$coefficients[2,4])
-        prox2_int_genes = c(prox2_int_genes, summary(glm_int_prox)$coefficients[2,4])
-        prox2_all_genes = c(prox2_all_genes, summary(glm_all_prox)$coefficients[2,4])
-
-        # DON"T NEED TO DO THIS WITHIN THE GENE LOOP
-        # subset the genotype matrices
-        # LAST FEW ROWS ARE NA FOR THE FIRST GENE, NEED TO FIGURE OUT WHY
-        # I think it's because leg_fun still has the common variants in it
-        # but gen_int_all and geno_cases_cc already subset them out
-        # Try creating a new fun leg file that has the common variants removed
-        # common_all_fun = common_all %>% filter(fun=="fun")
-        # leg_fun_all_rare = subset(leg_fun, !(id %in% common_all_fun$id))
-        #
-        # common_ext_fun = common_ext %>% filter(fun=="fun")
-        # leg_fun_ext_rare = subset(leg_fun, !(id %in% common_ext_fun$id))
-        #
-        # common_int_fun = common_int %>% filter(fun=="fun")
-        # leg_fun_int_rare = subset(leg_fun, !(id %in% common_int_fun$id))
-
-        # Z_int = geno_int_all[which(leg_fun$gene==genes[g]), ]
-        # Z_ext = geno_cases_cc[which(leg_fun$gene==genes[g]), ]
-        Z_int_all = geno_int_all[which(leg_fun_all_rare$gene==genes[g]), ]
-        Z_int = geno_cases_int[which(leg_fun_int_rare$gene==genes[g]), ]
-        Z_ext = geno_cases_cc[which(leg_fun_ext_rare$gene==genes[g]), ]
-        Z_all = geno_all[which(leg_fun_all_rare$gene==genes[g]), ]
-
-        # subset the MAC matrix for the external controls
-        # tbl_gene = tbl[which(leg_fun$gene==genes[g]), ]
-        tbl_gene = tbl[which(leg_fun_all_rare$gene==genes[g]), ]
-
-        # call the iECAT-O and SKAT-O functions
-        re_gene = iECAT(t(Z_int_all), obj_int, as.matrix(tbl_gene), method="optimal") # iECAT and SKAT-O internal
-        skato_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O external
-        skato_int_gene = SKATBinary(t(Z_int), obj_int, method="SKATO") # SKAT-O internal
-        skato_all_gene = SKATBinary(t(Z_all), obj_all, method="SKATO") # SKAT-O internal+external
-
-        # Save the iECAT-O and SKAT-O p-values
-        iecat_genes = c(iecat_genes, re_gene$p.value)
-        # iecat_skato_int_genes = c(iecat_skato_int_genes, re_gene$p.value.internal) # Check this is the same as SKAT-O, NOT THE SAME
-        skato_ext_genes = c(skato_ext_genes, skato_ext_gene$p.value)
-        skato_int_genes = c(skato_int_genes, skato_int_gene$p.value)
-        skato_all_genes = c(skato_all_genes, skato_all_gene$p.value)
-
-        # Call the SKAT functions
-        skat_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKAT") # SKAT external
-        skat_int_gene = SKATBinary(t(Z_int), obj_int, method="SKAT") # SKAT internal
-        skat_all_gene = SKATBinary(t(Z_all), obj_all, method="SKAT") # SKAT external
-
-        # Save the SKAT p-values
-        skat_ext_genes = c(skat_ext_genes, skat_ext_gene$p.value)
-        skat_int_genes = c(skat_int_genes, skat_int_gene$p.value)
-        skat_all_genes = c(skat_all_genes, skat_all_gene$p.value)
-
-        # Call the Burden functions
-        burden_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="Burden") # Burden external
-        burden_int_gene = SKATBinary(t(Z_int), obj_int, method="Burden") # Burden internal
-        burden_all_gene = SKATBinary(t(Z_all), obj_all, method="Burden") # Burden external
-
-        # Save the Burden p-values
-        burden_ext_genes = c(burden_ext_genes, burden_ext_gene$p.value)
-        burden_int_genes = c(burden_int_genes, burden_int_gene$p.value)
-        burden_all_genes = c(burden_all_genes, burden_all_gene$p.value)
-
-     }
+     # Save the Burden p-values
+     burden_ext_genes = c(burden_ext_genes, burden_ext_gene$p.value)
+     burden_int_genes = c(burden_int_genes, burden_int_gene$p.value)
+     burden_all_genes = c(burden_all_genes, burden_all_gene$p.value)
    }
 
    # Check counts of MAC > 2 for internal and external samples
