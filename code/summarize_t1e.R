@@ -21,7 +21,7 @@ pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneT
 folder = '100v80'
 data = 'by_gene'
 method = 'prox' #Options: prox, prox_weighted, prox2, iecat, skato, skat, burden
-type = 'ext' #Options: int, ext, all
+type = 'int' #Options: int, ext, all
 
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
 
