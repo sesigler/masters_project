@@ -23,7 +23,7 @@ data = 'by_gene'
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', folder, '/', int_prune, 'v', ext_prune, '/')
-dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/')
+dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/', data, '/')
 
 # read in the results
 # Proportion Estimates 
@@ -35,7 +35,7 @@ dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_
 # t1e_all = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_all_adj = read.csv(paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_all_homo = read.csv(paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+# t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
@@ -80,16 +80,61 @@ t1e_burden_all = read.csv(paste0(dir, "T1e_all_gene_burden_all_", pruning, "_", 
 #   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 # t1e_skat_pruning = pivot_longer(t1e_skat_pruning, skat_int_p:burden_all_p_syn, names_to="Method", values_to="Value") %>%
 #   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
-t1e_all_pruning = pivot_longer(t1e_all_pruning, prox_p:burden_all_p_syn, names_to="Method", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE")
+# t1e_all_pruning = pivot_longer(t1e_all_pruning, prox_p:burden_all_p_syn, names_to="Method", values_to="Value") %>%
+#   mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE")
+
+## By Gene
+t1e_prox_int = pivot_longer(t1e_prox_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT", Data = "Internal")
+t1e_prox_ext = pivot_longer(t1e_prox_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT", Data = "External")
+t1e_prox_weighted_int = pivot_longer(t1e_prox_weighted_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT-weighted", Data = "Internal")
+t1e_prox_weighted_ext = pivot_longer(t1e_prox_weighted_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT-weighted", Data = "External")
+
+t1e_prox2_int = pivot_longer(t1e_prox2_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "LogProx", Data = "Internal")
+t1e_prox2_ext = pivot_longer(t1e_prox2_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "LogProx", Data = "External")
+t1e_prox2_all = pivot_longer(t1e_prox2_all, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "LogProx", Data = "Internal + External")
+
+t1e_iecat_all = pivot_longer(t1e_iecat_all, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "iECAT-O", Data = "Internal + External")
+t1e_skato_int = pivot_longer(t1e_skato_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT-O", Data = "Internal")
+t1e_skato_ext = pivot_longer(t1e_skato_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT-O", Data = "External")
+t1e_skato_all = pivot_longer(t1e_skato_all, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT-O", Data = "Internal + External")
+
+t1e_skat_int = pivot_longer(t1e_skat_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT", Data = "Internal")
+t1e_skat_ext = pivot_longer(t1e_skat_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT", Data = "External")
+t1e_skat_all = pivot_longer(t1e_skat_all, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT", Data = "Internal + External")
+
+t1e_burden_int = pivot_longer(t1e_burden_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "Burden", Data = "Internal")
+t1e_burden_ext = pivot_longer(t1e_burden_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "Burden", Data = "External")
+t1e_burden_all = pivot_longer(t1e_burden_all, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "Burden", Data = "Internal + External")
 
 # results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
 # results = t1e_all_homo
 # results = rbind(t1e_all_homo, t1e_all_skat)
-results = t1e_all_pruning
+# results = t1e_all_pruning
 # results = rbind(t1e_all_pruning, t1e_skat_pruning)
 # results_all = t1e_all_pruning
 # results_skat = t1e_skat_pruning
+results2 = rbind(t1e_prox_int, t1e_prox_ext, t1e_prox_weighted_int, t1e_prox_weighted_ext,
+                 t1e_prox2_int, t1e_prox2_ext, t1e_prox2_all,
+                 t1e_iecat_all, t1e_skato_int, t1e_skato_ext, t1e_skato_all,
+                 t1e_skat_int, t1e_skat_ext, t1e_skat_all,
+                 t1e_burden_int, t1e_burden_ext, t1e_burden_all)
 
 # results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
 #                                        "Internal + External", "Internal", "External", "Internal + External",
@@ -115,15 +160,15 @@ results = t1e_all_pruning
 # results_skat = results_skat%>% mutate(Data = rep(c("Internal", "External", "Internal + External"), 4)) %>% 
 #   mutate(Variants_Used = rep(c("Functional Only", "Synonymous Only"), times=c(6, 6)))
 
-results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
-                                       "Internal + External", "Internal", "External", "Internal + External",
-                                       "Internal + External", "Internal", "External", "Internal + External",
-                                       "Internal", "External", "Internal + External",
-                                       "Internal", "External", "Internal + External",
-                                       "Internal", "External", "Internal + External",
-                                       "Internal", "External", "Internal + External")) %>%
-  mutate(Variants_Used = rep(c("Functional and Synonymous", "Functional Only", "Synonymous Only", 
-                               "Functional Only", "Synonymous Only"), times=c(5, 4, 4, 6, 6)))
+# results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
+#                                        "Internal + External", "Internal", "External", "Internal + External",
+#                                        "Internal + External", "Internal", "External", "Internal + External",
+#                                        "Internal", "External", "Internal + External",
+#                                        "Internal", "External", "Internal + External",
+#                                        "Internal", "External", "Internal + External",
+#                                        "Internal", "External", "Internal + External")) %>%
+#   mutate(Variants_Used = rep(c("Functional and Synonymous", "Functional Only", "Synonymous Only", 
+#                                "Functional Only", "Synonymous Only"), times=c(5, 4, 4, 6, 6)))
 
 # results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
 #                                                    "iecat_p", "skat_int_p", "skat_ext_p", "skat_all_p",
@@ -161,15 +206,15 @@ results2 = results %>% mutate(Data = c("External", "Internal", "External", "Inte
 #                                                              "burden_int_p_syn", "burden_ext_p_syn", "burden_all_p_syn"),
 #                              labels=rep(c("SKAT", "SKAT", "SKAT", "Burden", "Burden", "Burden"), 2))
 
-results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
-                                                   "iecat_p", "skato_int_p", "skato_ext_p", "skato_all_p",
-                                                   "iecat_p_syn", "skato_int_p_syn", "skato_ext_p_syn", "skato_all_p_syn",
-                                                   "skat_int_p", "skat_ext_p", "skat_all_p",
-                                                   "burden_int_p", "burden_ext_p", "burden_all_p",
-                                                   "skat_int_p_syn", "skat_ext_p_syn", "skat_all_p_syn",
-                                                   "burden_int_p_syn", "burden_ext_p_syn", "burden_all_p_syn"),
-                         labels=rep(c("proxECAT", "LogProx", "iECAT-O", "SKAT-O", "iECAT-O", "SKAT-O",
-                                      "SKAT", "Burden", "SKAT", "Burden"), times=c(2, 3, 1, 3, 1, 3, 3, 3, 3, 3)))
+# results2$Method = factor(results2$Method, levels=c("prox_p", "prox_int_p", "prox2_p", "prox2_all_p", "prox2_int_p", 
+#                                                    "iecat_p", "skato_int_p", "skato_ext_p", "skato_all_p",
+#                                                    "iecat_p_syn", "skato_int_p_syn", "skato_ext_p_syn", "skato_all_p_syn",
+#                                                    "skat_int_p", "skat_ext_p", "skat_all_p",
+#                                                    "burden_int_p", "burden_ext_p", "burden_all_p",
+#                                                    "skat_int_p_syn", "skat_ext_p_syn", "skat_all_p_syn",
+#                                                    "burden_int_p_syn", "burden_ext_p_syn", "burden_all_p_syn"),
+#                          labels=rep(c("proxECAT", "LogProx", "iECAT-O", "SKAT-O", "iECAT-O", "SKAT-O",
+#                                       "SKAT", "Burden", "SKAT", "Burden"), times=c(2, 3, 1, 3, 1, 3, 3, 3, 3, 3)))
 
 # results2 = rbind(results_all, results_skat)
 
@@ -182,7 +227,11 @@ results2$Pop = factor(results2$Pop)
 results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal + External"))
 # results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Adjusted"))
 # results2$Configuration = factor(results2$Configuration, levels=c("Homogeneous-Unadjusted", "Admixed-Unadjusted", "Admixed-Adjusted"))
-results2$Variants_Used = factor(results2$Variants_Used, levels=c("Functional and Synonymous", "Functional Only", "Synonymous Only"))
+# results2$Variants_Used = factor(results2$Variants_Used, levels=c("Functional and Synonymous", "Functional Only", "Synonymous Only"))
+results2$Gene = factor(results2$Gene, levels=c("ADGRE2", "ADGRE3", "ADGRE5", "CLEC17A", "DDX39A", "DNAJB1", 
+                                               "GIPC1", "NDUFB7", "PKN1", "PTGER1", "TECR", "ZNF333"))
+results2$Method = factor(results2$Method, levels = c("ProxECAT", "ProxECAT-weighted", "LogProx", "iECAT-O",
+                                                     "SKAT-O", "SKAT", "Burden"))
 
 # get CI's
 results2$Lower = '.'
@@ -209,6 +258,9 @@ colors3 = c("#009E73", "#0072B2", "#D55E00")
 colors_nfe = c("#009E73", "#0072B2", "#D55E00", "#CC79A7", "#999999",
                "lightgreen", "#56B4E9", "#E69F00", "pink")
 colors_all_nfe = "#009E73"
+colors_meth = c("#56B4E9", "#0072B2", "#009E73", "#CC79A7", "#BC9F4C", "#E69F00", "#D55E00")
+colors_gene = c("#009E73", "#0072B2", "#D55E00", "#CC79A7", "#999999",
+                "lightgreen", "#56B4E9", "#E69F00", "#BC9F4C", "pink", "red", "purple")
 
 # Controls everything in the graph
 # base_size = 25
@@ -313,6 +365,25 @@ ggsave(file = paste0(dir_out, 't1e_all_', Pop2, '_', pruning, '_', folder, '_', 
        plot = p6, height = 8, width = 16, units = 'in')
 # ggsave(file = paste0(dir_out, 't1e_all_', Pop2, '_', pruning, '_', data, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
 #        plot = p6, height = 8, width = 16, units = 'in') #int v ext
+
+# t1e for by gene resutls
+p7 <- ggplot(results2, aes(x=Gene, y=Value, color=Method)) +
+        geom_point(aes(shape=Method), size=3, position=position_dodge(width=0.5)) +
+        geom_hline(yintercept=0.05, linetype=2, linewidth=1) +
+        # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+        # scale_y_continuous(limits=c(0, 1)) +
+        # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+        # scale_y_continuous(breaks=c(0, 0.05, 0.20, 0.40, 0.60)) +
+        geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1, width=.3, position=position_dodge(width=0.5)) +
+        scale_color_manual(values=colors_meth) +
+        scale_shape_manual(values = c(16, 18, 17, 15, 9, 10, 12)) +
+        facet_wrap(~Data, ncol = 1, scales = 'free_y') +
+        labs(y='Type I Error', x='Method', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
+        theme_bw(base_size = 15)
+p7
+ggsave(file = paste0(dir_out, 't1e_gene_zoomed_', Pop2, '_', pruning, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
+       plot = p7, height = 8, width = 16, units = 'in')
 
 
 
