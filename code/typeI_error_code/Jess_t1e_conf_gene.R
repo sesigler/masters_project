@@ -10,9 +10,9 @@ source("/home/math/siglersa/mastersProject/Input/read_in_funcs.R")
 source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
 
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
 
 Pop = 'NFE'
 pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
@@ -33,9 +33,9 @@ dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', fo
 dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
 dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/', folder, '/')
 
-# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-# dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 
 # create empty vectors to store the p-values from each replicate
 # prox.p = prox.int.p = prox.all.p = c()
@@ -53,7 +53,7 @@ burden_ext_genes_p = burden_int_genes_p = burden_all_genes_p = c() #Burden
 
 # loop through the simulation replicates
 set.seed(1) 
-# i=27
+i=27
 for (i in 1:100){
   
    # read in the legend file
@@ -130,6 +130,12 @@ for (i in 1:100){
                               proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
             prox_int_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
                                 proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+   
+   # Store the proxECAT and proxECAT-weighted p-values
+   prox_ext_genes_p = rbind(prox_ext_genes_p, counts_ext_wide$prox_ext)
+   prox_int_genes_p = rbind(prox_int_genes_p, counts_int_wide$prox_int)
+   prox_weighted_ext_genes_p = rbind(prox_weighted_ext_genes_p, counts_ext_wide$prox_ext_w)
+   prox_weighted_int_genes_p = rbind(prox_weighted_int_genes_p, counts_int_wide$prox_int_w)
      
    # counts_all = colSums(counts_wide[,-1])
    # names(counts_all) = colnames(counts_wide)[-1]
@@ -168,26 +174,37 @@ for (i in 1:100){
    obj_all = SKAT_Null_Model(as.numeric(pheno_all) ~ 1, out_type="D") # D-dichotomous
    
    # create combined genotype matrices
-   geno_int_all = cbind(geno_cases, geno_int)[-union(leg_syn$row, common_all$row),] # for iECAT
-   geno_cases_int = cbind(geno_cases, geno_int)[-union(leg_syn$row, common_int$row),] # SKAT int
-   geno_cases_cc = cbind(geno_cases, geno_cc)[-union(leg_syn$row, common_ext$row),] # SKAT (just cases & external controls)
+   # geno_int_all = cbind(geno_cases, geno_int)[-union(leg_syn$row, common_all$row),] # for iECAT
+   # geno_cases_int = cbind(geno_cases, geno_int)[-union(leg_syn$row, common_int$row),] # SKAT int
+   # geno_cases_cc = cbind(geno_cases, geno_cc)[-union(leg_syn$row, common_ext$row),] # SKAT ext
+   # geno_all = cbind(geno_cases, geno_int, geno_cc)[-union(leg_syn$row, common_all$row),] # SKAT (all)
+   geno_cases_int = cbind(geno_cases, geno_int, gene=leg$gene)[-union(leg_syn$row, common_int$row),] #internal
+   geno_cases_cc = cbind(geno_cases, geno_cc, gene=leg$gene)[-union(leg_syn$row, common_ext$row),] #external
+   geno_all = cbind(geno_cases, geno_int, geno_cc, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #internal+external
+   geno_int_all = cbind(geno_cases, geno_int, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
    # geno_ext = geno_cc[-union(leg_syn$row, common_all$row),] #will need to change geno_cc to counts_cc for admixed
-   geno_ext = count_cc[-union(leg_syn$row, common_all$row),] # need MAC for tbl object for iECAT
-   geno_all = cbind(geno_cases, geno_int, geno_cc)[-union(leg_syn$row, common_all$row),] # SKAT (all)
+   # geno_ext = count_cc[-union(leg_syn$row, common_all$row),] # need MAC for tbl object for iECAT
+   geno_ext = cbind(count_cc, gene=leg$gene)[-union(leg_syn$row, common_all$row),]
+   
+   # some colnames are same from cbinding the geno matrices, need to make them unique
+   colnames(geno_cases_int) <- make.unique(colnames(geno_cases_int))
+   colnames(geno_cases_cc) <- make.unique(colnames(geno_cases_cc))
+   colnames(geno_all) <- make.unique(colnames(geno_all))
+   colnames(geno_int_all) <- make.unique(colnames(geno_int_all))
 
    # subset the genotype matrices
    # LAST FEW ROWS ARE NA FOR THE FIRST GENE, NEED TO FIGURE OUT WHY
    # I think it's because leg_fun still has the common variants in it
    # but gen_int_all and geno_cases_cc already subset them out
    # Try creating a new fun leg file that has the common variants removed
-   common_all_fun = common_all %>% filter(fun=="fun")
-   leg_fun_all_rare = subset(leg_fun, !(id %in% common_all_fun$id))
-
-   common_ext_fun = common_ext %>% filter(fun=="fun")
-   leg_fun_ext_rare = subset(leg_fun, !(id %in% common_ext_fun$id))
-
-   common_int_fun = common_int %>% filter(fun=="fun")
-   leg_fun_int_rare = subset(leg_fun, !(id %in% common_int_fun$id))
+   # common_all_fun = common_all %>% filter(fun=="fun")
+   # leg_fun_all_rare = subset(leg_fun, !(id %in% common_all_fun$id))
+   # 
+   # common_ext_fun = common_ext %>% filter(fun=="fun")
+   # leg_fun_ext_rare = subset(leg_fun, !(id %in% common_ext_fun$id))
+   # 
+   # common_int_fun = common_int %>% filter(fun=="fun")
+   # leg_fun_int_rare = subset(leg_fun, !(id %in% common_int_fun$id))
 
    # fit the ProxECATv2 model
    #glm.prox = glm(fun ~ case + group, data=data.all, family="binomial") 
@@ -202,7 +219,8 @@ for (i in 1:100){
    
    # create MAC matrix for external controls
    # tbl = data.frame(a0=rowSums(geno_ext)) %>% mutate(a1=2*ncol(geno_ext)-a0)
-   tbl = data.frame(a0=geno_ext$mac) %>% mutate(a1=2*Ncc-a0) # need to use MAC
+   # tbl = data.frame(a0=geno_ext$mac) %>% mutate(a1=2*Ncc-a0) # need to use MAC
+   tbl = data.frame(a0=geno_ext$mac) %>% mutate(a1=2*Ncc-a0, gene = geno_ext$gene)
    
    # call the iECAT function
    # re = iECAT(t(geno.int.all), obj.int, as.matrix(tbl), method="optimal")
@@ -226,7 +244,7 @@ for (i in 1:100){
    burden_int_genes = burden_ext_genes = burden_all_genes = c()
    
    genes = levels(droplevels(as.factor(leg$gene)))
-   # g = 1
+   g = 1
    # gene_counts = leg %>% count(gene)
    # loop through the genes
    for(g in 1:length(genes)){
@@ -267,32 +285,23 @@ for (i in 1:100){
 
      ### Prepare data for iECAT and SKAT methods
      
-     # DON"T NEED TO DO THIS WITHIN THE GENE LOOP
-     # subset the genotype matrices
-     # LAST FEW ROWS ARE NA FOR THE FIRST GENE, NEED TO FIGURE OUT WHY
-     # I think it's because leg_fun still has the common variants in it
-     # but gen_int_all and geno_cases_cc already subset them out
-     # Try creating a new fun leg file that has the common variants removed
-     # common_all_fun = common_all %>% filter(fun=="fun")
-     # leg_fun_all_rare = subset(leg_fun, !(id %in% common_all_fun$id))
-     #
-     # common_ext_fun = common_ext %>% filter(fun=="fun")
-     # leg_fun_ext_rare = subset(leg_fun, !(id %in% common_ext_fun$id))
-     #
-     # common_int_fun = common_int %>% filter(fun=="fun")
-     # leg_fun_int_rare = subset(leg_fun, !(id %in% common_int_fun$id))
-     
      # Z_int = geno_int_all[which(leg_fun$gene==genes[g]), ]
      # Z_ext = geno_cases_cc[which(leg_fun$gene==genes[g]), ]
 
-     Z_int_all = geno_int_all[which(leg_fun_all_rare$gene==genes[g]), ]
-     Z_int = geno_cases_int[which(leg_fun_int_rare$gene==genes[g]), ]
-     Z_ext = geno_cases_cc[which(leg_fun_ext_rare$gene==genes[g]), ]
-     Z_all = geno_all[which(leg_fun_all_rare$gene==genes[g]), ]
+     # Z_int_all = geno_int_all[which(leg_fun_all_rare$gene==genes[g]), ]
+     # Z_int = geno_cases_int[which(leg_fun_int_rare$gene==genes[g]), ]
+     # Z_ext = geno_cases_cc[which(leg_fun_ext_rare$gene==genes[g]), ]
+     # Z_all = geno_all[which(leg_fun_all_rare$gene==genes[g]), ]
+     
+     Z_int = geno_cases_int %>% filter(gene == genes[g]) %>% select(-gene)
+     Z_ext = geno_cases_cc %>% filter(gene == genes[g]) %>% select(-gene)
+     Z_all = geno_all %>% filter(gene == genes[g]) %>% select(-gene)
+     Z_int_all = geno_int_all %>% filter(gene == genes[g]) %>% select(-gene)
      
      # subset the MAC matrix for the external controls
      # tbl_gene = tbl[which(leg_fun$gene==genes[g]), ]
-     tbl_gene = tbl[which(leg_fun_all_rare$gene==genes[g]), ]
+     # tbl_gene = tbl[which(leg_fun_all_rare$gene==genes[g]), ]
+     tbl_gene = tbl %>% filter(gene == genes[g]) %>% select(-gene)
      
      # call the iECAT-O and SKAT-O functions
      re_gene = iECAT(t(Z_int_all), obj_int, as.matrix(tbl_gene), method="optimal") # iECAT and SKAT-O internal
@@ -301,7 +310,6 @@ for (i in 1:100){
      skato_all_gene = SKATBinary(t(Z_all), obj_all, method="SKATO") # SKAT-O internal+external
      
      # Save the iECAT-O and SKAT-O p-values
-     # COMMENTED OUT
      iecat_genes = c(iecat_genes, re_gene$p.value)
      # iecat_skato_int_genes = c(iecat_skato_int_genes, re_gene$p.value.internal) # Check this is the same as SKAT-O, NOT THE SAME
      skato_ext_genes = c(skato_ext_genes, skato_ext_gene$p.value)
@@ -352,13 +360,8 @@ for (i in 1:100){
    #   }
    # }
 
-   # store the ProxECAT, LogProx, iECAT-O, SKAT gene p-values
+   # store the LogProx, iECAT-O, SKAT gene p-values
    # Each col represents a gene and each row represents a sim rep
-   prox_ext_genes_p = rbind(prox_ext_genes_p, counts_ext_wide$prox_ext)
-   prox_int_genes_p = rbind(prox_int_genes_p, counts_int_wide$prox_int)
-   prox_weighted_ext_genes_p = rbind(prox_weighted_ext_genes_p, counts_ext_wide$prox_ext_w)
-   prox_weighted_int_genes_p = rbind(prox_weighted_int_genes_p, counts_int_wide$prox_int_w)
-
    prox2_ext_genes_p = rbind(prox2_ext_genes_p, prox2_ext_genes)
    prox2_int_genes_p = rbind(prox2_int_genes_p, prox2_int_genes)
    prox2_all_genes_p = rbind(prox2_all_genes_p, prox2_all_genes)
