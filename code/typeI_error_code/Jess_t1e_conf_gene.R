@@ -10,9 +10,9 @@ source("/home/math/siglersa/mastersProject/Input/read_in_funcs.R")
 source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
 
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
 
 Pop = 'NFE'
 pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
@@ -32,16 +32,12 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
 dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
 dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/', folder, '/')
+# dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/')
 
-dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+# dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 
-# create empty vectors to store the p-values from each replicate
-# prox.p = prox.int.p = prox.all.p = c()
-# prox2.p = prox2.int.p = prox2.all.p = c()
-# iecat.p = skat.int.p = skat.ext.p = skat.all.p = c()
-# prox_genes_p = prox2_genes_p = iecat_genes_p = skat_int_genes_p = skat_ext_genes_p = c()
 
 prox_ext_genes_p = prox_int_genes_p = c() #proxECAT
 prox_weighted_ext_genes_p = prox_weighted_int_genes_p = c() #proxECAT-weighted
@@ -53,7 +49,7 @@ burden_ext_genes_p = burden_int_genes_p = burden_all_genes_p = c() #Burden
 
 # loop through the simulation replicates
 set.seed(1) 
-i=27
+# i=90
 for (i in 1:100){
   
    # read in the legend file
@@ -143,20 +139,6 @@ for (i in 1:100){
    # counts_all = data_all %>% count(case, fun)
    # counts_prox = data_prox %>% count(case, fun)
    # counts_int = data_int %>% count(case, fun)
-
-   # call proxECAT
-   #prox = proxecat(counts.all['case.fun'], counts.all['case.syn'], counts.all['control.fun'], counts.all['control.syn'])
-   # prox.genes = proxecat(counts_wide$case_fun, counts_wide$case_syn, counts_wide$control_fun, counts_wide$control_syn)
-
-   # prox = proxecat(counts.prox$n[1], counts.prox$n[2], counts.prox$n[3], counts.prox$n[4])
-   # prox.all = proxecat(counts.all$n[1], counts.all$n[2], counts.all$n[3], counts.all$n[4])
-   # prox.int = proxecat(counts.int$n[1], counts.int$n[2], counts.int$n[3], counts.int$n[4])
-
-   # store proxECAT p-values
-   # prox.p = rbind(prox.p, prox$p.value)
-   # prox.all.p = rbind(prox.all.p, prox.all$p.value)
-   # prox.int.p = rbind(prox.int.p, prox.int$p.value)
-   # prox.genes.p = rbind(prox.genes.p, prox.genes$p.value)
    
    # create case/control phenotype matrices for iECAT/SKAT
    pheno_int = rep(0, (ncol(geno_cases) + ncol(geno_int)))
@@ -205,46 +187,21 @@ for (i in 1:100){
    # 
    # common_int_fun = common_int %>% filter(fun=="fun")
    # leg_fun_int_rare = subset(leg_fun, !(id %in% common_int_fun$id))
-
-   # fit the ProxECATv2 model
-   #glm.prox = glm(fun ~ case + group, data=data.all, family="binomial") 
-   # glm.prox = glm(fun ~ case, data=data.prox, family="binomial") 
-   # glm.all.prox = glm(fun ~ case + group, data=data.all, family="binomial") 
-   # glm.int.prox = glm(fun ~ case, data=data.int, family="binomial") 
-   
-   # save the p-value for case/control status
-   # p.prox = summary(glm.prox)$coefficients[2,4]
-   # p.prox.all = summary(glm.all.prox)$coefficients[2,4]
-   # p.prox.int = summary(glm.int.prox)$coefficients[2,4]
    
    # create MAC matrix for external controls
    # tbl = data.frame(a0=rowSums(geno_ext)) %>% mutate(a1=2*ncol(geno_ext)-a0)
    # tbl = data.frame(a0=geno_ext$mac) %>% mutate(a1=2*Ncc-a0) # need to use MAC
    tbl = data.frame(a0=geno_ext$mac) %>% mutate(a1=2*Ncc-a0, gene = geno_ext$gene)
    
-   # call the iECAT function
-   # re = iECAT(t(geno.int.all), obj.int, as.matrix(tbl), method="optimal")
-   # re.skat = SKATBinary(t(geno.cases.cc), obj.ext, method="SKATO") # SKAT-O based on the unified approach
-   # re.all = SKATBinary(t(geno.all), obj.all, method="SKATO") # SKAT-O based on the unified approach
-   
-   # save the p-values
-   # prox2.p = c(prox2.p, p.prox)
-   # prox2.all.p = c(prox2.all.p, p.prox.all)
-   # prox2.int.p = c(prox2.int.p, p.prox.int)
-   # iecat.p = c(iecat.p, re$p.value)
-   # skat.int.p = c(skat.int.p, re$p.value.internal)
-   # skat.ext.p = c(skat.ext.p, re.skat$p.value)
-   # skat.all.p = c(skat.all.p, re.all$p.value)
    
    # call ProxECATv2/iECAT/SKAT once per gene
-   # prox_ext_genes = prox_int_genes = c()
    prox2_int_genes = prox2_ext_genes = prox2_all_genes = c()
    iecat_genes = skato_int_genes = skato_ext_genes = skato_all_genes = c()
    skat_int_genes = skat_ext_genes = skat_all_genes = c()
    burden_int_genes = burden_ext_genes = burden_all_genes = c()
    
    genes = levels(droplevels(as.factor(leg$gene)))
-   g = 1
+   # g = 8
    # gene_counts = leg %>% count(gene)
    # loop through the genes
    for(g in 1:length(genes)){
@@ -257,9 +214,10 @@ for (i in 1:100){
      data_ext_gene = data_prox %>% filter(gene==genes[g])
      data_all_gene = data_all %>% filter(gene==genes[g])
      # Count the number of fun and syn alleles by case status
-     counts_data_int_gene = data_int_gene %>% count(case, fun)
-     counts_data_ext_gene = data_ext_gene %>% count(case, fun)
-     counts_data_all_gene = data_all_gene %>% count(case, fun)
+     # need .drop param so it still creates a group even if AC is 0
+     counts_data_int_gene = data_int_gene %>% count(case, fun, .drop = FALSE)
+     counts_data_ext_gene = data_ext_gene %>% count(case, fun, .drop = FALSE)
+     counts_data_all_gene = data_all_gene %>% count(case, fun, .drop = FALSE)
      
      # print(paste0("Counts for internal data: ", counts_data_int_gene$n[1], " ", counts_data_int_gene$n[2], " ", counts_data_int_gene$n[3], " ", counts_data_int_gene$n[4]))
      # print(paste0("Counts for external data: ", counts_data_ext_gene$n[1], " ", counts_data_ext_gene$n[2], " ", counts_data_ext_gene$n[3], " ", counts_data_ext_gene$n[4]))
@@ -292,7 +250,6 @@ for (i in 1:100){
      # Z_int = geno_cases_int[which(leg_fun_int_rare$gene==genes[g]), ]
      # Z_ext = geno_cases_cc[which(leg_fun_ext_rare$gene==genes[g]), ]
      # Z_all = geno_all[which(leg_fun_all_rare$gene==genes[g]), ]
-     
      Z_int = geno_cases_int %>% filter(gene == genes[g]) %>% select(-gene)
      Z_ext = geno_cases_cc %>% filter(gene == genes[g]) %>% select(-gene)
      Z_all = geno_all %>% filter(gene == genes[g]) %>% select(-gene)
@@ -374,6 +331,7 @@ for (i in 1:100){
    skat_ext_genes_p = rbind(skat_ext_genes_p, skat_ext_genes)
    skat_int_genes_p = rbind(skat_int_genes_p, skat_int_genes)
    skat_all_genes_p = rbind(skat_all_genes_p, skat_all_genes)
+   
    burden_ext_genes_p = rbind(burden_ext_genes_p, burden_ext_genes)
    burden_int_genes_p = rbind(burden_int_genes_p, burden_int_genes)
    burden_all_genes_p = rbind(burden_all_genes_p, burden_all_genes)
