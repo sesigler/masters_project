@@ -20,10 +20,23 @@ ext_prune = 80
 pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 folder = '100v80'
 data = 'by_gene'
-method = 'prox' #Options: prox, prox_weighted, prox2, iecat, skato, skat, burden
-type = 'int' #Options: int, ext, all
+method = 'prox2' #Options: prox, prox_weighted, prox2, iecat, skato, skat, burden
+type = 'all' #Options: int, ext, all
 
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
+dir = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/') 
+
+prox = read.table(paste0(dir, "T1e_gene_prox_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+prox2 = read.table(paste0(dir, "T1e_gene_prox2_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+
+comb_int = cbind(prox_CLEC17A = prox$CLEC17A, prox2_CLEC17A = prox2$CLEC17A, 
+                 prox_NDUFB7 = prox$NDUFB7, prox2_NDUFB7 = prox2$NDUFB7)
+
+comb_ext = cbind(prox_ADGRE2 = prox$ADGRE2, prox2_ADGRE2 = prox2$ADGRE2,
+                 prox_CLEC17A = prox$CLEC17A, prox2_CLEC17A = prox2$CLEC17A,
+                 prox_DNAJB1 = prox$DNAJB1, prox2_DNAJB1 = prox2$DNAJB1,
+                 prox_NDUFB7 = prox$NDUFB7, prox2_NDUFB7 = prox2$NDUFB7,
+                 prox_PTGER1 = prox$PTGER, prox2_PTGER = prox2$PTGER)
 
 ### Type 1 error
 
