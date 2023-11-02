@@ -40,29 +40,7 @@ dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_
 # t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-
-# Read in files for by gene method
-t1e_prox_int = read.csv(paste0(dir, "T1e_all_gene_prox_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_prox_ext = read.csv(paste0(dir, "T1e_all_gene_prox_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_prox_weighted_int = read.csv(paste0(dir, "T1e_all_gene_prox_weighted_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_prox_weighted_ext = read.csv(paste0(dir, "T1e_all_gene_prox_weighted_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-
-t1e_prox2_int = read.csv(paste0(dir, "T1e_all_gene_prox2_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_prox2_ext = read.csv(paste0(dir, "T1e_all_gene_prox2_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_prox2_all = read.csv(paste0(dir, "T1e_all_gene_prox2_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-
-t1e_iecat_all = read.csv(paste0(dir, "T1e_all_gene_iecat_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_skato_int = read.csv(paste0(dir, "T1e_all_gene_skato_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_skato_ext = read.csv(paste0(dir, "T1e_all_gene_skato_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_skato_all = read.csv(paste0(dir, "T1e_all_gene_skato_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-
-t1e_skat_int = read.csv(paste0(dir, "T1e_all_gene_skat_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_skat_ext = read.csv(paste0(dir, "T1e_all_gene_skat_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_skat_all = read.csv(paste0(dir, "T1e_all_gene_skat_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-
-t1e_burden_int = read.csv(paste0(dir, "T1e_all_gene_burden_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_burden_ext = read.csv(paste0(dir, "T1e_all_gene_burden_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_burden_all = read.csv(paste0(dir, "T1e_all_gene_burden_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+t1e_gene = read.csv(paste0(dir, "T1e_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 
 # puts in a format for ggplot
 # t1e_all = pivot_longer(t1e_all, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
@@ -83,46 +61,9 @@ t1e_burden_all = read.csv(paste0(dir, "T1e_all_gene_burden_all_", pruning, "_", 
 #   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 # t1e_all_pruning = pivot_longer(t1e_all_pruning, prox_p:burden_all_p_syn, names_to="Method", values_to="Value") %>%
 #   mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE")
+t1e_gene = pivot_longer(t1e_gene, prox_int:burden_all, names_to="Method", values_to="Value") %>%
+  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE")
 
-## By Gene
-t1e_prox_int = pivot_longer(t1e_prox_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT", Data = "Internal")
-t1e_prox_ext = pivot_longer(t1e_prox_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT", Data = "External")
-t1e_prox_weighted_int = pivot_longer(t1e_prox_weighted_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT-weighted", Data = "Internal")
-t1e_prox_weighted_ext = pivot_longer(t1e_prox_weighted_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT-weighted", Data = "External")
-
-t1e_prox2_int = pivot_longer(t1e_prox2_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "LogProx", Data = "Internal")
-t1e_prox2_ext = pivot_longer(t1e_prox2_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "LogProx", Data = "External")
-t1e_prox2_all = pivot_longer(t1e_prox2_all, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "LogProx", Data = "Internal + External")
-
-t1e_iecat_all = pivot_longer(t1e_iecat_all, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "iECAT-O", Data = "Internal + External")
-t1e_skato_int = pivot_longer(t1e_skato_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT-O", Data = "Internal")
-t1e_skato_ext = pivot_longer(t1e_skato_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT-O", Data = "External")
-t1e_skato_all = pivot_longer(t1e_skato_all, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT-O", Data = "Internal + External")
-
-t1e_skat_int = pivot_longer(t1e_skat_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT", Data = "Internal")
-t1e_skat_ext = pivot_longer(t1e_skat_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT", Data = "External")
-t1e_skat_all = pivot_longer(t1e_skat_all, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "SKAT", Data = "Internal + External")
-
-t1e_burden_int = pivot_longer(t1e_burden_int, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "Burden", Data = "Internal")
-t1e_burden_ext = pivot_longer(t1e_burden_ext, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "Burden", Data = "External")
-t1e_burden_all = pivot_longer(t1e_burden_all, ADGRE2:ZNF333, names_to="Gene", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "Burden", Data = "Internal + External")
 
 # results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
 # results = t1e_all_homo
@@ -131,11 +72,7 @@ t1e_burden_all = pivot_longer(t1e_burden_all, ADGRE2:ZNF333, names_to="Gene", va
 # results = rbind(t1e_all_pruning, t1e_skat_pruning)
 # results_all = t1e_all_pruning
 # results_skat = t1e_skat_pruning
-results2 = rbind(t1e_prox_int, t1e_prox_ext, t1e_prox_weighted_int, t1e_prox_weighted_ext,
-                 t1e_prox2_int, t1e_prox2_ext, t1e_prox2_all,
-                 t1e_iecat_all, t1e_skato_int, t1e_skato_ext, t1e_skato_all,
-                 t1e_skat_int, t1e_skat_ext, t1e_skat_all,
-                 t1e_burden_int, t1e_burden_ext, t1e_burden_all)
+results = t1e_gene
 
 # results2 = results %>% mutate(Data = c("External", "Internal", "External", "Internal + External", "Internal", 
 #                                        "Internal + External", "Internal", "External", "Internal + External",
@@ -217,6 +154,22 @@ results2 = rbind(t1e_prox_int, t1e_prox_ext, t1e_prox_weighted_int, t1e_prox_wei
 #                          labels=rep(c("proxECAT", "LogProx", "iECAT-O", "SKAT-O", "iECAT-O", "SKAT-O",
 #                                       "SKAT", "Burden", "SKAT", "Burden"), times=c(2, 3, 1, 3, 1, 3, 3, 3, 3, 3)))
 
+results2 = results %>% mutate(Data = rep(c("Internal", "External", "Internal", "External",
+                                           "Internal", "External", "Internal + External",
+                                           "Internal + External", "Internal", "External", "Internal + External",
+                                           "Internal", "External", "Internal + External",
+                                           "Internal", "External", "Internal + External"), 12))
+
+results2$Method = factor(results2$Method, levels=c("prox_int", "prox_ext", "proxW_int", "proxW_ext",
+                                                   "prox2_int", "prox2_ext", "prox2_all",
+                                                   "iecat_all", "skato_int", "skato_ext", "skato_all",
+                                                   "skat_int", "skat_ext", "skat_all",
+                                                   "burden_int", "burden_ext", "burden_all"),
+                         labels=rep(c("ProxECAT", "ProxECAT-weighted", "LogProx", "iECAT-O", "SKAT-O", 
+                                      "SKAT", "Burden"), times=c(2, 2, 3, 1, 3, 3, 3)))
+
+
+
 # results2 = rbind(results_all, results_skat)
 
 #results2$MAF = factor(results2$MAF, levels = c(0.01, 0.001))
@@ -231,8 +184,8 @@ results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal
 # results2$Variants_Used = factor(results2$Variants_Used, levels=c("Functional and Synonymous", "Functional Only", "Synonymous Only"))
 results2$Gene = factor(results2$Gene, levels=c("ADGRE2", "ADGRE3", "ADGRE5", "CLEC17A", "DDX39A", "DNAJB1", 
                                                "GIPC1", "NDUFB7", "PKN1", "PTGER1", "TECR", "ZNF333"))
-results2$Method = factor(results2$Method, levels = c("ProxECAT", "ProxECAT-weighted", "LogProx", "iECAT-O",
-                                                     "SKAT-O", "SKAT", "Burden"))
+# results2$Method = factor(results2$Method, levels = c("ProxECAT", "ProxECAT-weighted", "LogProx", "iECAT-O",
+#                                                      "SKAT-O", "SKAT", "Burden"))
 
 # get CI's
 results2$Lower = '.'

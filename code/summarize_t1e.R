@@ -15,13 +15,13 @@ Pop2 = "NFE"
 # scen = "s1"
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
-int_prune = 100
-ext_prune = 100
+int_prune = 80
+ext_prune = 80
 pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 folder = '100v80'
 data = 'by_gene'
-method = 'skato' #Options: prox, prox_weighted, prox2, iecat, skato, skat, burden
-type = 'ext' #Options: int, ext, all
+# method = 'skato' #Options: prox, prox_weighted, prox2, iecat, skato, skat, burden
+# type = 'ext' #Options: int, ext, all
 
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/', int_prune, 'v', ext_prune, '/')
@@ -35,7 +35,30 @@ dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '
 # t1e_pruning = read.table(paste0(dir, "T1e_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T) # for int v ext
 # t1e_pruning = read.table(paste0(dir, "T1e_skat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 # t1e_pruning = read.table(paste0(dir, "T1e_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
-t1e_pruning = read.table(paste0(dir, "T1e_gene_", method, "_", type, "_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+# t1e_pruning = read.table(paste0(dir, "T1e_gene_", method, "_", type, "_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+
+# By gene
+prox_int = read.table(paste0(dir, "T1e_gene_prox_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+prox_ext = read.table(paste0(dir, "T1e_gene_prox_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+proxW_int = read.table(paste0(dir, "T1e_gene_prox_weighted_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+proxW_ext = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+
+prox2_int = read.table(paste0(dir, "T1e_gene_prox2_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+prox2_ext = read.table(paste0(dir, "T1e_gene_prox2_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+prox2_all = read.table(paste0(dir, "T1e_gene_prox2_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+
+iecat_all = read.table(paste0(dir, "T1e_gene_iecat_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+skato_int = read.table(paste0(dir, "T1e_gene_skato_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+skato_ext = read.table(paste0(dir, "T1e_gene_skato_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+skato_all = read.table(paste0(dir, "T1e_gene_skato_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+
+skat_int = read.table(paste0(dir, "T1e_gene_skat_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+skat_ext = read.table(paste0(dir, "T1e_gene_skat_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+skat_all = read.table(paste0(dir, "T1e_gene_skat_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+
+burden_int = read.table(paste0(dir, "T1e_gene_burden_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+burden_ext = read.table(paste0(dir, "T1e_gene_burden_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+burden_all = read.table(paste0(dir, "T1e_gene_burden_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 
 
 # t1e_out = apply(t1e, 2, my.power)
@@ -43,7 +66,36 @@ t1e_pruning = read.table(paste0(dir, "T1e_gene_", method, "_", type, "_", prunin
 # t1e_homo_out = apply(t1e_homo, 2, my.power)
 # t1e_skat_out = apply(t1e_skat, 2, my.power)
 # t1e_og_hap_out = apply(t1e_og_hap, 2, my.power)
-t1e_pruning_out = apply(t1e_pruning, 2, my.power)
+# t1e_pruning_out = apply(t1e_pruning, 2, my.power)
+
+# By gene
+prox_int = apply(prox_int, 2, my.power)
+prox_ext = apply(prox_ext, 2, my.power)
+proxW_int = apply(proxW_int, 2, my.power)
+proxW_ext = apply(proxW_ext, 2, my.power)
+
+prox2_int = apply(prox2_int, 2, my.power)
+prox2_ext = apply(prox2_ext, 2, my.power)
+prox2_all = apply(prox2_all, 2, my.power)
+
+iecat_all = apply(iecat_all, 2, my.power)
+skato_int = apply(skato_int, 2, my.power)
+skato_ext = apply(skato_ext, 2, my.power)
+skato_all = apply(skato_all, 2, my.power)
+
+skat_int = apply(skat_int, 2, my.power)
+skat_ext = apply(skat_ext, 2, my.power)
+skat_all = apply(skat_all, 2, my.power)
+
+burden_int = apply(burden_int, 2, my.power)
+burden_ext = apply(burden_ext, 2, my.power)
+burden_all = apply(burden_all, 2, my.power)
+
+results = cbind(Gene=names(prox_int), prox_int, prox_ext, proxW_int, proxW_ext,
+                prox2_int, prox2_ext, prox2_all,
+                iecat_all, skato_int, skato_ext, skato_all,
+                skat_int, skat_ext, skat_all,
+                burden_int, burden_ext, burden_all)
 
 # write.csv(t(as.data.frame(t1e_out)), paste0(dir, "T1e_all_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 # write.csv(t(as.data.frame(t1e_adj_out)), paste0(dir, "T1e_all_adj_", int_prune, "_v_", ext_prune, "_", scen, "_", Pop1, '-', Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
@@ -51,7 +103,8 @@ t1e_pruning_out = apply(t1e_pruning, 2, my.power)
 # write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 # write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F) # for int v ext
 # write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_skat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_gene_", method, "_", type, "_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
+# write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_gene_", method, "_", type, "_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
+write.csv(as.data.frame(results), paste0(dir, "T1e_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 
 
 
