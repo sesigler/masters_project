@@ -16,27 +16,15 @@ Pop2 = "NFE"
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
-ext_prune = 80
+ext_prune = 100
 pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 folder = '100v80'
 data = 'by_gene'
-method = 'prox2' #Options: prox, prox_weighted, prox2, iecat, skato, skat, burden
-type = 'all' #Options: int, ext, all
+method = 'skato' #Options: prox, prox_weighted, prox2, iecat, skato, skat, burden
+type = 'ext' #Options: int, ext, all
 
-dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
-dir = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/') 
-
-prox = read.table(paste0(dir, "T1e_gene_prox_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
-prox2 = read.table(paste0(dir, "T1e_gene_prox2_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
-
-comb_int = cbind(prox_CLEC17A = prox$CLEC17A, prox2_CLEC17A = prox2$CLEC17A, 
-                 prox_NDUFB7 = prox$NDUFB7, prox2_NDUFB7 = prox2$NDUFB7)
-
-comb_ext = cbind(prox_ADGRE2 = prox$ADGRE2, prox2_ADGRE2 = prox2$ADGRE2,
-                 prox_CLEC17A = prox$CLEC17A, prox2_CLEC17A = prox2$CLEC17A,
-                 prox_DNAJB1 = prox$DNAJB1, prox2_DNAJB1 = prox2$DNAJB1,
-                 prox_NDUFB7 = prox$NDUFB7, prox2_NDUFB7 = prox2$NDUFB7,
-                 prox_PTGER1 = prox$PTGER, prox2_PTGER = prox2$PTGER)
+# dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
+dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/', int_prune, 'v', ext_prune, '/')
 
 ### Type 1 error
 
@@ -64,6 +52,22 @@ t1e_pruning_out = apply(t1e_pruning, 2, my.power)
 # write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F) # for int v ext
 # write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_skat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_gene_", method, "_", type, "_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
+
+
+
+dir = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/') 
+
+prox = read.table(paste0(dir, "T1e_gene_prox_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+prox2 = read.table(paste0(dir, "T1e_gene_prox2_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
+
+comb_int = cbind(prox_CLEC17A = prox$CLEC17A, prox2_CLEC17A = prox2$CLEC17A, 
+                 prox_NDUFB7 = prox$NDUFB7, prox2_NDUFB7 = prox2$NDUFB7)
+
+comb_ext = cbind(prox_ADGRE2 = prox$ADGRE2, prox2_ADGRE2 = prox2$ADGRE2,
+                 prox_CLEC17A = prox$CLEC17A, prox2_CLEC17A = prox2$CLEC17A,
+                 prox_DNAJB1 = prox$DNAJB1, prox2_DNAJB1 = prox2$DNAJB1,
+                 prox_NDUFB7 = prox$NDUFB7, prox2_NDUFB7 = prox2$NDUFB7,
+                 prox_PTGER1 = prox$PTGER, prox2_PTGER = prox2$PTGER)
 
 
 # Recalculate p-values proxECAT only data
