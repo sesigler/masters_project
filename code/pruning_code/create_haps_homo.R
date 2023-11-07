@@ -3,10 +3,8 @@
 # the type I error and power calculations for proxECAT, LogProx, and iECAT-O
 # on a homogeneous population
 ##############################################################################
-# Current set-up: Add rows of zero back in to 99% pruned haplotypes and extract
-# datasets to test 99% internal v 99% external samples coming from 2 separate 
-# 99% pruning steps but each coming from the same 100% pruned hap using 
-# RAREsim v2.1.1 pruning pipeline
+# Current set-up: Add rows of zero back in to 100% fun 100% syn and 80% fun 80% 
+# syn pruned haps for power scenario
 ##############################################################################
 
 library(data.table)
@@ -17,13 +15,13 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 
 
 Pop = 'NFE'
-p_case = 100
-# p_exp = 100
-p_conf = 99
+p_case = 120
+p_exp = 100
+p_conf = 80
 Nsim = 20000 
 pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
-folder = 'int_v_ext'
-sample = 'internal_data'
+folder = '120v100v80'
+# sample = 'internal_data'
 # int_prune = 100
 # ext_prune = 99
 
@@ -45,17 +43,15 @@ cols = 1:40000
 # mac_dir = '/home/math/siglersa/mastersProject/Input/'
 # dir_in = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
 # dir_in = '/storage/math/projects/RAREsim/Cases/Sim_20k/NFE/data/' #For pruning OG hap file
-# dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
-# dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/') 
-# dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
-# dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/cc10k/100v', p_conf, '/')
-# dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneDown/100v', p_conf, '/')
-# dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
-dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/', sample, '/')
-# dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/datasets/') 
 dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+# dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
+dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+# dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/', sample, '/')
+# dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/datasets/') 
 
 # mac_dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/input/macBins/'
+# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 # dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/output/'
 
@@ -79,10 +75,12 @@ for(j in 1:100){
   # leg$row = 1:nrow(leg)
   
   # For RAREsim v2.1.1 only pruning pipeline
-  leg_pcase = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', j, '.', p_case, 'fun.', p_case, 'syn.legend'), header=T, sep='\t')
+  leg_pcase = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', j, '.', p_case, 'fun.', p_exp, 'syn.legend'), header=T, sep='\t')
   leg_pcase$row = 1:nrow(leg_pcase)
+  
+  leg_pexp = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', j, '.', p_exp, 'fun.', p_exp, 'syn.legend'), header=T, sep='\t')
 
-  leg_pconf = read.table(paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.', p_conf, 'fun.', p_conf, 'syn.legend'), header=T, sep='\t')
+  leg_pconf = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', j, '.', p_conf, 'fun.', p_conf, 'syn.legend'), header=T, sep='\t')
   
   # read in the haplotype file
   # hap = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.', p_case, 'syn.haps.gz'))
@@ -93,13 +91,17 @@ for(j in 1:100){
   # hap = as.data.frame(hap)
   
   ### For adding pruned variants back in
-  hap_pcase = fread(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.', p_case, 'syn.haps.gz'))
+  hap_pcase = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_case, 'fun.', p_exp, 'syn.haps.gz'))
   hap_pcase = as.data.frame(hap_pcase)
+  
+  hap_pexp = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_exp, 'fun.', p_exp, 'syn.haps.gz'))
+  hap_pexp = as.data.frame(hap_pexp)
 
-  hap_pconf = fread(paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.all.', p_conf, 'fun.', p_conf, 'syn.haps.gz'))
+  hap_pconf = fread(paste0(dir_in, 'chr19.block37.', Pop, '.sim', j, '.all.', p_conf, 'fun.', p_conf, 'syn.haps.gz'))
   hap_pconf = as.data.frame(hap_pconf)
   
   # Add rows of zeros back into p_conf % pruned hap file
+  hap_exp_pruned = add_prune_var(leg_pcase, leg_pexp, hap_pexp, Nsim)
   hap_all_pruned = add_prune_var(leg_pcase, leg_pconf, hap_pconf, Nsim)
   
   # add allele counts to the haplotypes
@@ -120,11 +122,11 @@ for(j in 1:100){
   cc = sort(sample(x=cols[! cols %in% c(cases, int)], size = 2*Ncc, replace = FALSE))
   
   # subset the case haplotypes (120% fun and 100% syn)
-  # hap_cases_pcase = hap[, cases]
+  hap_cases_pcase = hap_pcase[, cases]
   
   # write the haplotype file for the cases (power)
-  # fwrite(hap_cases_pcase, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_case, 'fun.100syn.haps.gz'),
-  #        quote=F, row.names=F, col.names=F, sep=' ')
+  fwrite(hap_cases_pcase, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_case, 'fun.', p_exp, 'syn.haps.gz'),
+         quote=F, row.names=F, col.names=F, sep=' ')
   
   # pcase % Functional
   # fun120_bins1 = which(leg_fun$MAC==1)
@@ -212,37 +214,37 @@ for(j in 1:100){
   # hap_cases = hap_exp[, cases]
   # hap_int = hap_exp[, int]
   # hap_cc = hap_exp[, cc]
-  hap_cases = hap_all_pruned[, cases]
-  hap_int = hap_all_pruned[, int]
-  hap_cc = hap_all_pruned[, cc]
+  hap_cases = hap_exp_pruned[, cases]
+  hap_int = hap_exp_pruned[, int]
+  hap_cc = hap_exp_pruned[, cc]
   
   # hap_all_pruned = hap # just need if going from 100% to 80%
   # hap_all_pruned = hap_exp
   
   # write the haplotype files for the cases, internal and common controls
-  fwrite(hap_cases, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+  fwrite(hap_cases, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_exp, 'fun.', p_exp, 'syn.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
 
-  fwrite(hap_int, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.internal.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+  fwrite(hap_int, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.internal.controls.', p_exp, 'fun.', p_exp, 'syn.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
 
-  fwrite(hap_cc, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.common.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+  fwrite(hap_cc, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.common.controls.', p_exp, 'fun.', p_exp, 'syn.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
   
   # Subset the datasets for the p_conf % pruned haplotype
-  # hap_cases_pconf = hap_all_pruned[, cases]
-  # hap_int_pconf = hap_all_pruned[, int]
-  # hap_cc_pconf = hap_all_pruned[, cc]
+  hap_cases_pconf = hap_all_pruned[, cases]
+  hap_int_pconf = hap_all_pruned[, int]
+  hap_cc_pconf = hap_all_pruned[, cc]
   
   # write the haplotype files for the cases, internal and common controls p_conf % pruned
-  # fwrite(hap_cases_pconf, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
-  #        quote=F, row.names=F, col.names=F, sep=' ')
-  # 
-  # fwrite(hap_int_pconf, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.internal.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
-  #        quote=F, row.names=F, col.names=F, sep=' ')
-  # 
-  # fwrite(hap_cc_pconf, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.common.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
-  #        quote=F, row.names=F, col.names=F, sep=' ')
+  fwrite(hap_cases_pconf, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.cases.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+         quote=F, row.names=F, col.names=F, sep=' ')
+
+  fwrite(hap_int_pconf, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.internal.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+         quote=F, row.names=F, col.names=F, sep=' ')
+
+  fwrite(hap_cc_pconf, paste0(dir_out, 'chr19.block37.', Pop, '.sim', j, '.common.controls.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
+         quote=F, row.names=F, col.names=F, sep=' ')
   
   # pconf % Functional
   # fun_bins1 = which(leg_fun$MAC==1)
