@@ -10,17 +10,17 @@ source("/home/math/siglersa/mastersProject/Input/read_in_funcs.R")
 source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
 
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
 
 Pop = 'NFE'
 pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
-folder = '100v90'
+folder = '120v100v80'
 data = 'by_gene'
-p_case = 100
-p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
-p_cc_fun = p_cc_syn = ext_prune = 90
+p_case = p_case_fun = 120
+p_exp = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
+p_cc_fun = p_cc_syn = ext_prune = 80
 Ncase = Nint = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
@@ -35,9 +35,9 @@ dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', fol
 dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/', folder, '/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/')
 
-# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-# dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 
 
 prox_ext_genes_p = prox_int_genes_p = c() #proxECAT
@@ -50,12 +50,12 @@ burden_ext_genes_p = burden_int_genes_p = burden_all_genes_p = c() #Burden
 
 # loop through the simulation replicates
 set.seed(1) 
-# i=90
+i=1
 for (i in 1:100){
   
    # read in the legend file
    # leg = read_leg_homo(dir_leg, Pop, i)
-   leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', i, '.', p_case, 'fun.', p_case, 'syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
+   leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim', i, '.', p_case, 'fun.', p_exp, 'syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
    leg$row = 1:nrow(leg)
    
    # Need to mutate so counts get added up correctly for ZNF333
@@ -106,10 +106,30 @@ for (i in 1:100){
    counts_ext_gene = data_prox %>% count(gene, case, fun)
    counts_ext_wide = tidyr::pivot_wider(counts_ext_gene, names_from=c(case, fun), values_from=n,
                                         values_fill=0, names_sep="_")
-   counts_ext_wide = counts_ext_wide %>% mutate(case_ratio = case_fun/case_syn, 
-                                                control_ratio = control_fun/control_syn,
-                                                case_fun_w = case_fun/median(case_ratio),
-                                                control_fun_w = control_fun/median(control_ratio)) %>%
+   # counts_ext_wide = counts_ext_wide %>% mutate(case_ratio = case_fun/case_syn, 
+   #                                              control_ratio = control_fun/control_syn,
+   #                                              case_fun_w = case_fun/median(case_ratio),
+   #                                              control_fun_w = control_fun/median(control_ratio)) %>%
+   #   mutate(prox_ext = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
+   #                            proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+   #          prox_ext_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
+   #                              proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+   
+   counts_ext_wide_power = subset(counts_ext_wide, gene %in% c("ADGRE5", "ADGRE3", "TECR")) %>%
+     mutate(case_ratio = case_fun/case_syn, 
+            control_ratio = control_fun/control_syn,
+            case_fun_w = case_fun/median(case_ratio),
+            control_fun_w = control_fun/median(control_ratio)) %>%
+     mutate(prox_ext = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
+                              proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+            prox_ext_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
+                                proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+   
+   counts_ext_wide_t1e = subset(counts_ext_wide, !(gene %in% c("ADGRE5", "ADGRE3", "TECR"))) %>%
+     mutate(case_ratio = case_fun/case_syn, 
+            control_ratio = control_fun/control_syn,
+            case_fun_w = case_fun/median(case_ratio),
+            control_fun_w = control_fun/median(control_ratio)) %>%
      mutate(prox_ext = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
                               proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
             prox_ext_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
@@ -119,10 +139,30 @@ for (i in 1:100){
    counts_int_gene = data_int %>% count(gene, case, fun)
    counts_int_wide = tidyr::pivot_wider(counts_int_gene, names_from=c(case, fun), values_from=n,
                                         values_fill=0, names_sep="_")
-   counts_int_wide = counts_int_wide %>% mutate(case_ratio = case_fun/case_syn, 
-                                                control_ratio = control_fun/control_syn,
-                                                case_fun_w = case_fun/median(case_ratio),
-                                                control_fun_w = control_fun/median(control_ratio)) %>%
+   # counts_int_wide = counts_int_wide %>% mutate(case_ratio = case_fun/case_syn, 
+   #                                              control_ratio = control_fun/control_syn,
+   #                                              case_fun_w = case_fun/median(case_ratio),
+   #                                              control_fun_w = control_fun/median(control_ratio)) %>%
+   #   mutate(prox_int = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
+   #                            proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+   #          prox_int_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
+   #                              proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+   
+   counts_int_t1e = subset(counts_int_wide, !(gene %in% c("ADGRE5", "ADGRE3", "TECR"))) %>%
+     mutate(case_ratio = case_fun/case_syn, 
+            control_ratio = control_fun/control_syn,
+            case_fun_w = case_fun/median(case_ratio),
+            control_fun_w = control_fun/median(control_ratio)) %>%
+     mutate(prox_int = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
+                              proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+            prox_int_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
+                                proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+   
+   counts_int_power = subset(counts_int_wide, gene %in% c("ADGRE5", "ADGRE3", "TECR")) %>%
+     mutate(case_ratio = case_fun/case_syn, 
+            control_ratio = control_fun/control_syn,
+            case_fun_w = case_fun/median(case_ratio),
+            control_fun_w = control_fun/median(control_ratio)) %>%
      mutate(prox_int = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
                               proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
             prox_int_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
