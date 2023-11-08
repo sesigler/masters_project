@@ -66,9 +66,33 @@ for (i in 1:100){
    leg_fun = leg %>% filter(fun=="fun")
    
    # read in the haplotype files
-   hap_cases = read_hap_homo(dir_in, Pop, i, "cases", p_case_fun, p_case_syn)
+   # hap_cases = read_hap_homo(dir_in, Pop, i, "cases", p_case_fun, p_case_syn)
+   hap_cases_power = read_hap_homo(dir_in, Pop, i, "cases", p_case_fun, p_case_syn) # 120% fun 100% syn
+   hap_cases_t1e = read_hap_homo(dir_in, Pop, i, "cases", p_int_fun, p_int_syn) # 100% fun 100% syn
    hap_int = read_hap_homo(dir_in, Pop, i, "internal.controls", p_int_fun, p_int_syn)
    hap_cc = read_hap_homo(dir_in, Pop, i, "common.controls", p_cc_fun, p_cc_syn)
+   
+   #### PICK BACK UP HERE
+   # Create a new hap cases dataframe that merges the cases used for power and t1e but only contains
+   # the genes associated with each calculation
+   # Add row column to each hap
+   hap_cases_power = hap_cases_power %>% mutate(row = leg$row, gene = leg$gene)
+   hap_cases_t1e = hap_cases_t1e %>% mutate(row = leg$row, gene = leg$gene)
+   
+   # Subset haps to the necessary genes
+   hap_power_gene = subset(hap_cases_power, gene %in% c("ADGRE5", "ADGRE3", "TECR")) 
+   hap_t1e_gene = subset(hap_cases_t1e, !(gene %in% c("ADGRE5", "ADGRE3", "TECR")))
+   
+   # Merge the two case haps
+   hap_cases_merge = rbind(hap_power_gene, hap_t1e_gene)
+   
+   # Order the merged hap file by row number
+   hap_cases = hap_cases_merge[order(hap_cases_merge$row),]
+   
+   # Remove the row number and gene columns
+   hap_cases = subset(hap_cases, select = -c(row, gene))
+   
+   hap_cases = merge_cases(hap_cases_power, hap_cases_t1e, leg)
 
    # convert the haplotypes into genotypes
    geno_cases = make_geno(hap_cases)
@@ -106,16 +130,16 @@ for (i in 1:100){
    counts_ext_gene = data_prox %>% count(gene, case, fun)
    counts_ext_wide = tidyr::pivot_wider(counts_ext_gene, names_from=c(case, fun), values_from=n,
                                         values_fill=0, names_sep="_")
-   # counts_ext_wide = counts_ext_wide %>% mutate(case_ratio = case_fun/case_syn, 
-   #                                              control_ratio = control_fun/control_syn,
-   #                                              case_fun_w = case_fun/median(case_ratio),
-   #                                              control_fun_w = control_fun/median(control_ratio)) %>%
-   #   mutate(prox_ext = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
-   #                            proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-   #          prox_ext_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
-   #                              proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+   counts_ext_wide = counts_ext_wide %>% mutate(case_ratio = case_fun/case_syn,
+                                                control_ratio = control_fun/control_syn,
+                                                case_fun_w = case_fun/median(case_ratio),
+                                                control_fun_w = control_fun/median(control_ratio)) %>%
+     mutate(prox_ext = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA,
+                              proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+            prox_ext_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA,
+                                proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
    
-   counts_ext_wide_power = subset(counts_ext_wide, gene %in% c("ADGRE5", "ADGRE3", "TECR")) %>%
+   counts_ext_power = subset(counts_ext_wide, gene %in% c("ADGRE5", "ADGRE3", "TECR")) %>%
      mutate(case_ratio = case_fun/case_syn, 
             control_ratio = control_fun/control_syn,
             case_fun_w = case_fun/median(case_ratio),
@@ -125,7 +149,7 @@ for (i in 1:100){
             prox_ext_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
                                 proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
    
-   counts_ext_wide_t1e = subset(counts_ext_wide, !(gene %in% c("ADGRE5", "ADGRE3", "TECR"))) %>%
+   counts_ext_t1e = subset(counts_ext_wide, !(gene %in% c("ADGRE5", "ADGRE3", "TECR"))) %>%
      mutate(case_ratio = case_fun/case_syn, 
             control_ratio = control_fun/control_syn,
             case_fun_w = case_fun/median(case_ratio),
