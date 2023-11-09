@@ -1,7 +1,7 @@
 ############################################################################## 
 # This file contains the functions necessary to do general data manipulation
-# to get it in the necessary formats to be able to use for the three statistical
-# methods (proxECAT, LogProx, iECAT-O)
+# on the files necessary for performing type I error and power calculations for 
+# several different rare variant association tests
 #
 # Variable legend:
 # hap: the haplotype file
@@ -18,6 +18,9 @@
 # maf: the minor allele frequency threshold 
 # prop_est: ancestry proportion estimates from the summix function
 # pi_tar: the target proportion of a given ancestry
+# cases_power: hap file for cases used for power calculation
+# cases_t1e: hap file for cases used for type I error calculation
+# power_genes: vector of gene names used for power calculation
 ##############################################################################
 
 # function to convert the haplotypes into a genotype matrix
@@ -65,6 +68,29 @@ make_long_adj = function(counts, leg, case, group) {
   out = data.frame(lapply(temp2, rep, temp2$mac)) %>% select(-mac, -maf)
   
   return(out)
+}
+
+# Merge the case datasets for power and t1e calculations
+merge_cases = function(cases_power, cases_t1e, leg, genes_power) {
+  
+  # Add row number and gene column to each hap
+  hap_power = cases_power %>% mutate(row = leg$row, gene = leg$gene)
+  hap_t1e = cases_t1e %>% mutate(row = leg$row, gene = leg$gene)
+  
+  # Subset haps to the necessary genes
+  power_gene = subset(hap_power, gene %in% genes_power) 
+  t1e_gene = subset(hap_t1e, !(gene %in% genes_power))
+  
+  # Merge the two case haps
+  hap_out = rbind(power_gene, t1e_gene)
+  
+  # Order the merged hap file by row number
+  hap_out = hap_out[order(hap_out$row),]
+  
+  # Remove the row number and gene columns
+  hap_out = subset(hap_out, select = -c(row, gene))
+  
+  return(hap_out)
 }
 
 # Function to calculate the allele counts/frequencies

@@ -24,6 +24,7 @@ p_cc_fun = p_cc_syn = ext_prune = 80
 Ncase = Nint = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
+genes_power = c("ADGRE5", "ADGRE3", "TECR") # genes used for cases (power)
 # scen = 's1'
 
 # dir = '/storage/math/projects/compinfo/simulations/'
@@ -72,27 +73,9 @@ for (i in 1:100){
    hap_int = read_hap_homo(dir_in, Pop, i, "internal.controls", p_int_fun, p_int_syn)
    hap_cc = read_hap_homo(dir_in, Pop, i, "common.controls", p_cc_fun, p_cc_syn)
    
-   #### PICK BACK UP HERE
    # Create a new hap cases dataframe that merges the cases used for power and t1e but only contains
    # the genes associated with each calculation
-   # Add row column to each hap
-   hap_cases_power = hap_cases_power %>% mutate(row = leg$row, gene = leg$gene)
-   hap_cases_t1e = hap_cases_t1e %>% mutate(row = leg$row, gene = leg$gene)
-   
-   # Subset haps to the necessary genes
-   hap_power_gene = subset(hap_cases_power, gene %in% c("ADGRE5", "ADGRE3", "TECR")) 
-   hap_t1e_gene = subset(hap_cases_t1e, !(gene %in% c("ADGRE5", "ADGRE3", "TECR")))
-   
-   # Merge the two case haps
-   hap_cases_merge = rbind(hap_power_gene, hap_t1e_gene)
-   
-   # Order the merged hap file by row number
-   hap_cases = hap_cases_merge[order(hap_cases_merge$row),]
-   
-   # Remove the row number and gene columns
-   hap_cases = subset(hap_cases, select = -c(row, gene))
-   
-   hap_cases = merge_cases(hap_cases_power, hap_cases_t1e, leg)
+   hap_cases = merge_cases(hap_cases_power, hap_cases_t1e, leg, genes_power)
 
    # convert the haplotypes into genotypes
    geno_cases = make_geno(hap_cases)
@@ -127,6 +110,7 @@ for (i in 1:100){
    
    # count the number of alleles per gene per status (case/control & fun/syn)
    # counts_gene = data_all %>% filter(!(case=="control" & group=="int")) %>% count(gene, case, fun)
+   # proxECAT External
    counts_ext_gene = data_prox %>% count(gene, case, fun)
    counts_ext_wide = tidyr::pivot_wider(counts_ext_gene, names_from=c(case, fun), values_from=n,
                                         values_fill=0, names_sep="_")
@@ -139,57 +123,17 @@ for (i in 1:100){
             prox_ext_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA,
                                 proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
    
-   counts_ext_power = subset(counts_ext_wide, gene %in% c("ADGRE5", "ADGRE3", "TECR")) %>%
-     mutate(case_ratio = case_fun/case_syn, 
-            control_ratio = control_fun/control_syn,
-            case_fun_w = case_fun/median(case_ratio),
-            control_fun_w = control_fun/median(control_ratio)) %>%
-     mutate(prox_ext = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
-                              proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-            prox_ext_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
-                                proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
-   
-   counts_ext_t1e = subset(counts_ext_wide, !(gene %in% c("ADGRE5", "ADGRE3", "TECR"))) %>%
-     mutate(case_ratio = case_fun/case_syn, 
-            control_ratio = control_fun/control_syn,
-            case_fun_w = case_fun/median(case_ratio),
-            control_fun_w = control_fun/median(control_ratio)) %>%
-     mutate(prox_ext = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
-                              proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-            prox_ext_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
-                                proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
-   
-   
+   # proxECAT Internal
    counts_int_gene = data_int %>% count(gene, case, fun)
    counts_int_wide = tidyr::pivot_wider(counts_int_gene, names_from=c(case, fun), values_from=n,
                                         values_fill=0, names_sep="_")
-   # counts_int_wide = counts_int_wide %>% mutate(case_ratio = case_fun/case_syn, 
-   #                                              control_ratio = control_fun/control_syn,
-   #                                              case_fun_w = case_fun/median(case_ratio),
-   #                                              control_fun_w = control_fun/median(control_ratio)) %>%
-   #   mutate(prox_int = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
-   #                            proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-   #          prox_int_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
-   #                              proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
-   
-   counts_int_t1e = subset(counts_int_wide, !(gene %in% c("ADGRE5", "ADGRE3", "TECR"))) %>%
-     mutate(case_ratio = case_fun/case_syn, 
-            control_ratio = control_fun/control_syn,
-            case_fun_w = case_fun/median(case_ratio),
-            control_fun_w = control_fun/median(control_ratio)) %>%
-     mutate(prox_int = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
+   counts_int_wide = counts_int_wide %>% mutate(case_ratio = case_fun/case_syn,
+                                                control_ratio = control_fun/control_syn,
+                                                case_fun_w = case_fun/median(case_ratio),
+                                                control_fun_w = control_fun/median(control_ratio)) %>%
+     mutate(prox_int = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA,
                               proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-            prox_int_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
-                                proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
-   
-   counts_int_power = subset(counts_int_wide, gene %in% c("ADGRE5", "ADGRE3", "TECR")) %>%
-     mutate(case_ratio = case_fun/case_syn, 
-            control_ratio = control_fun/control_syn,
-            case_fun_w = case_fun/median(case_ratio),
-            control_fun_w = control_fun/median(control_ratio)) %>%
-     mutate(prox_int = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
-                              proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-            prox_int_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
+            prox_int_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA,
                                 proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
    
    # Store the proxECAT and proxECAT-weighted p-values
@@ -266,7 +210,7 @@ for (i in 1:100){
    burden_int_genes = burden_ext_genes = burden_all_genes = c()
    
    genes = levels(droplevels(as.factor(leg$gene)))
-   # g = 8
+   # g = 1
    # gene_counts = leg %>% count(gene)
    # loop through the genes
    for(g in 1:length(genes)){
@@ -283,10 +227,6 @@ for (i in 1:100){
      counts_data_int_gene = data_int_gene %>% count(case, fun, .drop = FALSE)
      counts_data_ext_gene = data_ext_gene %>% count(case, fun, .drop = FALSE)
      counts_data_all_gene = data_all_gene %>% count(case, fun, .drop = FALSE)
-     
-     # print(paste0("Counts for internal data: ", counts_data_int_gene$n[1], " ", counts_data_int_gene$n[2], " ", counts_data_int_gene$n[3], " ", counts_data_int_gene$n[4]))
-     # print(paste0("Counts for external data: ", counts_data_ext_gene$n[1], " ", counts_data_ext_gene$n[2], " ", counts_data_ext_gene$n[3], " ", counts_data_ext_gene$n[4]))
-     # print(paste0("Counts for all data: ", counts_data_all_gene$n[1], " ", counts_data_all_gene$n[2], " ", counts_data_all_gene$n[3], " ", counts_data_all_gene$n[4]))
      
      # If sum of fun alleles or sum of syn alleles is < 5, mark as NA, else run LogProx
      prox2_int = ifelse(counts_data_int_gene$n[1] + counts_data_int_gene$n[3] < 5 |

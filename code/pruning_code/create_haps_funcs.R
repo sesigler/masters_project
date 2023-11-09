@@ -114,27 +114,3 @@ rare_var = function(legend_fun_idx, hap, maf){
   
   return(out)
 }
-
-# Merge the case datasets for power and t1e calculations
-merge_cases = function(cases_power, cases_t1e, leg) {
-  
-  # Add row number and gene column to each hap
-  hap_power = cases_power %>% mutate(row = leg$row, gene = leg$gene)
-  hap_t1e = cases_t1e %>% mutate(row = leg$row, gene = leg$gene)
-  
-  # Subset haps to the necessary genes
-  power_gene = subset(hap_power, gene %in% c("ADGRE5", "ADGRE3", "TECR")) 
-  t1e_gene = subset(hap_t1e, !(gene %in% c("ADGRE5", "ADGRE3", "TECR")))
-  
-  # Merge the two case haps
-  hap_out = rbind(power_gene, t1e_gene)
-  
-  # Order the merged hap file by row number
-  hap_out = hap_out[order(hap_out$row),]
-  
-  # Remove the row number and gene columns
-  hap_out = subset(hap_out, select = -c(row, gene))
-  
-  return(hap_out)
-  
-}
