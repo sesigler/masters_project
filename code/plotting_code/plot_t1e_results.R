@@ -13,10 +13,10 @@ Pop2 = 'NFE'
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
-ext_prune = 99
+ext_prune = 80
 pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
-folder = '100v99'
-pruning_plot = 'Separately-RAREsim v2.1.1' #Separately-RAREsim v2.1.1, Separately-R
+folder = '120v100v80'
+pruning_plot = 'Separately and Sequentially-RAREsim v2.1.1' #Separately-RAREsim v2.1.1, Separately-R
 data = 'by_gene'
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
@@ -24,7 +24,9 @@ data = 'by_gene'
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/', int_prune, 'v', ext_prune, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', folder, '/', int_prune, 'v', ext_prune, '/')
-dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/', data, '/')
+# dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/', data, '/')
+dir_out_t1e = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/', data, '/')
+dir_out_power = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/power_plots/', data, '/')
 
 # read in the results
 # Proportion Estimates 
@@ -40,7 +42,7 @@ dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_
 # t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_gene = read.csv(paste0(dir, "T1e_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+t1e_gene = read.csv(paste0(dir, "T1e_power_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 
 # puts in a format for ggplot
 # t1e_all = pivot_longer(t1e_all, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
@@ -61,8 +63,10 @@ t1e_gene = read.csv(paste0(dir, "T1e_all_gene_", pruning, "_", int_prune, "_v_",
 #   mutate(Calculation = "Type I Error", Scenario = scen, MAF = maf, Pop = "100% NFE")
 # t1e_all_pruning = pivot_longer(t1e_all_pruning, prox_p:burden_all_p_syn, names_to="Method", values_to="Value") %>%
 #   mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE")
+# t1e_gene = pivot_longer(t1e_gene, prox_int:burden_all, names_to="Method", values_to="Value") %>%
+#   mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE")
 t1e_gene = pivot_longer(t1e_gene, prox_int:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE")
+  mutate(MAF = maf, Pop = "100% NFE")
 
 
 # results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
@@ -160,6 +164,10 @@ results2 = results %>% mutate(Data = rep(c("Internal", "External", "Internal", "
                                            "Internal", "External", "Internal + External",
                                            "Internal", "External", "Internal + External"), 12))
 
+results2 = results2 %>% mutate(Calculation = rep(c("Type I Error", "Power", "Power", "Type I Error",
+                                                   "Type I Error", "Type I Error", "Type I Error", "Type I Error",
+                                                   "Type I Error", "Type I Error", "Power", "Type I Error"), each=17))
+
 results2$Method = factor(results2$Method, levels=c("prox_int", "prox_ext", "proxW_int", "proxW_ext",
                                                    "prox2_int", "prox2_ext", "prox2_all",
                                                    "iecat_all", "skato_int", "skato_ext", "skato_all",
@@ -173,7 +181,8 @@ results2$Method = factor(results2$Method, levels=c("prox_int", "prox_ext", "prox
 # results2 = rbind(results_all, results_skat)
 
 #results2$MAF = factor(results2$MAF, levels = c(0.01, 0.001))
-results2$Calculation = factor(results2$Calculation)
+# results2$Calculation = factor(results2$Calculation)
+results2$Calculation = factor(results2$Calculation, levels = c("Type I Error", "Power"))
 # results2$Scenario = factor(results2$Scenario)
 results2$MAF = factor(results2$MAF)
 # results2$Pop = factor(results2$Pop, levels=c("Admixed", "Homogeneous"))
@@ -320,7 +329,7 @@ ggsave(file = paste0(dir_out, 't1e_all_', Pop2, '_', pruning, '_', folder, '_', 
 # ggsave(file = paste0(dir_out, 't1e_all_', Pop2, '_', pruning, '_', data, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
 #        plot = p6, height = 8, width = 16, units = 'in') #int v ext
 
-# t1e for by gene resutls
+# t1e for by gene results
 p7 <- ggplot(results2, aes(x=Gene, y=Value, color=Method)) +
         geom_point(aes(shape=Method), size=3, position=position_dodge(width=0.5)) +
         geom_hline(yintercept=0.05, linetype=2, linewidth=1) +
@@ -339,71 +348,110 @@ p7
 ggsave(file = paste0(dir_out, 't1e_gene_', Pop2, '_', pruning, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
        plot = p7, height = 8, width = 16, units = 'in')
 
+# t1e for by gene results from 120v100v80 pipeline
+p8 <- ggplot(results2 %>% filter(Calculation == "Type I Error"), aes(x=Gene, y=Value, color=Method)) +
+        geom_point(aes(shape=Method), size=3, position=position_dodge(width=0.5)) +
+        geom_hline(yintercept=0.05, linetype=2, linewidth=1) +
+        # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+        # scale_y_continuous(limits=c(0, 1)) +
+        # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+        # scale_y_continuous(breaks=c(0, 0.05, 0.20, 0.40, 0.60)) +
+        geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1, width=.3, position=position_dodge(width=0.5)) +
+        scale_color_manual(values=colors_meth) +
+        scale_shape_manual(values = c(16, 18, 17, 15, 9, 10, 12)) +
+        facet_wrap(~Data, ncol = 1, scales = 'free_y') +
+        labs(y='Type I Error', x='Method', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
+        theme_bw(base_size = 15)
+p8
+ggsave(file = paste0(dir_out_t1e, 't1e_gene_', Pop2, '_', pruning, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
+       plot = p8, height = 8, width = 16, units = 'in')
+
+# power for by gene results from 120v100v80 pipeline
+p9 <- ggplot(results2 %>% filter(Calculation == "Power"), aes(x=Gene, y=Value, color=Method)) +
+        geom_point(aes(shape=Method), size=3, position=position_dodge(width=0.5)) +
+        geom_hline(yintercept=0.80, linetype=2, linewidth=1) +
+        # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+        # scale_y_continuous(limits=c(0, 1)) +
+        scale_y_continuous(breaks=c(0, 0.20, 0.40, 0.60, 0.80, 1)) +
+        # scale_y_continuous(breaks=c(0, 0.05, 0.20, 0.40, 0.60)) +
+        geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1, width=.3, position=position_dodge(width=0.5)) +
+        scale_color_manual(values=colors_meth) +
+        scale_shape_manual(values = c(16, 18, 17, 15, 9, 10, 12)) +
+        # facet_wrap(~Data, ncol = 1, scales = 'free_y') +
+        facet_wrap(~Data, ncol = 1) +
+        labs(y='Power', x='Method', title=paste0('Power by Gene: 120% Cases vs 100% Internal Controls vs ', ext_prune, '% External Controls from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
+        theme_bw(base_size = 15)
+p9
+ggsave(file = paste0(dir_out_power, 'power_gene_', Pop2, '_', folder, '_maf', maf, '.jpg'),
+       plot = p9, height = 8, width = 16, units = 'in')
+
 
 
 ################################################################################
 # t1e 100% NFE-proxECAT only
-t1e_int_v_ext = read.csv(paste0(dir, "T1e_NFE_99-80_maf", maf, ".csv"), header=T)
-t1e_ext_v_ext = read.csv(paste0(dir, "T1e_NFE_100v100-80v80_maf", maf, ".csv"), header=T)
-
-t1e_int_v_ext = pivot_longer(t1e_int_v_ext, t1e_99:t1e_80, values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
-         Scenario = c("100% v 99%", "100% v 95%", "100% v 90%", "100% v 80%"),
-         Pruning = c("99%", "95%", "90%", "80%"))
-
-t1e_ext_v_ext = pivot_longer(t1e_ext_v_ext, t1e_100v100:t1e_80v80, values_to="Value") %>%
-  mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
-         Scenario = c("100% v 100%", "99% v 99%", "95% v 95%", "90% v 90%", "80% v 80%"),
-         Pruning = c("100%", "99%", "95%", "90%", "80%"))
-
-results = rbind(t1e_int_v_ext, t1e_ext_v_ext)
-results$Scenario = factor(results$Scenario, levels=c("100% v 99%", "100% v 95%", "100% v 90%", 
-                                                     "100% v 80%", "100% v 100%",  "99% v 99%",
-                                                     "95% v 95%", "90% v 90%", "80% v 80%"))
-results$Pruning = factor(results$Pruning, levels=c("100%", "99%", "95%", "90%", "80%"))
-# get CI's
-results$Lower = '.'
-results$Upper = '.'
-# default level is 95% confidence
-nsim = 100
-for(i in 1:nrow(results)){
-  results$Lower[i] = binom.confint(nsim*results$Value[i], nsim, method=c("wilson"), type="central")$lower
-  results$Upper[i] = binom.confint(nsim*results$Value[i], nsim, method=c("wilson"), type="central")$upper
-}
-
-results$Lower = as.numeric(results$Lower)
-results$Upper = as.numeric(results$Upper)
+# t1e_int_v_ext = read.csv(paste0(dir, "T1e_NFE_99-80_maf", maf, ".csv"), header=T)
+# t1e_ext_v_ext = read.csv(paste0(dir, "T1e_NFE_100v100-80v80_maf", maf, ".csv"), header=T)
+# 
+# t1e_int_v_ext = pivot_longer(t1e_int_v_ext, t1e_99:t1e_80, values_to="Value") %>%
+#   mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
+#          Scenario = c("100% v 99%", "100% v 95%", "100% v 90%", "100% v 80%"),
+#          Pruning = c("99%", "95%", "90%", "80%"))
+# 
+# t1e_ext_v_ext = pivot_longer(t1e_ext_v_ext, t1e_100v100:t1e_80v80, values_to="Value") %>%
+#   mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE", Method = "ProxECAT",
+#          Scenario = c("100% v 100%", "99% v 99%", "95% v 95%", "90% v 90%", "80% v 80%"),
+#          Pruning = c("100%", "99%", "95%", "90%", "80%"))
+# 
+# results = rbind(t1e_int_v_ext, t1e_ext_v_ext)
+# results$Scenario = factor(results$Scenario, levels=c("100% v 99%", "100% v 95%", "100% v 90%", 
+#                                                      "100% v 80%", "100% v 100%",  "99% v 99%",
+#                                                      "95% v 95%", "90% v 90%", "80% v 80%"))
+# results$Pruning = factor(results$Pruning, levels=c("100%", "99%", "95%", "90%", "80%"))
+# # get CI's
+# results$Lower = '.'
+# results$Upper = '.'
+# # default level is 95% confidence
+# nsim = 100
+# for(i in 1:nrow(results)){
+#   results$Lower[i] = binom.confint(nsim*results$Value[i], nsim, method=c("wilson"), type="central")$lower
+#   results$Upper[i] = binom.confint(nsim*results$Value[i], nsim, method=c("wilson"), type="central")$upper
+# }
+# 
+# results$Lower = as.numeric(results$Lower)
+# results$Upper = as.numeric(results$Upper)
 #############################################
 
 
 # Proportion estimate plots
 # t1e Scenario 1
-par(mfrow=c(2,3))
-plot(t1e.cc.prop.ests$maf_afr, t1e.case.prop.ests.s1$maf_afr, 
-     xlab = "AFR AF External Controls", ylab = "AFR AF Cases")
-abline(a=0, b=1)
-
-plot(t1e.int.prop.ests$maf_afr, t1e.case.prop.ests.s1$maf_afr, 
-     xlab = "AFR AF Internal Controls", ylab = "AFR AF Cases")
-abline(a=0, b=1)
-
-plot(t1e.cc.prop.ests$maf_afr, t1e.int.prop.ests.s1$maf_afr, 
-     xlab = "AFR AF External Controls", ylab = "AFR AF Internal Controls")
-abline(a=0, b=1)
-mtext("Scenario 1 Dataset Proportion Estimates-Type I error", side = 3, line = -3, outer = TRUE)
+# par(mfrow=c(2,3))
+# plot(t1e.cc.prop.ests$maf_afr, t1e.case.prop.ests.s1$maf_afr, 
+#      xlab = "AFR AF External Controls", ylab = "AFR AF Cases")
+# abline(a=0, b=1)
+# 
+# plot(t1e.int.prop.ests$maf_afr, t1e.case.prop.ests.s1$maf_afr, 
+#      xlab = "AFR AF Internal Controls", ylab = "AFR AF Cases")
+# abline(a=0, b=1)
+# 
+# plot(t1e.cc.prop.ests$maf_afr, t1e.int.prop.ests.s1$maf_afr, 
+#      xlab = "AFR AF External Controls", ylab = "AFR AF Internal Controls")
+# abline(a=0, b=1)
+# mtext("Scenario 1 Dataset Proportion Estimates-Type I error", side = 3, line = -3, outer = TRUE)
 
 
 ## Check to see if AFs differ greatly between AFR and NFE
 # read in reference files
-hap.ref.afr.s1 = fread('chr19.block37.AFR.sim1.s1.ref.haps.gz')
-hap.ref.nfe.s1 = fread('chr19.block37.NFE.sim1.s1.ref.haps.gz')
-# Calculate AFs
-hap.ref.afr.s2 = fread('chr19.block37.AFR.sim1.s2.ref.haps.gz')
-hap.ref.nfe.s2 = fread('chr19.block37.NFE.sim1.s2.ref.haps.gz')
-count.ref.afr.s1 = data.frame(mac_afr=rowSums(hap.ref.afr.s1)) %>% mutate(maf_afr=mac_afr/(ncol(hap.ref.afr.s1)))
-count.ref.nfe.s1 = data.frame(mac_nfe=rowSums(hap.ref.nfe.s1)) %>% mutate(maf_nfe=mac_nfe/(ncol(hap.ref.nfe.s1)))
-count.ref.afr.s2 = data.frame(mac_afr=rowSums(hap.ref.afr.s2)) %>% mutate(maf_afr=mac_afr/(ncol(hap.ref.afr.s2)))
-count.ref.nfe.s2 = data.frame(mac_nfe=rowSums(hap.ref.nfe.s2)) %>% mutate(maf_nfe=mac_nfe/(ncol(hap.ref.nfe.s2)))
-# Plot resutls
-plot(count.ref.nfe.s1$maf_nfe, count.ref.afr.s1$maf_afr, xlim = c(0, 0.1), ylim = c(0, 0.1))
-plot(count.ref.nfe.s2$maf_nfe, count.ref.afr.s2$maf_afr, xlim = c(0, 0.1), ylim = c(0, 0.1))
+# hap.ref.afr.s1 = fread('chr19.block37.AFR.sim1.s1.ref.haps.gz')
+# hap.ref.nfe.s1 = fread('chr19.block37.NFE.sim1.s1.ref.haps.gz')
+# # Calculate AFs
+# hap.ref.afr.s2 = fread('chr19.block37.AFR.sim1.s2.ref.haps.gz')
+# hap.ref.nfe.s2 = fread('chr19.block37.NFE.sim1.s2.ref.haps.gz')
+# count.ref.afr.s1 = data.frame(mac_afr=rowSums(hap.ref.afr.s1)) %>% mutate(maf_afr=mac_afr/(ncol(hap.ref.afr.s1)))
+# count.ref.nfe.s1 = data.frame(mac_nfe=rowSums(hap.ref.nfe.s1)) %>% mutate(maf_nfe=mac_nfe/(ncol(hap.ref.nfe.s1)))
+# count.ref.afr.s2 = data.frame(mac_afr=rowSums(hap.ref.afr.s2)) %>% mutate(maf_afr=mac_afr/(ncol(hap.ref.afr.s2)))
+# count.ref.nfe.s2 = data.frame(mac_nfe=rowSums(hap.ref.nfe.s2)) %>% mutate(maf_nfe=mac_nfe/(ncol(hap.ref.nfe.s2)))
+# # Plot resutls
+# plot(count.ref.nfe.s1$maf_nfe, count.ref.afr.s1$maf_afr, xlim = c(0, 0.1), ylim = c(0, 0.1))
+# plot(count.ref.nfe.s2$maf_nfe, count.ref.afr.s2$maf_afr, xlim = c(0, 0.1), ylim = c(0, 0.1))

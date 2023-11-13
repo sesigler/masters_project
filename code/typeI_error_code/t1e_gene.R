@@ -10,9 +10,9 @@ source("/home/math/siglersa/mastersProject/Input/read_in_funcs.R")
 source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
 
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
 
 Pop = 'NFE'
 pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
@@ -36,9 +36,9 @@ dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', fol
 dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/', folder, '/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/')
 
-dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
-dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
+# dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 
 
 prox_ext_genes_p = prox_int_genes_p = c() #proxECAT
@@ -51,7 +51,7 @@ burden_ext_genes_p = burden_int_genes_p = burden_all_genes_p = c() #Burden
 
 # loop through the simulation replicates
 set.seed(1) 
-i=1
+# i=1
 for (i in 1:100){
   
    # read in the legend file
