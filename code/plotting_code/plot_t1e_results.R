@@ -15,8 +15,8 @@ Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 int_prune = 100
 ext_prune = 80
 pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
-folder = '120v100v80'
-pruning_plot = 'Separately and Sequentially-RAREsim v2.1.1' #Separately-RAREsim v2.1.1, Separately-R
+folder = '140v100v80'
+pruning_plot = 'Separately and Sequentially-RAREsim v2.1.1' #Separately-RAREsim v2.1.1, Separately-R, Separately and Sequentially-RAREsim v2.1.1
 data = 'by_gene'
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
@@ -42,7 +42,9 @@ dir_out_power = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/
 # t1e_all_pruning = read.csv(paste0(dir, "T1e_all_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+# t1e_gene = read.csv(paste0(dir, "T1e_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 t1e_gene = read.csv(paste0(dir, "T1e_power_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+
 
 # puts in a format for ggplot
 # t1e_all = pivot_longer(t1e_all, prox_p:skat_all_p, names_to="Method", values_to="Value") %>%
@@ -341,7 +343,7 @@ p7 <- ggplot(results2, aes(x=Gene, y=Value, color=Method)) +
         scale_color_manual(values=colors_meth) +
         scale_shape_manual(values = c(16, 18, 17, 15, 9, 10, 12)) +
         facet_wrap(~Data, ncol = 1, scales = 'free_y') +
-        labs(y='Type I Error', x='Method', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
+        labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
         # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
         theme_bw(base_size = 15)
 p7
@@ -360,7 +362,7 @@ p8 <- ggplot(results2 %>% filter(Calculation == "Type I Error"), aes(x=Gene, y=V
         scale_color_manual(values=colors_meth) +
         scale_shape_manual(values = c(16, 18, 17, 15, 9, 10, 12)) +
         facet_wrap(~Data, ncol = 1, scales = 'free_y') +
-        labs(y='Type I Error', x='Method', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
+        labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
         # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
         theme_bw(base_size = 15)
 p8
@@ -380,12 +382,12 @@ p9 <- ggplot(results2 %>% filter(Calculation == "Power"), aes(x=Gene, y=Value, c
         scale_shape_manual(values = c(16, 18, 17, 15, 9, 10, 12)) +
         # facet_wrap(~Data, ncol = 1, scales = 'free_y') +
         facet_wrap(~Data, ncol = 1) +
-        labs(y='Power', x='Method', title=paste0('Power by Gene: 120% Cases vs 100% Internal Controls vs ', ext_prune, '% External Controls from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
+        labs(y='Power', x='Gene', title=paste0('Power by Gene: 120% Cases vs 100% Internal Controls vs ', ext_prune, '% External Controls from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
         # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
         theme_bw(base_size = 15)
 p9
 ggsave(file = paste0(dir_out_power, 'power_gene_', Pop2, '_', folder, '_maf', maf, '.jpg'),
-       plot = p9, height = 8, width = 16, units = 'in')
+       plot = p9, height = 8, width = 15, units = 'in')
 
 
 
