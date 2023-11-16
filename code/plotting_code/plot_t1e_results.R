@@ -12,10 +12,11 @@ Pop2 = 'NFE'
 # scen = 's1'
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
+pcase = 160
 int_prune = 100
 ext_prune = 80
 pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
-folder = '140v100v80'
+folder = '160v100v80'
 pruning_plot = 'Separately and Sequentially-RAREsim v2.1.1' #Separately-RAREsim v2.1.1, Separately-R, Separately and Sequentially-RAREsim v2.1.1
 data = 'by_gene'
 
@@ -357,20 +358,27 @@ p8 <- ggplot(results2 %>% filter(Calculation == "Type I Error"), aes(x=Gene, y=V
         # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
         # scale_y_continuous(limits=c(0, 1)) +
         # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
-        # scale_y_continuous(breaks=c(0, 0.05, 0.20, 0.40, 0.60)) +
+        # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
         geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1, width=.3, position=position_dodge(width=0.5)) +
         scale_color_manual(values=colors_meth) +
         scale_shape_manual(values = c(16, 18, 17, 15, 9, 10, 12)) +
         facet_wrap(~Data, ncol = 1, scales = 'free_y') +
+        # facet_wrap(~Data, ncol = 1) +
         labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
         # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
         theme_bw(base_size = 15)
 p8
 ggsave(file = paste0(dir_out_t1e, 't1e_gene_', Pop2, '_', pruning, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
        plot = p8, height = 8, width = 16, units = 'in')
+# ggsave(file = paste0(dir_out_t1e, 't1e_gene_same_y_', Pop2, '_', pruning, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
+#        plot = p8, height = 8, width = 16, units = 'in')
 
 # power for by gene results from 120v100v80 pipeline
-p9 <- ggplot(results2 %>% filter(Calculation == "Power"), aes(x=Gene, y=Value, color=Method)) +
+p9 <- ggplot(results2 %>% filter(Calculation == "Power") %>%
+               filter(!(Method == "SKAT-O" & (Data == "External" | Data == "Internal + External"))) %>%
+               filter(!(Method == "SKAT" & (Data == "External" | Data == "Internal + External"))) %>%
+               filter(!(Method == "Burden" & (Data == "External" | Data == "Internal + External"))), 
+             aes(x=Gene, y=Value, color=Method)) +
         geom_point(aes(shape=Method), size=3, position=position_dodge(width=0.5)) +
         geom_hline(yintercept=0.80, linetype=2, linewidth=1) +
         # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
@@ -382,7 +390,7 @@ p9 <- ggplot(results2 %>% filter(Calculation == "Power"), aes(x=Gene, y=Value, c
         scale_shape_manual(values = c(16, 18, 17, 15, 9, 10, 12)) +
         # facet_wrap(~Data, ncol = 1, scales = 'free_y') +
         facet_wrap(~Data, ncol = 1) +
-        labs(y='Power', x='Gene', title=paste0('Power by Gene: 120% Cases vs 100% Internal Controls vs ', ext_prune, '% External Controls from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
+        labs(y='Power', x='Gene', title=paste0('Power by Gene: ', pcase, '% Cases vs 100% Internal Controls vs ', ext_prune, '% External Controls from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
         # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
         theme_bw(base_size = 15)
 p9
