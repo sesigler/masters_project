@@ -8,7 +8,7 @@ library(tidyr)
 library(data.table)
 library(ggplot2)
 
-Pop = 'AFR'
+Pop = 'NFE'
 Pop1 = 'AFR'
 Pop2 = 'NFE'
 p_exp = 100
@@ -25,13 +25,15 @@ hap = fread(paste0(dir, 'chr19.block37.', Pop, '.sim', i, '.all.', p_exp, 'fun.'
 hap = as.data.frame(hap)
 
 # add relevant columns to a copy of the hap file
-hap2 = hap %>% mutate(sums = rowSums(hap), af = sums/ncol(hap), gene = leg$gene, fun = leg$fun, row = leg$row)
+hap2 = hap %>% mutate(sums = rowSums(hap), af = sums/ncol(hap), gene = leg$gene, fun = leg$fun, exonic = leg$exonic, row = leg$row)
 
 # See how many variants there are by gene
-hap2 %>% filter(sums != 0) %>% group_by(gene) %>% count()
+# Can also filter out intronic variants
+# Shouldn't have any rows sum to 0 bc RAREsim removes those rows in pruning
+hap2 %>% filter(sums != 0, exonic != 'intronic') %>% group_by(gene) %>% count()
 
 # See how many common variants there are by gene
-hap2 %>% filter(af > maf) %>% group_by(gene) %>% count()
+hap2 %>% filter(exonic != 'intronic', af > maf) %>% group_by(gene) %>% count()
 
 # See how many fun/syn variants there are by gene
 fun = hap2 %>% group_by(gene, fun) %>% count()
@@ -73,7 +75,8 @@ ggplot(data=tst, aes(x=gene, y=n, fill=Pop)) +
 
 ### gnomAD variants
 meg_leg = read.table(paste0(dir, 'chr19.block37.', Pop, '.sim', i, '.copy.legend'), header=T, sep='\t')
-meg_leg %>% filter(AC!='.' & AC!=0) %>% group_by(gene) %>% count()
+# can also filter out genes that are intronic (mainly occurs for ZNF333 gene which is why counts were slightly off at first)
+meg_leg %>% filter(AC!='.' & AC!=0, exonic != 'intronic') %>% group_by(gene) %>% count()
 meg_leg_fun = meg_leg %>% filter(AC!='.' & AC!=0) %>% group_by(gene, fun) %>% count()
 
 # Check which gromAD variants are unique to AFR and NFE pops
