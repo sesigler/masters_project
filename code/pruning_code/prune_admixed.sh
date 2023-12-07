@@ -12,11 +12,13 @@ pcase=160
 pconf=80
 
 # define parameters
-#end=100
-#start=$(($end-99))
+end=100
+start=$(($end-99))
 
 #WD=/storage/math/projects/compinfo/simulations
 WD=/home/math/siglersa
+
+cd ${WD}/admixed/${pop1}_${pop2}_pops/${pcase}v100v${pconf}
 
 ### replace the first lines of the Expected MAC Bins R script with the necessary variables
 #Pop="Pop = '$pop1'"
@@ -33,40 +35,44 @@ WD=/home/math/siglersa
 
 
 ### use RAREsim to prune to pcase % functional and 100% synonymous
-#for rep in $(eval echo "{$start..$end}")
-for rep in {1..10}
+for rep in $(eval echo "{$start..$end}")
 do 
 
+### Copy megan's .controls.haps.gz file into my directory then gunzip it
+cp /storage/math/projects/RAREsim/Cases/Sim_20k/${pop1}/data/chr19.block37.${pop1}.sim${rep}.controls.haps.gz .
+gunzip chr19.block37.${pop1}.sim${rep}.controls.haps.gz
+
 ### extract the AFR haplotypes
-cd /storage/math/projects/RAREsim/Cases/Sim_20k/${pop1}/data
 python3 ${WD}/raresim/extract.py \
-    -i chr19.block37.${pop1}.sim${rep}.controls.haps.gz \
-    -o ${WD}/admixed/${pop1}_${pop2}_pops/chr19.block37.${pop1}.reduced.sim${rep}.controls.haps \
+    -i chr19.block37.${pop1}.sim${rep}.controls.haps \
+    -o chr19.block37.${pop1}.reduced.sim${rep}.controls.haps \
     -n 37000 \
     --seed 123
 
+### Copy megan's .controls.haps.gz file into my directory then gunzip it
+cp /storage/math/projects/RAREsim/Cases/Sim_20k/${pop2}/data/chr19.block37.${pop2}.sim${rep}.controls.haps.gz .
+gunzip chr19.block37.${pop2}.sim${rep}.controls.haps.gz
+
 ### extract the NFE haplotypes
-cd /storage/math/projects/RAREsim/Cases/Sim_20k/${pop2}/data
 python3 ${WD}/raresim/extract.py \
-    -i chr19.block37.${pop2}.sim${rep}.controls.haps.gz \
-    -o ${WD}/admixed/${pop1}_${pop2}_pops/chr19.block37.${pop2}.reduced.sim${rep}.controls.haps \
+    -i chr19.block37.${pop2}.sim${rep}.controls.haps \
+    -o chr19.block37.${pop2}.reduced.sim${rep}.controls.haps \
     -n 9000 \
     --seed 123
 
 ### combine the extracted AFR and NFE haplotype files 
-cd ${WD}/admixed/${pop1}_${pop2}_pops
-paste chr19.block37.${pop1}.reduced.sim${rep}.controls.haps chr19.block37.${pop2}.reduced.sim${rep}.controls.haps -d " " | gzip > chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.gz
+paste chr19.block37.${pop1}.reduced.sim${rep}.controls.haps-sample chr19.block37.${pop2}.reduced.sim${rep}.controls.haps-sample -d " " | gzip > chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.gz
 
 ### convert the combined haplotype file into a sparse matrix
 python3 ${WD}/raresim/convert.py \
     -i chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.gz \
-    -o chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.gz.sm
+    -o chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.sm
 
 ### prune the haplotypes down to pcase % functional and 100% synonymous variants
 python3 ${WD}/raresim/sim.py \
-    -m chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.gz.sm \
-    --functional_bins ${WD}/mastersProject/input/MAC_bin_estimates_${nsim}_${pop1}_fun_${pcase}.txt \
-    --synonymous_bins ${WD}/mastersProject/input/MAC_bin_estimates_${nsim}_${pop1}_syn_100.txt \
+    -m chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.sm \
+    --functional_bins ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop1}_fun_${pcase}.txt \
+    --synonymous_bins ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop1}_syn_100.txt \
     -l chr19.block37.${pop1}_${pop2}.sim${rep}.copy.legend \
     -L chr19.block37.${pop1}_${pop2}.sim${rep}.${pcase}fun.100syn.legend \
     -H chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pcase}fun.100syn.haps.gz
@@ -81,12 +87,12 @@ python3 ${WD}/raresim/sim.py \
 ### convert the pruned haplotype file into a sparse matrix
 python3 ${WD}/raresim/convert.py \
     -i chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pcase}fun.100syn.haps.gz \
-    -o chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pcase}fun.100syn.haps.gz.sm
+    -o chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pcase}fun.100syn.haps.sm
 
 ### prune the haplotypes down to 100% functional
 python3 ${WD}/raresim/sim.py \
-    -m chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pcase}fun.100syn.haps.gz.sm \
-    --f_only ${WD}/mastersProject/input/MAC_bin_estimates_${nsim}_${pop1}_fun_100.txt \
+    -m chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pcase}fun.100syn.haps.sm \
+    --f_only ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop1}_fun_100.txt \
     -l chr19.block37.${pop1}_${pop2}.sim${rep}.${pcase}fun.100syn.legend \
     -L chr19.block37.${pop1}_${pop2}.sim${rep}.100fun.100syn.legend \
     -H chr19.block37.${pop1}_${pop2}.sim${rep}.all.100fun.100syn.haps.gz
@@ -104,13 +110,13 @@ python3 ${WD}/raresim/sim.py \
 ### convert the pruned haplotype file into a sparse matrix
 python3 ${WD}/raresim/convert.py \
     -i chr19.block37.${pop1}_${pop2}.sim${rep}.all.100fun.100syn.haps.gz \
-    -o chr19.block37.${pop1}_${pop2}.sim${rep}.all.100fun.100syn.haps.gz.sm
+    -o chr19.block37.${pop1}_${pop2}.sim${rep}.all.100fun.100syn.haps.sm
 
 ### prune the haplotypes down to pconf % functional and pconf % synonymous variants
 python3 ${WD}/raresim/sim.py \
-    -m chr19.block37.${pop1}_${pop2}.sim${rep}.all.100fun.100syn.haps.gz.sm \
-    --functional_bins ${WD}/mastersProject/input/MAC_bin_estimates_${nsim}_${pop1}_fun_${pconf}.txt \
-    --synonymous_bins ${WD}/mastersProject/input/MAC_bin_estimates_${nsim}_${pop1}_syn_${pconf}.txt \
+    -m chr19.block37.${pop1}_${pop2}.sim${rep}.all.100fun.100syn.haps.sm \
+    --functional_bins ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop1}_fun_${pconf}.txt \
+    --synonymous_bins ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop1}_syn_${pconf}.txt \
     -l chr19.block37.${pop1}_${pop2}.sim${rep}.100fun.100syn.legend \
     -L chr19.block37.${pop1}_${pop2}.sim${rep}.${pconf}fun.${pconf}syn.legend \
     -H chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pconf}fun.${pconf}syn.haps.gz
