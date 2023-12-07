@@ -14,13 +14,13 @@ source("/home/math/siglersa/mastersProject/Input/create_haps_funcs.R")
 # source("C:/Users/sagee/Documents/GitHub/masters_project/code/pruning_code/create_haps_funcs.R")
 
 
-Pop = 'NFE'
-p_case = 120
+Pop = 'AFR'
+p_case = 160
 p_exp = 100
 p_conf = 80
 Nsim = 20000 
-pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
-folder = '120v100v80'
+# pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
+folder = '160v100v80'
 # sample = 'internal_data'
 # int_prune = 100
 # ext_prune = 99
@@ -43,10 +43,13 @@ cols = 1:40000
 # mac_dir = '/home/math/siglersa/mastersProject/Input/'
 # dir_in = '/storage/math/projects/compinfo/simulations/output/20K_NFE/'
 # dir_in = '/storage/math/projects/RAREsim/Cases/Sim_20k/NFE/data/' #For pruning OG hap file
-dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
-dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+# dir_leg = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+# dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+dir_leg = paste0('/home/math/siglersa/mastersProject/20K_', Pop, '/', folder, '/')
+dir_in = paste0('/home/math/siglersa/mastersProject/20K_', Pop, '/',  folder, '/')
 # dir_in = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
-dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+# dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/')
+dir_out = paste0('/home/math/siglersa/mastersProject/20K_', Pop, '/', folder, '/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/', sample, '/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', int_prune, 'v', ext_prune, '/datasets/') 
 
