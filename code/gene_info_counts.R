@@ -11,11 +11,33 @@ library(ggplot2)
 Pop = 'NFE'
 Pop1 = 'AFR'
 Pop2 = 'NFE'
+p_case = 100
 p_exp = 100
 i = 1
 maf = 0.01
+folder = '160v100v80'
 
+dir = paste0('/home/math/siglersa/mastersProject/20K_AFR/160v100v80/') # AFR 160v100v80
+dir = paste0('/home/math/siglersa/mastersProject/20K_NFE/pruneSepRaresim/160v100v80/') # NFE 160v100v80
+dir = paste0('/home/math/siglersa/mastersProject/gene_info/20K_', Pop, '/') # 100 fun 100 syn
+dir_out = paste0('/home/math/siglersa/mastersProject/Output/gene_info/20K_', Pop, '/', folder, '/')
 dir = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/gene_info/')
+
+for (i in 1:100){
+  
+  # Read in RAREsim leg and hap files
+  leg = read.table(paste0(dir, 'chr19.block37.', Pop, '.sim', i, '.', p_case, 'fun.', p_exp, 'syn.legend'), header=T, sep='\t')
+  leg$row = 1:nrow(leg)
+  
+  hap = fread(paste0(dir, 'chr19.block37.', Pop, '.sim', i, '.all.', p_case, 'fun.', p_exp, 'syn.haps.gz'))
+  hap = as.data.frame(hap)
+  
+  # add relevant columns to a copy of the hap file
+  hap2 = hap %>% mutate(sums = rowSums(hap), af = sums/ncol(hap), gene = leg$gene, fun = leg$fun, exonic = leg$exonic, row = leg$row)
+  
+  tst = hap2 %>% filter(sums != 0, exonic != 'intronic') %>% group_by(gene, fun) %>% count()
+  tst2 = tidyr::pivot_wider(tst, names_from = fun, values_from = n, values_fill = 0)
+}
 
 ### RAREsim variants
 leg = read.table(paste0(dir, 'chr19.block37.', Pop, '.sim', i, '.', p_exp, 'fun.', p_exp, 'syn.legend'), header=T, sep='\t')
