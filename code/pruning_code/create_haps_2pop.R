@@ -20,13 +20,13 @@ p_case = 160
 p_exp = 100
 p_conf = 80
 Nsim = 23000
-scen = 's1'
+scen = 's2'
 # pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 folder = '160v100v80'
 
 # Number of haplotypes in each dataset
-Ncase_pop1 = Nint_pop1 = 8000 #s1 = 8000, s2 = 10000
-Ncase_pop2 = Nint_pop2 = 2000 #s1 = 2000, s2 = 0
+Ncase_pop1 = Nint_pop1 = 10000 #s1 = 8000, s2 = 10000
+Ncase_pop2 = Nint_pop2 = 0 #s1 = 2000, s2 = 0
 
 Ncc_pop1 = 16000 #s1 = s2 = 16000 
 Ncc_pop2 = 4000 #s1 = s2 = 4000
@@ -47,7 +47,10 @@ pop2_cols = 37001:46000
 
 dir_leg = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/', folder, '/')
 dir_in = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/',  folder, '/')
-dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/', folder, '/')
+dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/',  folder, '/datasets/', scen, '/')
+
+# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/AFR_NFE_pops/')
+# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/AFR_NFE_pops/')
 
 
 ### read in the expected number of functional and synonymous variants from RAREsim
