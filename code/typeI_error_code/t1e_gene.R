@@ -376,27 +376,27 @@ colnames(skat_int_genes_p) = colnames(skat_ext_genes_p) = colnames(skat_all_gene
 colnames(burden_int_genes_p) = colnames(burden_ext_genes_p) = colnames(burden_all_genes_p) = genes
 
 #ProxECAT
-write.table(prox_ext_genes_p, paste0(dir_out, "T1e_gene_prox_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(prox_int_genes_p, paste0(dir_out, "T1e_gene_prox_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(prox_weighted_ext_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(prox_weighted_int_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(prox_ext_genes_p, paste0(dir_out, "T1e_gene_prox_ext_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(prox_int_genes_p, paste0(dir_out, "T1e_gene_prox_int_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(prox_weighted_ext_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_ext_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(prox_weighted_int_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_int_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 # LogProx
-write.table(prox2_ext_genes_p, paste0(dir_out, "T1e_gene_prox2_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(prox2_all_genes_p, paste0(dir_out, "T1e_gene_prox2_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(prox2_int_genes_p, paste0(dir_out, "T1e_gene_prox2_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(prox2_ext_genes_p, paste0(dir_out, "T1e_gene_prox2_ext_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(prox2_all_genes_p, paste0(dir_out, "T1e_gene_prox2_all_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(prox2_int_genes_p, paste0(dir_out, "T1e_gene_prox2_int_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 # iECAT-O and SKAT-O
-write.table(iecat_genes_p, paste0(dir_out, "T1e_gene_iecat_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(skato_int_genes_p, paste0(dir_out, "T1e_gene_skato_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(skato_ext_genes_p, paste0(dir_out, "T1e_gene_skato_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(skato_all_genes_p, paste0(dir_out, "T1e_gene_skato_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(iecat_genes_p, paste0(dir_out, "T1e_gene_iecat_all_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(skato_int_genes_p, paste0(dir_out, "T1e_gene_skato_int_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(skato_ext_genes_p, paste0(dir_out, "T1e_gene_skato_ext_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(skato_all_genes_p, paste0(dir_out, "T1e_gene_skato_all_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 # SKAT
-write.table(skat_int_genes_p, paste0(dir_out, "T1e_gene_skat_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(skat_ext_genes_p, paste0(dir_out, "T1e_gene_skat_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(skat_all_genes_p, paste0(dir_out, "T1e_gene_skat_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(skat_int_genes_p, paste0(dir_out, "T1e_gene_skat_int_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(skat_ext_genes_p, paste0(dir_out, "T1e_gene_skat_ext_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(skat_all_genes_p, paste0(dir_out, "T1e_gene_skat_all_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 # Burden
-write.table(burden_int_genes_p, paste0(dir_out, "T1e_gene_burden_int_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(burden_ext_genes_p, paste0(dir_out, "T1e_gene_burden_ext_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
-write.table(burden_all_genes_p, paste0(dir_out, "T1e_gene_burden_all_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(burden_int_genes_p, paste0(dir_out, "T1e_gene_burden_int_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(burden_ext_genes_p, paste0(dir_out, "T1e_gene_burden_ext_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
+write.table(burden_all_genes_p, paste0(dir_out, "T1e_gene_burden_all_", int_prune, "_v_", ext_prune, "_", Pop, "_maf", maf, ".txt"), quote=F, row.names=F, col.names=T)
 
 #write.table(prox.p, paste0("T1e_Confounding_ProxECAT_MAF", maf, ".txt"), quote=F, row.names=F)
 #write.table(prox2.p, paste0("T1e_Confounding_ProxECATv2_MAF", maf, ".txt"), quote=F, row.names=F)
