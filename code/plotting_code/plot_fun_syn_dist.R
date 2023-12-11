@@ -1,4 +1,6 @@
 # Plot the distribution of fun and syn alleles for proxECAT
+# Plot distribution of fun and syn variants and ratio of fun:syn variants
+# for 100% AFR, 100% NFE, and admixed populations
 
 library(dplyr)
 library(tidyr)
@@ -57,12 +59,12 @@ ggsave(file = paste0(dir_out, 'dist_fun_syn_', Pop2, '_100v', ext_prune, '.jpg')
        plot = p1, height = 5, width = 12, units = 'in')
 
 p2 <- ggplot(cases_df, aes(x = cases, color = Source, fill = Source)) +
-  geom_density(alpha = 0.4) +
-  scale_color_manual(values=colors_cases) +
-  scale_fill_manual(values=colors_cases) +
-  labs(title = paste0('Distribution of Functional and Synonymous Alleles (100% Pruned Cases)\nPop: 100% NFE'), 
-       x = "Number of Alleles", y = "Density") +
-  theme_bw(base_size = 18)
+        geom_density(alpha = 0.4) +
+        scale_color_manual(values=colors_cases) +
+        scale_fill_manual(values=colors_cases) +
+        labs(title = paste0('Distribution of Functional and Synonymous Alleles (100% Pruned Cases)\nPop: 100% NFE'), 
+             x = "Number of Alleles", y = "Density") +
+        theme_bw(base_size = 18)
 p2
 ggsave(file = paste0(dir_out, 'dist_fun_syn_', Pop2, '_100%_cases.jpg'),
        plot = p2, height = 5, width = 12, units = 'in')
@@ -85,3 +87,89 @@ ggsave(file = paste0(dir_out, 'dist_fun_syn_', Pop2, '_100%_cases.jpg'),
 #   labs(title = "Distribution of Synonymous Alleles (100% vs 99% Pruned)", x = "Number of Synonymous Alleles", y = "Density") +
 #   theme_bw(base_size = 20)
 
+################################################################################
+# Read in files to compare dist of fun syn variants across populations
+dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/gene_info/'
+dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/Results/densityPlots/'
+
+afr_100v100 = read.table(paste0(dir, 'fun_syn_counts_20K_AFR_100v100.txt'), header = T)
+nfe_100v100 = read.table(paste0(dir, 'fun_syn_counts_20K_NFE_100v100.txt'), header = T)
+afr_160v100v80 = read.table(paste0(dir, 'fun_syn_counts_20K_AFR_160v100v80.txt'), header = T)
+nfe_160v100v80 = read.table(paste0(dir, 'fun_syn_counts_20K_NFE_160v100v80.txt'), header = T)
+afr_nfe_160v100v80 = read.table(paste0(dir, 'fun_syn_counts_23K_AFR_NFE_160v100v80.txt'), header = T)
+
+afr_100v100 = pivot_longer(afr_100v100, fun:ratio, names_to="variants", values_to="Count") %>%
+  mutate(Pop = '20K_AFR', Pruning = '100v100', Source_Pruning = paste(variants, Pruning, sep = '_'), 
+         Source_Pop = paste(variants, Pop, sep = '_'))
+nfe_100v100 = pivot_longer(nfe_100v100, fun:ratio, names_to="variants", values_to="Count") %>%
+  mutate(Pop = '20K_NFE', Pruning = '100v100', Source_Pruning = paste(variants, Pruning, sep = '_'), 
+         Source_Pop = paste(variants, Pop, sep = '_'))
+afr_160v100v80 = pivot_longer(afr_160v100v80, fun:ratio, names_to="variants", values_to="Count") %>%
+  mutate(Pop = '20K_AFR', Pruning = '160v100v80', Source_Pruning = paste(variants, Pruning, sep = '_'), 
+         Source_Pop = paste(variants, Pop, sep = '_'))
+nfe_160v100v80 = pivot_longer(nfe_160v100v80, fun:ratio, names_to="variants", values_to="Count") %>%
+  mutate(Pop = '20K_NFE', Pruning = '160v100v80', Source_Pruning = paste(variants, Pruning, sep = '_'), 
+         Source_Pop = paste(variants, Pop, sep = '_'))
+afr_nfe_160v100v80 = pivot_longer(afr_nfe_160v100v80, fun:ratio, names_to="variants", values_to="Count") %>%
+  mutate(Pop = '23K_AFR_NFE', Pruning = '160v100v80', Source_Pruning = paste(variants, Pruning, sep = '_'), 
+         Source_Pop = paste(variants, Pop, sep = '_'))
+
+counts = rbind(afr_100v100, nfe_100v100, afr_160v100v80, nfe_160v100v80, afr_nfe_160v100v80)
+
+cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+cbPalette2 = c("#999999", "#BC9F4C", "#56B4E9", "#009E73", "#0072B2")
+colors = c("#0072B2", "#CC79A7")
+colors2 = c("#0072B2", "#CC79A7", "#BC9F4C", "#009E73")
+colors_cases = c("#CC79A7", "#009E73")
+
+### 20K AFR 100v100 vs 160v100v80
+p1 <- ggplot(counts %>% filter(Pop == '20K_AFR', variants != 'ratio'), aes(x = Count, color = Source, fill = Source)) +
+        geom_density(alpha = 0.4) +
+        scale_color_manual(values=colors2) +
+        scale_fill_manual(values=colors2) +
+        labs(title = paste0('Distribution of Functional and Synonymous Variants by Pruning Pipeline (100% Pruned)\nPop: 100% AFR (20K)'), 
+             x = "Number of Variants", y = "Density") +
+        facet_wrap(~gene) +
+        theme_bw(base_size = 18)
+p1
+ggsave(file = paste0(dir_out, 'dist_fun_syn_variants_20K_AFR_100v100_v_160v100v80.jpg'),
+       plot = p1, height = 8, width = 15, units = 'in')
+
+### 20K NFE 100v100 vs 160v100v80
+p2 <- ggplot(counts %>% filter(Pop == '20K_NFE', variants != 'ratio'), aes(x = Count, color = Source_Pruning, fill = Source_Pruning)) +
+        geom_density(alpha = 0.4) +
+        scale_color_manual(values=colors2) +
+        scale_fill_manual(values=colors2) +
+        labs(title = paste0('Distribution of Functional and Synonymous Variants by Pruning Pipeline (100% Pruned)\nPop: 100% NFE (20K)'), 
+             x = "Number of Variants", y = "Density") +
+        facet_wrap(~gene) +
+        theme_bw(base_size = 18)
+p2
+ggsave(file = paste0(dir_out, 'dist_fun_syn_variants_20K_NFE_100v100_v_160v100v80.jpg'),
+       plot = p2, height = 8, width = 15, units = 'in')
+
+### 20K AFR vs NFE 160v100v80
+p3 <- ggplot(counts %>% filter(Pop != '23K_AFR_NFE', variants != 'ratio', Pruning == '160v100v80'), aes(x = Count, color = Source_Pop, fill = Source_Pop)) +
+        geom_density(alpha = 0.4) +
+        scale_color_manual(values=colors2) +
+        scale_fill_manual(values=colors2) +
+        labs(title = paste0('Distribution of Functional and Synonymous Variants by Population (100% Pruned)\nPipeline: 160v100v80'), 
+             x = "Number of Variants", y = "Density") +
+        facet_wrap(~gene) +
+        theme_bw(base_size = 18)
+p3
+ggsave(file = paste0(dir_out, 'dist_fun_syn_variants_20K_AFR_v_NFE_160v100v80.jpg'),
+       plot = p3, height = 8, width = 15, units = 'in')
+
+### 20K AFR vs NFE 100v100
+p4 <- ggplot(counts %>% filter(Pop != '23K_AFR_NFE', variants != 'ratio', Pruning == '100v100'), aes(x = Count, color = Source_Pop, fill = Source_Pop)) +
+        geom_density(alpha = 0.4) +
+        scale_color_manual(values=colors2) +
+        scale_fill_manual(values=colors2) +
+        labs(title = paste0('Distribution of Functional and Synonymous Variants by Population (100% Pruned)\nPipeline: 100v100'), 
+             x = "Number of Variants", y = "Density") +
+        facet_wrap(~gene) +
+        theme_bw(base_size = 18)
+p4
+ggsave(file = paste0(dir_out, 'dist_fun_syn_variants_20K_AFR_v_NFE_100v100.jpg'),
+       plot = p4, height = 8, width = 15, units = 'in')
