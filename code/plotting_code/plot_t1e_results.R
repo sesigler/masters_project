@@ -7,6 +7,8 @@ library(ggpubr)
 library(binom)
 library(data.table) # for fread
 
+Pop = 'AFR'
+Nsim = '20K'
 Pop1 = 'AFR'
 Pop2 = 'NFE'
 # scen = 's1'
@@ -15,18 +17,20 @@ Ncc = 'cc10k'  #Number of common controls: 'cc5k' or 'cc10k'
 pcase = 160
 int_prune = 100
 ext_prune = 80
-pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
+# pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 folder = '160v100v80'
 pruning_plot = 'Separately and Sequentially-RAREsim v2.1.1' #Separately-RAREsim v2.1.1, Separately-R, Separately and Sequentially-RAREsim v2.1.1
 data = 'by_gene'
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/mastersProject/Results/cc10k/'
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
-dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
+# dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
+dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', Nsim, '_', Pop, '/', data, '/', folder, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/', int_prune, 'v', ext_prune, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', folder, '/', int_prune, 'v', ext_prune, '/')
 # dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/', data, '/')
-dir_out_t1e = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/', data, '/')
+# dir_out_t1e = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', pruning, '/', data, '/')
+dir_out_t1e = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/', Nsim, '_', Pop, '/')
 dir_out_power = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/power_plots/', data, '/')
 
 # read in the results
@@ -44,7 +48,8 @@ dir_out_power = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/
 # t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", data, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_skat_pruning = read.csv(paste0(dir, "T1e_all_skat_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_gene = read.csv(paste0(dir, "T1e_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_gene = read.csv(paste0(dir, "T1e_power_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+# t1e_gene = read.csv(paste0(dir, "T1e_power_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
+t1e_gene = read.csv(paste0(dir, "T1e_power_all_gene_", int_prune, "_v_", ext_prune, "_", Pop, "_", Ncc, "_maf", maf, ".csv"), header=T)
 
 
 # puts in a format for ggplot
@@ -69,7 +74,7 @@ t1e_gene = read.csv(paste0(dir, "T1e_power_all_gene_", pruning, "_", int_prune, 
 # t1e_gene = pivot_longer(t1e_gene, prox_int:burden_all, names_to="Method", values_to="Value") %>%
 #   mutate(Calculation = "Type I Error", MAF = maf, Pop = "100% NFE")
 t1e_gene = pivot_longer(t1e_gene, prox_int:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, Pop = "100% NFE")
+  mutate(MAF = maf, Pop = paste0("100% ", Pop))
 
 
 # results = rbind(t1e_all_homo, t1e_all, t1e_all_adj)
@@ -364,11 +369,11 @@ p8 <- ggplot(results2 %>% filter(Calculation == "Type I Error"), aes(x=Gene, y=V
         scale_shape_manual(values = c(16, 18, 17, 15, 9, 10, 12)) +
         facet_wrap(~Data, ncol = 1, scales = 'free_y') +
         # facet_wrap(~Data, ncol = 1) +
-        labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
+        labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% ', Pop, ', MAF=0.001')) +
         # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
         theme_bw(base_size = 15)
 p8
-ggsave(file = paste0(dir_out_t1e, 't1e_gene_', Pop2, '_', pruning, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
+ggsave(file = paste0(dir_out_t1e, 't1e_gene_', Nsim, '_', Pop, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
        plot = p8, height = 8, width = 16, units = 'in')
 # ggsave(file = paste0(dir_out_t1e, 't1e_gene_same_y_', Pop2, '_', pruning, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'),
 #        plot = p8, height = 8, width = 16, units = 'in')
@@ -390,11 +395,11 @@ p9 <- ggplot(results2 %>% filter(Calculation == "Power") %>%
         scale_shape_manual(values = c(16, 18, 17, 15, 9, 10, 12)) +
         # facet_wrap(~Data, ncol = 1, scales = 'free_y') +
         facet_wrap(~Data, ncol = 1) +
-        labs(y='Power', x='Gene', title=paste0('Power by Gene: ', pcase, '% Cases vs 100% Internal Controls vs ', ext_prune, '% External Controls from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% NFE, MAF=0.001')) +
+        labs(y='Power', x='Gene', title=paste0('Power by Gene: ', pcase, '% Cases vs 100% Internal Controls vs ', ext_prune, '% External Controls from ', folder, ' Data (10k cc) \nPruning: ', pruning_plot, '\nPop=100% ', Pop, ', MAF=0.001')) +
         # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
         theme_bw(base_size = 15)
 p9
-ggsave(file = paste0(dir_out_power, 'power_gene_', Pop2, '_', folder, '_maf', maf, '.jpg'),
+ggsave(file = paste0(dir_out_power, 'power_gene_', Nsim, '_', Pop, '_', folder, '_maf', maf, '.jpg'),
        plot = p9, height = 8, width = 15, units = 'in')
 
 
