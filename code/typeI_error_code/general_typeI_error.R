@@ -12,9 +12,9 @@ source("/home/math/siglersa/mastersProject/Input/read_in_funcs.R")
 source("/home/math/siglersa/mastersProject/Input/general_data_manip.R")
 source("/home/math/siglersa/mastersProject/Input/methods_funcs.R")
 
-# source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/read_in_funcs.R")
-# source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/general_data_manip.R")
-# source("C:/Users/sagee/OneDrive/Documents/GitHub/masters_project/methods_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/read_in_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/general_data_manip.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/methods_funcs.R")
 
 
 Pop1 = 'AFR'
