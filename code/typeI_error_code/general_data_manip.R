@@ -4,23 +4,23 @@
 # several different rare variant association tests
 #
 # Variable legend:
-# hap: the haplotype file
-# counts: dataframe containing the allele counts, MACs, and MAFs of a genotype file
-# leg: the legend file
-# case: a string indicating if the counts are "cases" or "controls"
-# group: a string indicating if the counts are from an "int" (internal) or 
-#        "ext" (external) sample
-# geno: the genotype file
-# n: number of individuals in the dataset/number of columns in the genotype file
-# N<DATASET>: number of individuals in DATASET
-# Pop: a string referring to the 3 letter ancestry population (e.g. "AFR", "NFE")
-# hap_ref: haplotype file for the reference dataset
-# maf: the minor allele frequency threshold 
-# prop_est: ancestry proportion estimates from the summix function
-# pi_tar: the target proportion of a given ancestry
-# cases_power: hap file for cases used for power calculation
-# cases_t1e: hap file for cases used for type I error calculation
-# power_genes: vector of gene names used for power calculation
+#' @param hap: the haplotype file
+#' @param counts: dataframe containing the allele counts, MACs, and MAFs of a genotype file
+#' @param leg: the legend file
+#' @param case: a string indicating if the counts are "cases" or "controls"
+#' @param group: a string indicating if the counts are from an "int" (internal) or 
+#                "ext" (external) sample
+#' @param geno: the genotype file
+#' @param n: number of individuals in the dataset/number of columns in the genotype file
+#' @param N<DATASET>: number of individuals in DATASET
+#' @param Pop: a string referring to the 3 letter ancestry population (e.g. "AFR", "NFE")
+#' @param hap_ref: haplotype file for the reference dataset
+#' @param maf: the minor allele frequency threshold 
+#' @param prop_est: ancestry proportion estimates from the summix function
+#' @param pi_tar: the target proportion of a given ancestry
+#' @param cases_power: hap file for cases used for power calculation
+#' @param cases_t1e: hap file for cases used for type I error calculation
+#' @param power_genes: vector of gene names used for power calculation
 ##############################################################################
 
 # function to convert the haplotypes into a genotype matrix
@@ -142,7 +142,7 @@ est_props = function(counts, Pop1, Pop2, maf) {
   Pop2 <- tolower(Pop2)
   
   # variants that are common in at least one dataset
-  common <- which(counts$maf > maf | counts[, 6] > maf | counts[, 9] > maf) #6=maf_afr, 9=maf_nfe
+  common <- which(counts$maf > maf | counts[, paste0("maf_", Pop1)] > maf | counts[, paste0("maf_", Pop2)] > maf) 
   
   # Subset counts dataframe to only common variants
   common_df <- counts[common,]
@@ -157,26 +157,32 @@ est_props = function(counts, Pop1, Pop2, maf) {
 }
 
 # Use summix to update AFs of common controls dataset
-calc_adjusted_AF = function(counts, Pop_ref, prop_est, pi_tar1, pi_tar2, Ncc) {
+calc_adjusted_AF = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref, Ncc) {
   
-  Pop_ref <- tolower(Pop_ref)
+  Pop1 <- tolower(Pop1)
+  Pop2 <- tolower(Pop2)
   
   adj_AF <- adjAF(data = counts,
-                    reference = c(paste0("maf_", Pop_ref)),
-                    observed = "maf",
-                    pi.target = c(pi_tar1, pi_tar2), #last one is AFR proportion
-                    pi.observed = c(prop_est[, 6], prop_est[, 5])) #6=maf_nfe, 5=maf_afr
+                  reference = c(paste0("maf_", Pop2), paste0("maf_", Pop1)),
+                  observed = "maf",
+                  pi.target = c(pi_tar1, pi_tar2), #last one is AFR proportion
+                  pi.observed = c(prop_est[, paste0("maf_", Pop2)], prop_est[, paste0("maf_", Pop1)]),
+                  adj_method = "average",
+                  N_reference = c(Nref, Nref),
+                  N_observed = Ncc,
+                  filter = TRUE) 
   
   # Add adj AF to data frame
   counts$adj_maf <- adj_AF$adjusted.AF$adjustedAF
   
   # Set AFs < 0 = 0 
-  counts$adj_maf[counts$adj_maf < 0] <- 0
+  # Fixed in Summix2
+  # counts$adj_maf[counts$adj_maf < 0] <- 0
   
   # Add adj ACs
   counts$adj_mac <- round(counts$adj_maf*(2*Ncc))
   
-  # Re-check that ACs and AFs are the minor ones (may 68be higher after adjustment)
+  # Re-check that ACs and AFs are the minor ones (may be higher after adjustment)
   counts_minor = calc_adj_allele_freqs(counts, Ncc)
   
   # Create data frame with only the 2 adj MAC and AF columns
