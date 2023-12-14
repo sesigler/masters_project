@@ -16,7 +16,7 @@
 # Read in legend file (admixed)
 read_leg = function(dir, Pop1, Pop2, sim_rep) {
   
-  leg = read.table(paste0(dir, 'chr19.block37.', Pop1, '-', Pop2, '.sim', sim_rep, '.legend'), header=T, sep='\t')
+  leg = read.table(paste0(dir, 'chr19.block37.', Pop1, '_', Pop2, '.sim', sim_rep, '.legend'), header=T, sep='\t')
   leg$row = 1:nrow(leg)
   
   return(leg)
@@ -51,9 +51,9 @@ read_hap_homo = function(dir, Pop, sim_rep, dataset, p_fun, p_syn) {
 }
 
 # read in reference haplotype file
-read_ref = function(dir, Pop, sim_rep, scen) {
+read_ref = function(dir, Pop, sim_rep, scen, p_fun, p_syn) {
   
-  ref = fread(paste0(dir, 'chr19.block37.', Pop, '.sim', sim_rep, '.', scen, '.ref.haps.gz'))
+  ref = fread(paste0(dir, 'chr19.block37.', Pop, '.sim', sim_rep, '.', scen, '.refs.', p_fun, 'fun.', p_syn, 'syn.haps.gz'))
   ref = as.data.frame(ref)
   
   return(ref)
