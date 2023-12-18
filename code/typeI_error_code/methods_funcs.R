@@ -134,11 +134,11 @@ logprox_gene_data_prep = function(data.prox2, current.gene, data.all) {
   if (data.all) {
     prox2 = ifelse(counts.data.gene$n[1] + counts.data.gene$n[3] < 5 | 
                      counts.data.gene$n[2] + counts.data.gene$n[4] < 5, NA, 
-                   summary(glm(fun ~ case, data=data.gene, family="binomial"))$coefficients[2,4])
+                   summary(glm(fun ~ case + group, data=data.gene, family="binomial"))$coefficients[2,4])
   } else {
     prox2 = ifelse(counts.data.gene$n[1] + counts.data.gene$n[3] < 5 |
                      counts.data.gene$n[2] + counts.data.gene$n[4] < 5, NA,
-                   summary(glm(fun ~ case + group, data=data.gene, family="binomial"))$coefficients[2,4])
+                   summary(glm(fun ~ case, data=data.gene, family="binomial"))$coefficients[2,4])
   }
   
   return(prox2) 
