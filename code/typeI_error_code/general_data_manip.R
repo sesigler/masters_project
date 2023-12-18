@@ -163,10 +163,10 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref
   Pop2 <- tolower(Pop2)
   
   adj_AF <- adjAF(data = counts,
-                  reference = c(paste0("maf_", Pop2), paste0("maf_", Pop1)),
+                  reference = c(paste0("maf_", Pop1), paste0("maf_", Pop2)),
                   observed = "maf",
                   pi.target = c(pi_tar1, pi_tar2), #last one is AFR proportion
-                  pi.observed = c(prop_est[, paste0("maf_", Pop2)], prop_est[, paste0("maf_", Pop1)]),
+                  pi.observed = c(prop_est[, paste0("maf_", Pop1)], prop_est[, paste0("maf_", Pop2)]),
                   adj_method = "average",
                   N_reference = c(Nref, Nref),
                   N_observed = Ncc,
