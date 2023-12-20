@@ -121,7 +121,8 @@ cbPalette2 = c("#999999", "#BC9F4C", "#56B4E9", "#009E73", "#0072B2")
 colors = c("#0072B2", "#CC79A7")
 colors2 = c("#0072B2", "#CC79A7", "#BC9F4C", "#009E73")
 colors_cases = c("#CC79A7", "#009E73")
-colors3 = c("#0072B2", "#CC79A7", "#BC9F4C", "#009E73", "#999999", "#D55E00")
+colors3 = c("#0072B2", "#BC9F4C", "#CC79A7", "#009E73", "#E69F00", "#999999")
+colors_ratio = c("#0072B2", "#CC79A7", "#BC9F4C")
 
 ### 20K AFR 100v100 vs 160v100v80
 p1 <- ggplot(counts %>% filter(Pop == '20K_AFR', variants != 'ratio'), aes(x = Count, color = Source, fill = Source)) +
@@ -178,8 +179,8 @@ ggsave(file = paste0(dir_out, 'dist_fun_syn_variants_20K_AFR_v_NFE_100v100.jpg')
 ### 20K AFR vs 20K NFE vs 23K admixed ratio fun:syn 160v100v80
 p5 <- ggplot(counts %>% filter(variants == 'ratio', Pruning == '160v100v80'), aes(x = Count, color = Source_Pop, fill = Source_Pop)) +
         geom_density(alpha = 0.4) +
-        scale_color_manual(values=colors2) +
-        scale_fill_manual(values=colors2) +
+        scale_color_manual(values=colors_ratio) +
+        scale_fill_manual(values=colors_ratio) +
         labs(title = paste0('Distribution of Ratio of Functional to Synonymous Variants by Population (100% Pruned)\nPipeline: 160v100v80'), 
              x = "Ratio", y = "Density") +
         facet_wrap(~gene) +
@@ -187,3 +188,17 @@ p5 <- ggplot(counts %>% filter(variants == 'ratio', Pruning == '160v100v80'), ae
 p5
 ggsave(file = paste0(dir_out, 'dist_ratio_fun_syn_variants_20K_AFR_v_20K_NFE_v_23K_AFR_NFE_160v100v80.jpg'),
        plot = p5, height = 8, width = 15, units = 'in')
+
+
+### 20K AFR vs 20K NFE vs 23K admixed dist fun & syn 160v100v80
+p6 <- ggplot(counts %>% filter(variants != 'ratio', Pruning == '160v100v80'), aes(x = Count, color = Source_Pop, fill = Source_Pop)) +
+        geom_density(alpha = 0.4) +
+        scale_color_manual(values=colors3) +
+        scale_fill_manual(values=colors3) +
+        labs(title = paste0('Distribution of Functional and Synonymous Variants by Population (100% Pruned)\nPipeline: 160v100v80'), 
+             x = "Number of Variants", y = "Density") +
+        facet_wrap(~gene) +
+        theme_bw(base_size = 18)
+p6
+ggsave(file = paste0(dir_out, 'dist_fun_syn_variants_20K_AFR_v_20K_NFE_v_23K_AFR_NFE_160v100v80.jpg'),
+       plot = p6, height = 8, width = 15, units = 'in')
