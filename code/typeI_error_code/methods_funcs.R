@@ -34,18 +34,18 @@ rare_counts = function(counts, leg.fun, leg.syn, maf){
 # NOTE: This version does not filter out variants that are common in at least
 # one of the datasets
 # prox_data_prep = function(leg.fun, leg.syn, counts.cases, counts.ctrl, maf) {
-#   
+# 
 #   counts.prox = c()
-#   
+# 
 #   case.fun = rare_counts(counts.cases, leg.fun, leg.syn, maf)
 #   counts.prox = c(counts.prox, c(case.fun[1], case.fun[2]))
-#   
+# 
 #   ctrl.fun = rare_counts(counts.ctrl, leg.fun, leg.syn, maf)
 #   counts.prox = c(counts.prox, c(ctrl.fun[1], ctrl.fun[2]))
-#   
+# 
 #   # Run proxECAT
 #   prox = proxecat(counts.prox[1], counts.prox[2], counts.prox[3], counts.prox[4])
-#   
+# 
 #   # return p-value
 #   return(prox$p.value)
 # }
@@ -115,6 +115,37 @@ prox_gene_data_prep = function(data.cases, data.controls, common) {
                              proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
            prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA,
                                proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+  
+  return(counts_wide)
+}
+
+# Function for formatting data and running statistical test for ProxECAT by gene
+# not using the long format that LogProx uses
+prox_gene_data_prep2 = function(count.cases, count.cc, leg, common) {
+  
+  data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case", group="int") %>% 
+    filter(mac!=0) %>% select(-count)
+  
+  data.controls = count.cc %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
+    filter(mac!=0)
+  
+  names <- c("id", "gene", "fun", "case", "group")
+  
+  data.prox = data.frame(rbind(data.cases, data.controls)) %>% mutate(across(all_of(names), as.factor)) %>% 
+    filter(!(id %in% common$id))
+  
+  counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(mac))
+  
+  counts_wide = tidyr::pivot_wider(counts_gene, names_from=c(case, fun), values_from=n,
+                                   values_fill=0, names_sep="_")
+  counts_wide = counts_wide %>% mutate(case_ratio = case_fun/case_syn,
+                                       control_ratio = control_fun/control_syn,
+                                       case_fun_w = case_fun/median(case_ratio),
+                                       control_fun_w = control_fun/median(control_ratio)) %>%
+    mutate(prox = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA,
+                         proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+           prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA,
+                           proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
   
   return(counts_wide)
 }
