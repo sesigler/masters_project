@@ -157,7 +157,7 @@ est_props = function(counts, Pop1, Pop2, maf) {
 }
 
 # Use summix to update AFs of common controls dataset
-calc_adjusted_AF = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref, Ncc) {
+calc_adjusted_AF = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref, Ncc, round_adj_mac) {
   
   Pop1 <- tolower(Pop1)
   Pop2 <- tolower(Pop2)
@@ -180,41 +180,11 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref
   # counts$adj_maf[counts$adj_maf < 0] <- 0
   
   # Add adj ACs
-  counts$adj_mac <- round(counts$adj_maf*(2*Ncc))
-  
-  # Re-check that ACs and AFs are the minor ones (may be higher after adjustment)
-  counts_minor = calc_adj_allele_freqs(counts, Ncc)
-  
-  # Create data frame with only the 2 adj MAC and AF columns
-  counts_adj <- counts_minor[, c("adj_mac2", "adj_maf2")]
-  
-  # Rename columns so they are same as other data frames
-  colnames(counts_adj) <- c("mac", "maf")
-  
-  return(counts_adj)
-}
-
-# Don't round adj AC
-calc_adjusted_AF_unrounded = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref, Ncc) {
-  
-  Pop1 <- tolower(Pop1)
-  Pop2 <- tolower(Pop2)
-  
-  adj_AF <- adjAF(data = counts,
-                  reference = c(paste0("maf_", Pop1), paste0("maf_", Pop2)),
-                  observed = "maf",
-                  pi.target = c(pi_tar1, pi_tar2), #last one is AFR proportion
-                  pi.observed = c(prop_est[, paste0("maf_", Pop1)], prop_est[, paste0("maf_", Pop2)]),
-                  adj_method = "average",
-                  N_reference = c(Nref, Nref),
-                  N_observed = Ncc,
-                  filter = TRUE) 
-  
-  # Add adj AF to data frame
-  counts$adj_maf <- adj_AF$adjusted.AF$adjustedAF
-  
-  # Add adj ACs
-  counts$adj_mac <- counts$adj_maf*(2*Ncc)
+  if (round_adj_mac) {
+    counts$adj_mac <- round(counts$adj_maf*(2*Ncc))
+  } else {
+    counts$adj_mac <- counts$adj_maf*(2*Ncc)
+  }
   
   # Re-check that ACs and AFs are the minor ones (may be higher after adjustment)
   counts_minor = calc_adj_allele_freqs(counts, Ncc)
