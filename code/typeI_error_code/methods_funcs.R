@@ -121,30 +121,65 @@ prox_gene_data_prep = function(data.cases, data.controls, common) {
 
 # Function for formatting data and running statistical test for ProxECAT by gene
 # not using the long format that LogProx uses
-prox_gene_data_prep2 = function(count.cases, count.cc, leg, common) {
+prox_gene_data_prep2 = function(count.cases, count.controls, leg, control_group, adj, common, round_macs) {
   
   data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case", group="int") %>% 
     filter(mac!=0) %>% select(-count)
   
-  data.controls = count.cc %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
-    filter(mac!=0)
+  if (control_group == "int") {
+    data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="int") %>% 
+      filter(mac!=0) %>% select(-count)
+  } else if (control_group == "ext") {
+    if (adj) {
+      data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
+        filter(mac!=0)
+    } else {
+      data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
+        filter(mac!=0) %>% select(-count)
+    }
+  } else {
+    stop("ERROR: 'control_group' must be a character string of either 'int' or 'ext'")
+  }
   
   names <- c("id", "gene", "fun", "case", "group")
   
   data.prox = data.frame(rbind(data.cases, data.controls)) %>% mutate(across(all_of(names), as.factor)) %>% 
     filter(!(id %in% common$id))
   
-  counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(mac))
+  if (round_macs) {
+    counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = round(sum(mac)))
+  } else {
+    counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(mac))
+  }
   
   counts_wide = tidyr::pivot_wider(counts_gene, names_from=c(case, fun), values_from=n,
                                    values_fill=0, names_sep="_")
+  
+  # For some reason this just makes case_fun_w and control_fun_w the same as
+  # case_syn and control_syn, respectively. Not sure why so had to rework code
+  # counts_wide = counts_wide %>% mutate(case_ratio = case_fun/case_syn,
+  #                                      control_ratio = control_fun/control_syn,
+  #                                      case_fun_w = case_fun/median(case_ratio),
+  #                                      control_fun_w = control_fun/median(control_ratio)) %>%
+  #   mutate(prox = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA,
+  #                        proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+  #          prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA,
+  #                          proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+  
+  # Calculate the ratios
   counts_wide = counts_wide %>% mutate(case_ratio = case_fun/case_syn,
-                                       control_ratio = control_fun/control_syn,
-                                       case_fun_w = case_fun/median(case_ratio),
-                                       control_fun_w = control_fun/median(control_ratio)) %>%
-    mutate(prox = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA,
+                                       control_ratio = control_fun/control_syn)
+  
+  # Calculate medians
+  median_case_ratio = median(counts_wide$case_ratio)
+  median_control_ratio = median(counts_wide$control_ratio)
+  
+  # Calculate the weighted values and the p-values
+  counts_wide = counts_wide %>% mutate(case_fun_w = case_fun / median_case_ratio,
+                                         control_fun_w = control_fun / median_control_ratio) %>% 
+    mutate(prox = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
                          proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-           prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA,
+           prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
                            proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
   
   return(counts_wide)
