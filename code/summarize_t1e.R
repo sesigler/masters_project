@@ -29,6 +29,7 @@ folder = '160v100v80'
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', Nsim, '_', Pop, '/', data, '/', folder, '/')
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', Pop1, '_', Pop2, '_pops/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/', int_prune, 'v', ext_prune, '/')
+dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', Pop1, '_', Pop2, '_pops/')
 
 file_path = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, "_maf", maf, ".txt")
 file_out = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, "_", Ncc, "_maf", maf, ".csv")
@@ -48,10 +49,14 @@ file_out = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, 
 prox_int = read.table(paste0(dir, "T1e_gene_prox_int_", file_path), header = T)
 prox_ext = read.table(paste0(dir, "T1e_gene_prox_ext_", file_path), header = T)
 prox_ext_adj = read.table(paste0(dir, "T1e_gene_prox_ext_adj_", file_path), header = T)
+prox_ext_adj_unrounded = read.table(paste0(dir, "T1e_gene_prox_ext_adj_unrounded_", file_path), header = T)
+prox_ext_adj_rounded = read.table(paste0(dir, "T1e_gene_prox_ext_adj_rounded_", file_path), header = T)
 
 proxW_int = read.table(paste0(dir, "T1e_gene_prox_weighted_int_", file_path), header = T)
 proxW_ext = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_", file_path), header = T)
 proxW_ext_adj = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_adj_", file_path), header = T)
+proxW_ext_adj_unrounded = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_adj_unrounded_", file_path), header = T)
+proxW_ext_adj_rounded = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_adj_rounded_", file_path), header = T)
 
 prox2_int = read.table(paste0(dir, "T1e_gene_prox2_int_", file_path), header = T)
 prox2_ext = read.table(paste0(dir, "T1e_gene_prox2_ext_", file_path), header = T)
@@ -86,10 +91,14 @@ iecat_all_adj = read.table(paste0(dir, "T1e_gene_iecat_all_adj_", file_path), he
 prox_int = apply(prox_int, 2, my.power)
 prox_ext = apply(prox_ext, 2, my.power)
 prox_ext_adj = apply(prox_ext_adj, 2, my.power)
+prox_ext_adj_unrounded = apply(prox_ext_adj_unrounded, 2, my.power)
+prox_ext_adj_rounded = apply(prox_ext_adj_rounded, 2, my.power)
 
 proxW_int = apply(proxW_int, 2, my.power)
 proxW_ext = apply(proxW_ext, 2, my.power)
 proxW_ext_adj = apply(proxW_ext_adj, 2, my.power)
+proxW_ext_adj_unrounded = apply(proxW_ext_adj_unrounded, 2, my.power)
+proxW_ext_adj_rounded = apply(proxW_ext_adj_rounded, 2, my.power)
 
 prox2_int = apply(prox2_int, 2, my.power)
 prox2_ext = apply(prox2_ext, 2, my.power)
@@ -119,6 +128,9 @@ results = cbind(Gene=names(prox_int), prox_int, prox_ext, prox_ext_adj,
                 prox2_int, prox2_ext, prox2_all, prox2_ext_adj, prox2_all_adj,
                 iecat_all, iecat_all_adj)
 
+results = cbind(Gene=names(prox_int), prox_int, prox_ext, prox_ext_adj, prox_ext_adj_unrounded, prox_ext_adj_rounded, 
+                proxW_int, proxW_ext, proxW_ext_adj, proxW_ext_adj_unrounded, proxW_ext_adj_rounded)
+
 # results = cbind(Gene=names(prox_int), prox_int, prox_ext, proxW_int, proxW_ext,
 #                 prox2_int, prox2_ext, prox2_all,
 #                 iecat_all, skato_int, skato_ext, skato_all,
@@ -134,6 +146,7 @@ results = cbind(Gene=names(prox_int), prox_int, prox_ext, prox_ext_adj,
 # write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_gene_", method, "_", type, "_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 # write.csv(as.data.frame(results), paste0(dir, "T1e_power_all_gene_", int_prune, "_v_", ext_prune, "_", Pop, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 write.csv(as.data.frame(results), paste0(dir, "T1e_all_gene_", file_out), quote=F, row.names=F)
+write.csv(as.data.frame(results), paste0(dir, "T1e_all_gene_rounding_", file_out), quote=F, row.names=F)
 
 
 
