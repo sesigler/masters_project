@@ -148,6 +148,7 @@ ggsave(file = paste0(dir_out, 'maf_adj_v_unadj_cc_', Pop1, '_', Pop2, '_', scen,
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 cbPalette2 = c("#999999", "#BC9F4C", "#56B4E9", "#009E73", "#0072B2")
 colors3 = c("#CC79A7", "#F0E442", "#56B4E9")
+colors2 = c("#009E73", "#CC79A7")
 
 # Scatter plot by gene of adj vs unadj cc MAFs
 p9 <- ggplot(counts, aes(x=cc_maf, y=case_maf, color=group)) +
@@ -175,6 +176,315 @@ p10
 ggsave(file = paste0(dir_out, 'mac_case_v_cc_rounding_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
        plot = p10, height = 8, width = 16, units = 'in')
 
+refs = read.table(paste0(dir, "ref_ac_af_", int_prune, "_v_", ext_prune, "_", Pop1, '_', Pop2, "_", scen, "_maf", maf, ".txt"), header = T)
+refs$gene = factor(refs$gene, levels=c("ADGRE2", "ADGRE3", "ADGRE5", "CLEC17A", "DDX39A", "DNAJB1", 
+                                       "GIPC1", "NDUFB7", "PKN1", "PTGER1", "TECR", "ZNF333"))
+refs$fun = factor(refs$fun)
+refs$common = factor(refs$common)
+
+# Scatter plot ref AFs AFR vs NFE
+p11 <- ggplot(refs, aes(x=maf_afr, y=maf_nfe, color=fun)) +
+          geom_point(alpha=0.5) +
+          geom_abline(slope = 1, intercept = 0) +
+          scale_color_manual(values=colors2) +      
+          # facet_wrap(~gene) +
+          labs(y = 'NFE AF ', x= 'AFR AF', title = 'Scenario 2: Scatter Plot of AFR vs NFE AFs from Reference Data \nNref=500, Sim Reps=100 \nMAF=0.001') +
+          theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+          # theme_bw(base_size = 18)
+p11
+ggsave(file = paste0(dir_out, 'ref_afr_vs_nfe_af_all_fun_syn_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p11, height = 8, width = 16, units = 'in')
+
+# Scatter plot of 20K AFR vs 20K NFE AFs for the 100v100 common controls from 160v100v80
+dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/checks/'
+cc_afr = read.table(paste0(dir, "20K_", Pop1, "_cc_mac_maf_info_", int_prune, "_v_", ext_prune, "_maf", maf, ".txt"), header = T)
+cc_nfe = read.table(paste0(dir, "20K_", Pop2, "_cc_mac_maf_info_", int_prune, "_v_", ext_prune, "_maf", maf, ".txt"), header = T)
+
+merge <- merge(cc_afr, cc_nfe, by = "id", all = TRUE)
+
+merge2 = merge %>% filter(maf.x <= maf & maf.y <= maf)
+
+afr_data = cbind(merge2$mac.x, merge2$maf.x, )
 
 
+p12 <- ggplot(merge2, aes(x=maf.x, y=maf.y)) +
+          geom_point(alpha=0.5) +
+          geom_abline(slope = 1, intercept = 0) +
+          # scale_color_manual(values=colors2) +      
+          # facet_wrap(~gene) +
+          labs(y = 'NFE AF ', x= 'AFR AF', title = 'Scatter Plot of AFR vs NFE AFs from 20K Pop Data \nSim Reps=100 \nMAF=0.001') +
+          theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+          # theme_bw(base_size = 18)
+p12
+ggsave(file = paste0(dir_out, 'ref_afr_vs_nfe_af_all_fun_syn_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p12, height = 8, width = 16, units = 'in')
 
+################################################################################ 
+#Plot case, adj and undj cc vs ref data
+dir = 'C:/Users/sagee/Documents/GitHub/masters_project/Data/checks/'
+dir_out = 'C:/Users/sagee/Documents/GitHub/masters_project/Results/maf_mac_plots/'
+cc_afr = read.table(paste0(dir, "ac_af_data_", int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, "_maf", maf, ".txt"), header = T)
+
+### Case vs Ref
+# Case AF vs ref AFR AC
+p13 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=case_maf)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Case AF ', x= 'Reference (AFR) AC', title = 'Scenario 2: Scatter Plot of Rare Case AF vs Reference AFR AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p13
+ggsave(file = paste0(dir_out, 'rare_case_AF_vs_refAFR_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p13, height = 8, width = 16, units = 'in')
+
+# Case AF vs ref NFE AC
+p14 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=case_maf)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Case AF ', x= 'Reference (NFE) AC', title = 'Scenario 2: Scatter Plot of Rare Case AF vs Reference NFE AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p14
+ggsave(file = paste0(dir_out, 'rare_case_AF_vs_refNFE_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p14, height = 8, width = 16, units = 'in')
+
+# Case AC vs ref AFR AC
+p15 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=case_mac)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Case AC ', x= 'Reference (AFR) AC', title = 'Scenario 2: Scatter Plot of Rare Case AC vs Reference AFR AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p15
+ggsave(file = paste0(dir_out, 'rare_case_AC_vs_refAFR_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p15, height = 8, width = 16, units = 'in')
+
+# Case AC vs ref NFE AC
+p16 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=case_mac)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Case AC ', x= 'Reference (NFE) AC', title = 'Scenario 2: Scatter Plot of Rare Case AC vs Reference NFE AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p16
+ggsave(file = paste0(dir_out, 'rare_case_AC_vs_refNFE_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p16, height = 8, width = 16, units = 'in')
+
+### Adj CC vs Ref
+# adj CC AF vs ref AFR AC
+p17 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=adj_maf)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Adjusted External Control AF', x= 'Reference (AFR) AC', title = 'Scenario 2: Scatter Plot of Rare Adjusted External Control AF vs Reference AFR AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p17
+ggsave(file = paste0(dir_out, 'rare_adj_cc_AF_vs_refAFR_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p17, height = 8, width = 16, units = 'in')
+
+# adj CC AF vs ref NFE AC
+p18 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=adj_maf)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Adjusted External Control AF', x= 'Reference (NFE) AC', title = 'Scenario 2: Scatter Plot of Rare Adjusted External Control AF vs Reference NFE AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p18
+ggsave(file = paste0(dir_out, 'rare_adj_cc_AF_vs_refNFE_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p18, height = 8, width = 16, units = 'in')
+
+# adj CC AC vs ref AFR AC
+p19 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=adj_mac)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Adjusted External Control AC', x= 'Reference (AFR) AC', title = 'Scenario 2: Scatter Plot of Rare Adjusted External Control AC vs Reference AFR AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p19
+ggsave(file = paste0(dir_out, 'rare_adj_cc_AC_vs_refAFR_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p19, height = 8, width = 16, units = 'in')
+
+# adj CC AC vs ref NFE AC
+p20 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=adj_mac)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Adjusted External Control AC', x= 'Reference (NFE) AC', title = 'Scenario 2: Scatter Plot of Rare Adjusted External Control AC vs Reference NFE AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p20
+ggsave(file = paste0(dir_out, 'rare_adj_cc_AC_vs_refNFE_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p20, height = 8, width = 16, units = 'in')
+
+### Unadj CC vs Ref
+# unadj CC AF vs ref AFR AC
+p21 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=maf)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Unadjusted External Control AF', x= 'Reference (AFR) AC', title = 'Scenario 2: Scatter Plot of Rare Unadjusted External Control AF vs Reference AFR AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p21
+ggsave(file = paste0(dir_out, 'rare_unadj_cc_AF_vs_refAFR_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p21, height = 8, width = 16, units = 'in')
+
+# unadj CC AF vs ref NFE AC
+p22 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=maf)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Unadjusted External Control AF', x= 'Reference (NFE) AC', title = 'Scenario 2: Scatter Plot of Rare Unadjusted External Control AF vs Reference NFE AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p22
+ggsave(file = paste0(dir_out, 'rare_unadj_cc_AF_vs_refNFE_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p22, height = 8, width = 16, units = 'in')
+
+# unadj CC AC vs ref AFR AC
+p23 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=mac)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Unadjusted External Control AC', x= 'Reference (AFR) AC', title = 'Scenario 2: Scatter Plot of Rare Unadjusted External Control AC vs Reference AFR AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p23
+ggsave(file = paste0(dir_out, 'rare_unadj_cc_AC_vs_refAFR_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p23, height = 8, width = 16, units = 'in')
+
+# unadj CC AC vs ref NFE AC
+p24 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=mac)) +
+        geom_point(alpha=0.5) +
+        # geom_abline(slope = 1, intercept = 0) +
+        # scale_color_manual(values=colors2) +      
+        facet_wrap(~gene) +
+        labs(y = 'Unadjusted External Control AC', x= 'Reference (NFE) AC', title = 'Scenario 2: Scatter Plot of Rare Unadjusted External Control AC vs Reference NFE AC from 160v100v80 Data \nSim Reps=100, Nref=500, Ncase=5000 \nMAF=0.001') +
+        # theme(axis.text.x = element_text(angle = 35, hjust=0.65)) 
+        theme_bw(base_size = 18)
+p24
+ggsave(file = paste0(dir_out, 'rare_unadj_cc_AC_vs_refNFE_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = p24, height = 8, width = 16, units = 'in')
+
+### Merge plots into one plot
+# AF vs refs
+p13 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=case_maf)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Case AF ', x= 'Reference (AFR) AC')
+
+p14 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=case_maf)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Case AF ', x= 'Reference (NFE) AC')
+
+p17 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=adj_maf)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Adjusted External Control AF', x= 'Reference (AFR) AC')
+
+p18 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=adj_maf)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Adjusted External Control AF', x= 'Reference (NFE) AC')
+
+p21 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=maf)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Unadjusted External Control AF', x= 'Reference (AFR) AC')
+
+p22 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=maf)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Unadjusted External Control AF', x= 'Reference (NFE) AC')
+
+af_v_ref <- ggarrange(p13, p14, p17, p18, p21, p22, ncol=2, nrow=3)
+af_v_ref
+ggsave(file = paste0(dir_out, 'rare_AF_vs_refNFE_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = af_v_ref, height = 8, width = 16, units = 'in')
+
+
+# AC vs refs
+p15 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=case_mac)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Case AC ', x= 'Reference (AFR) AC') 
+
+p16 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=case_mac)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Case AC ', x= 'Reference (NFE) AC')
+
+p19 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=adj_mac)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Adjusted External Control AC', x= 'Reference (AFR) AC')
+
+p20 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=adj_mac)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Adjusted External Control AC', x= 'Reference (NFE) AC')
+
+p23 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_afr, y=mac)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Unadjusted External Control AC', x= 'Reference (AFR) AC') 
+
+p24 <- ggplot(cc_afr %>% filter(gene == "ZNF333"), aes(x=mac_nfe, y=mac)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~gene) +
+  labs(y = 'Unadjusted External Control AC', x= 'Reference (NFE) AC')
+
+ac_v_ref <- ggarrange(p15, p16, p19, p20, p23, p24, ncol=2, nrow=3)
+ac_v_ref
+ggsave(file = paste0(dir_out, 'rare_AC_vs_refNFE_AC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = ac_v_ref, height = 8, width = 16, units = 'in')
+
+# Histogram of Case AF in variants with MAC 0 in AFR ref
+p_hist_caseAF_afr0 <- ggplot(cc_afr %>% filter(gene == "ZNF333" & mac_afr == 0), aes(x=case_maf)) +
+                        geom_histogram(bins=20, color = "black", fill = "white") +
+                        facet_wrap(~gene)
+p_hist_caseAF_afr0
+
+p_hist_adjccAF_afr0 <- ggplot(cc_afr %>% filter(gene == "ZNF333" & mac_afr == 0), aes(x=adj_maf)) +
+                        geom_histogram(bins=20, color = "black", fill = "white") +
+                        facet_wrap(~gene)
+p_hist_adjccAF_afr0
+
+p_hist_unadjccAF_afr0 <- ggplot(cc_afr %>% filter(gene == "ZNF333" & mac_afr == 0), aes(x=maf)) +
+                          geom_histogram(bins=20, color = "black", fill = "white") +
+                          facet_wrap(~gene)
+p_hist_unadjccAF_afr0
+
+p_hist_caseAF_afr1 <- ggplot(cc_afr %>% filter(gene == "ZNF333" & mac_afr == 1), aes(x=case_maf)) +
+                        geom_histogram(bins=20, color = "black", fill = "white") +
+                        facet_wrap(~gene)
+p_hist_caseAF_afr1
+
+p_hist_adjccAF_afr1 <- ggplot(cc_afr %>% filter(gene == "ZNF333" & mac_afr == 1), aes(x=adj_maf)) +
+                        geom_histogram(bins=20, color = "black", fill = "white") +
+                        facet_wrap(~gene)
+p_hist_adjccAF_afr1
+
+p_hist_unadjccAF_afr1 <- ggplot(cc_afr %>% filter(gene == "ZNF333" & mac_afr == 1), aes(x=maf)) +
+                          geom_histogram(bins=20, color = "black", fill = "white") +
+                          facet_wrap(~gene)
+p_hist_unadjccAF_afr1
