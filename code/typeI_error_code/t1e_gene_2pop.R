@@ -6,6 +6,7 @@ library(devtools) #need for installing Summix
 library(proxecat)
 library(SKAT)
 library(iECAT)
+# library(DescTools) # For Lin's CCC-problem installing package
 # library(Summix) #need to run install_github("hendriau/Summix2")
 
 source("/home/math/siglersa/code/functions/read_in_funcs.R")
@@ -14,16 +15,17 @@ source("/home/math/siglersa/code/functions/methods_funcs.R")
 source("/home/math/siglersa/code/functions/summix2_adjAF.R")
 source("/home/math/siglersa/code/functions/summix2_summix.R")
 
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
 
 # pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 # data = 'by_gene'
 Pop1 = 'AFR'
 Pop2 = 'NFE'
-scen = 's1'
+scen = 's2'
 folder = '160v100v80'
 p_case = 160
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = p_exp = int_prune = 100
@@ -32,8 +34,8 @@ Ncase = Nint = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 Nref = 500
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
-pi_tar1 = 0.80 #pi.target for AFR: 0.80 for s1 or 1 for s2
-pi_tar2 = 0.20 #pi.target for NFE: 0.20 for s1 or 0 for s2
+pi_tar1 = 1 #pi.target for AFR: 0.80 for s1 or 1 for s2
+pi_tar2 = 0 #pi.target for NFE: 0.20 for s1 or 0 for s2
 # genes_power = c("ADGRE5", "ADGRE3", "TECR") # genes used for cases (power)
 
 
@@ -42,13 +44,13 @@ dir_in = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/', folde
 dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/')
 
-# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
-# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
+dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
+dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
 # dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 
 # Vectors to store unadjusted p-values
-# prox_int_genes_p = prox_ext_genes_p = c() #proxECAT
-# prox_weighted_int_genes_p = prox_weighted_ext_genes_p = c() #proxECAT-weighted
+prox_int_genes_p = prox_ext_genes_p = c() #proxECAT
+prox_weighted_int_genes_p = prox_weighted_ext_genes_p = c() #proxECAT-weighted
 # prox2_int_genes_p = prox2_ext_genes_p = prox2_all_genes_p = c() #LogProx
 # iecat_genes_p = c() #iECAT-O and SKAT-O
 # skato_ext_genes_p = skato_int_genes_p = skato_all_genes_p = c() #iECAT-O and SKAT-O
@@ -56,20 +58,23 @@ dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results
 # burden_ext_genes_p = burden_int_genes_p = burden_all_genes_p = c() #Burden
 
 # Vectors to store adjusted p-values
-# prox_ext_genes_p_adj = c() #proxECAT
-# prox_weighted_ext_genes_p_adj = c() #proxECAT-weighted
+prox_ext_genes_p_adj = c() #proxECAT
+prox_weighted_ext_genes_p_adj = c() #proxECAT-weighted
+# prox_ext_genes_p_adj_unrounded = prox_weighted_ext_genes_p_adj_unrounded = c() #proxECAT
+# prox_ext_genes_p_adj_rounded = prox_weighted_ext_genes_p_adj_rounded = c() #proxECAT
 # prox2_ext_genes_p_adj = prox2_all_genes_p_adj = c() #LogProx
 # iecat_genes_p_adj = c() #iECAT-O and SKAT-O
 
 # Vector to save proportion estimates and macs/mafs
-prop_ests_cc = c()
-allele_data = c()
+# prop_ests_cc = c()
+# allele_data_unadj = allele_data_adj = allele_data_adj_unrounded = c()
+# ac_af_data = c()
 
 
 # loop through the simulation replicates
 set.seed(1) 
-# i=1
-for (i in 1:100){
+i=1
+for (i in 1:10){
   
   # read in the legend file
   # leg = read_leg_homo(dir_leg, Pop, i)
@@ -112,32 +117,189 @@ for (i in 1:100){
   count_ref_pop2 = calc_allele_freqs_ref(Pop2, hap_ref_pop2, Nref)
   
   cc_refs = cbind(count_cc, count_ref_pop1, count_ref_pop2)
-  
+
   # Estimate ancestry proportions using only COMMON variants
   cc_est_prop = est_props(cc_refs, Pop1, Pop2, maf)
   # cases_est_prop = est_props(cases_refs, Pop1, Pop2, maf)
   # int_est_prop = est_props(int_refs, Pop1, Pop2, maf)
 
-  prop_ests_cc <- rbind(prop_ests_cc, cc_est_prop)
+  # prop_ests_cc <- rbind(prop_ests_cc, cc_est_prop)
   # prop_ests_cases <- rbind(prop_ests_cases, cases_est_prop)
   # prop_ests_int <- rbind(prop_ests_int, int_est_prop)
   
-  # Calculate adjusted AFs 
+  ##############################################################################
+  # Adjust AFs at the gene level instead of variant level
+  # counts_cases_gene = count_cases %>% mutate(row = leg$row, gene = leg$gene, id = leg$id, fun = leg$fun)
+  # cc_refs2 = cc_refs %>% mutate(row = leg$row, gene = leg$gene, id = leg$id, fun = leg$fun)
+  # count_cc_gene = count_cc %>% mutate(row = leg$row, gene = leg$gene, id = leg$id, fun = leg$fun)
+  # 
+  # cc_refs_gene = cc_refs2 %>% filter(gene == "ZNF333")
+  # counts_cases_gene = counts_cases_gene %>% filter(gene == "ZNF333")
+  # count_cc_gene = count_cc_gene %>% filter(gene == "ZNF333")
+  # 
+  # # variants that are common in at least one dataset
+  # common <- which(cc_refs_gene$maf > maf | cc_refs_gene[, "maf_afr"] > maf | cc_refs_gene[, "maf_nfe"] > maf) 
+  # 
+  # # Subset counts dataframe to only common variants
+  # common_df <- cc_refs_gene[common,]
+  # 
+  # # Use summix to calculate ancestry proportion estimates
+  # prop_est <- summix(data = common_df,
+  #                    reference=c("maf_afr", #AFR
+  #                                "maf_nfe"), #NFE
+  #                    observed="maf") #leave out pi.start argument
+  # 
+  # adj_AF <- adjAF(data = cc_refs_gene,
+  #                 reference = c("maf_afr", "maf_nfe"),
+  #                 observed = "maf",
+  #                 pi.target = c(pi_tar1, pi_tar2), #last one is AFR proportion
+  #                 pi.observed = c(prop_est[, "maf_afr"], prop_est[, "maf_nfe"]),
+  #                 adj_method = "average",
+  #                 N_reference = c(Nref, Nref),
+  #                 N_observed = Ncc,
+  #                 filter = TRUE) 
+  # 
+  # # Add adj AF to data frame
+  # cc_refs_gene$adj_maf <- adj_AF$adjusted.AF$adjustedAF
+  # 
+  # cc_refs_gene$adj_mac <- round(cc_refs_gene$adj_maf*(2*Ncc))
+  # 
+  # # Re-check that ACs and AFs are the minor ones (may be higher after adjustment)
+  # counts_minor = calc_adj_allele_freqs(cc_refs_gene, Ncc)
+  # 
+  # # Create data frame with only the 2 adj MAC and AF columns
+  # counts_adj <- counts_minor[, c("adj_mac2", "adj_maf2", "row", "gene", "id", "fun")]
+  # 
+  # # Rename columns so they are same as other data frames
+  # colnames(counts_adj) <- c("mac", "maf", "row", "gene", "id", "fun")
+  # 
+  # common_ext = leg[which(counts_cases_gene$maf > maf | count_cc_gene$maf > maf),]
+  # common_ext_adj = leg[which(counts_cases_gene$maf > maf | counts_adj$maf > maf),]
+  # 
+  # data.cases = counts_cases_gene %>% mutate(case="case", group="int") %>% 
+  #   filter(mac!=0) %>% select(-count)
+  # 
+  # data.controls.adj = counts_adj %>% mutate(case="control", group="ext") %>% 
+  #   filter(mac!=0)
+  # 
+  # data.controls = count_cc_gene %>% mutate(case="control", group="ext") %>% 
+  #   filter(mac!=0) %>% select(-count)
+  # 
+  # names <- c("id", "gene", "fun", "case", "group")
+  # 
+  # data.prox.adj = data.frame(rbind(data.cases, data.controls.adj)) %>% mutate(across(all_of(names), as.factor)) %>% 
+  #   filter(!(id %in% common_ext_adj$id))
+  # 
+  # data.prox = data.frame(rbind(data.cases, data.controls)) %>% mutate(across(all_of(names), as.factor)) %>% 
+  #   filter(!(id %in% common_ext$id))
+  # 
+  # counts_gene_adj = data.prox.adj %>% group_by(gene, case, fun) %>% summarise(n = sum(mac))
+  # 
+  # counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(mac))
+  # 
+  # counts_wide_adj = tidyr::pivot_wider(counts_gene_adj, names_from=c(case, fun), values_from=n,
+  #                                  values_fill=0, names_sep="_")
+  # 
+  # counts_wide = tidyr::pivot_wider(counts_gene, names_from=c(case, fun), values_from=n,
+  #                                  values_fill=0, names_sep="_")
+  # 
+  # # Calculate the ratios
+  # counts_wide_adj = counts_wide_adj %>% mutate(case_ratio = case_fun/case_syn,
+  #                                              control_ratio = control_fun/control_syn)
+  # 
+  # counts_wide = counts_wide %>% mutate(case_ratio = case_fun/case_syn,
+  #                                      control_ratio = control_fun/control_syn)
+  # 
+  # # Calculate medians
+  # median_case_ratio_adj = median(counts_wide_adj$case_ratio)
+  # median_control_ratio_adj = median(counts_wide_adj$control_ratio)
+  # 
+  # median_case_ratio = median(counts_wide$case_ratio)
+  # median_control_ratio = median(counts_wide$control_ratio)
+  # 
+  # # Calculate the weighted values and the p-values
+  # counts_wide_adj = counts_wide_adj %>% mutate(case_fun_w = case_fun / median_case_ratio_adj,
+  #                                              control_fun_w = control_fun / median_control_ratio_adj) %>% 
+  #   mutate(prox = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
+  #                        proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+  #          prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
+  #                          proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+  # 
+  # counts_wide = counts_wide %>% mutate(case_fun_w = case_fun / median_case_ratio,
+  #                                      control_fun_w = control_fun / median_control_ratio) %>% 
+  #   mutate(prox = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
+  #                        proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+  #          prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
+  #                          proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+  ##############################################################################
+  
+  # Calculate adjusted AFs
   count_cc_adj = calc_adjusted_AF(cc_refs, Pop1, Pop2, cc_est_prop, pi_tar1, pi_tar2, Nref, Ncc)
+  # count_cc_adj_unrounded = calc_adjusted_AF(cc_refs, Pop1, Pop2, cc_est_prop, pi_tar1, pi_tar2, Nref, Ncc, round_adj_mac = FALSE)
+
+  # identify the common variants
+  # common_int = leg[which(count_cases$af > maf & count_cases$af < 1-maf | count_int$af > maf & count_int$af < 1-maf),]
+  common_ext = leg[which(count_cases$af > maf & count_cases$af < 1-maf | count_cc$af > maf & count_cc$af < 1-maf),]
+  # common_all = leg[which(count_cases$af > maf & count_cases$af < 1-maf | count_int$af > maf & count_int$af < 1-maf | count_cc$af > maf & count_cc$af < 1-maf),]
+
+  common_ext_adj = leg[which(count_cases$af > maf & count_cases$af < 1-maf | count_cc_adj$af > maf),]
+  # common_all_adj = leg[which(count_cases$af > maf & count_cases$af < 1-maf | count_int$af > maf & count_int$af < 1-maf | count_cc_adj$af > maf),]
   
-  # Save the unadjusted and adjusted MAFs and MACs
-  afs <- cbind(count_cases$mac, count_cases$maf, count_cc$mac, count_cc$maf, count_cc_adj, leg$gene)
-  allele_data = rbind(allele_data, afs)
+  ### Check dist
+  # data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case", group="int") %>% 
+  #   filter(mac!=0) %>% select(-count)
+  data.cases = count_cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case", group="int") %>% 
+    filter(ac!=0)
   
-  # # identify the common variants
-  # common_int = leg[which(count_cases$maf > maf | count_int$maf > maf),]
-  # common_ext = leg[which(count_cases$maf > maf | count_cc$maf > maf),]
-  # common_all = leg[which(count_cases$maf > maf | count_int$maf > maf | count_cc$maf > maf),]
-  # 
-  # common_ext_adj = leg[which(count_cases$maf > maf | count_cc_adj$maf > maf),]
-  # common_all_adj = leg[which(count_cases$maf > maf | count_int$maf > maf | count_cc_adj$maf > maf),]
-  # 
-  # # convert genotypes into long format for ProxECAT v2
+  data.controls = count_cc_adj %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
+    filter(ac!=0)
+  
+  names <- c("id", "gene", "fun", "case", "group")
+  
+  data.prox = data.frame(rbind(data.cases, data.controls)) %>% mutate(across(all_of(names), as.factor)) %>% 
+    filter(!(id %in% common_ext_adj$id))
+  
+  library(ggplot2)
+  library(ggpubr)
+  dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
+  case_af <- ggplot(data.prox %>% filter(case == "case"), aes(x=af)) +
+    geom_histogram(color="black", fill="white")
+  case_af
+  
+  case_ac <- ggplot(data.prox %>% filter(case == "case"), aes(x=ac)) +
+    geom_histogram(color="black", fill="white")
+  case_ac
+  
+  cc_ac <- ggplot(data.prox %>% filter(case == "control"), aes(x=ac)) +
+    geom_histogram(color="black", fill="white")
+  cc_ac
+  
+  plots <- ggarrange(case_af, case_ac, cc_ac, ncol=2, nrow=2)
+  plots
+  ggsave(file = paste0(dir_out, 'rare_caseAF_caseAC_adjccAC_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+         plot = plots, height = 8, width = 16, units = 'in')
+
+  # proxECAT
+  # counts_int_wide = prox_gene_data_prep2(count_cases, count_int, leg, "int", adj=FALSE, common_int)
+  counts_ext_wide = prox_gene_data_prep2(count_cases, count_cc, leg, "ext", adj=FALSE, common_ext)
+  counts_ext_wide_adj = prox_gene_data_prep2(count_cases, count_cc_adj, leg, "ext", adj=TRUE, common_ext_adj)
+  # counts_ext_wide_adj_unrounded = prox_gene_data_prep2(count_cases, count_cc_adj_unrounded, leg, "ext", adj=TRUE, common_ext_adj_unrounded, round_macs=FALSE)
+  # counts_ext_wide_adj_rounded = prox_gene_data_prep2(count_cases, count_cc_adj_unrounded, leg, "ext", adj=TRUE, common_ext_adj_unrounded, round_macs=TRUE)
+
+  # Store the proxECAT and proxECAT-weighted p-values
+  # prox_int_genes_p = rbind(prox_int_genes_p, counts_int_wide$prox)
+  prox_ext_genes_p = rbind(prox_ext_genes_p, counts_ext_wide$prox)
+  prox_ext_genes_p_adj = rbind(prox_ext_genes_p_adj, counts_ext_wide_adj$prox)
+  # prox_ext_genes_p_adj_unrounded = rbind(prox_ext_genes_p_adj_unrounded, counts_ext_wide_adj_unrounded$prox)
+  # prox_ext_genes_p_adj_rounded = rbind(prox_ext_genes_p_adj_rounded, counts_ext_wide_adj_rounded$prox)
+
+  # prox_weighted_int_genes_p = rbind(prox_weighted_int_genes_p, counts_int_wide$prox_w)
+  prox_weighted_ext_genes_p = rbind(prox_weighted_ext_genes_p, counts_ext_wide$prox_w)
+  prox_weighted_ext_genes_p_adj = rbind(prox_weighted_ext_genes_p_adj, counts_ext_wide_adj$prox_w)
+  # prox_weighted_ext_genes_p_adj_unrounded = rbind(prox_weighted_ext_genes_p_adj_unrounded, counts_ext_wide_adj_unrounded$prox_w)
+  # prox_weighted_ext_genes_p_adj_rounded = rbind(prox_weighted_ext_genes_p_adj_rounded, counts_ext_wide_adj_rounded$prox_w)
+
+  # convert genotypes into long format for ProxECAT v2
   # data_cases = make_long(count_cases, leg, "case", "int")
   # data_int = make_long(count_int, leg, "control", "int")
   # data_cc = make_long(count_cc, leg, "control", "ext")
@@ -158,20 +320,6 @@ for (i in 1:100){
   # 
   # data_all_adj = data.frame(lapply(rbind(data_cases, data_int, data_cc_adj), factor)) %>%
   #   filter(!(id %in% common_all_adj$id))
-  # 
-  # # proxECAT
-  # counts_int_wide = prox_gene_data_prep(data_cases, data_int, common_int)
-  # counts_ext_wide = prox_gene_data_prep(data_cases, data_cc, common_ext)
-  # counts_ext_wide_adj = prox_gene_data_prep(data_cases, data_cc_adj, common_ext_adj)
-  # 
-  # # Store the proxECAT and proxECAT-weighted p-values
-  # prox_int_genes_p = rbind(prox_int_genes_p, counts_int_wide$prox)
-  # prox_ext_genes_p = rbind(prox_ext_genes_p, counts_ext_wide$prox)
-  # prox_ext_genes_p_adj = rbind(prox_ext_genes_p_adj, counts_ext_wide_adj$prox)
-  # 
-  # prox_weighted_int_genes_p = rbind(prox_weighted_int_genes_p, counts_int_wide$prox_w)
-  # prox_weighted_ext_genes_p = rbind(prox_weighted_ext_genes_p, counts_ext_wide$prox_w)
-  # prox_weighted_ext_genes_p_adj = rbind(prox_weighted_ext_genes_p_adj, counts_ext_wide_adj$prox_w)
   # 
   # # create case/control phenotype matrices for iECAT/SKAT
   # pheno_int = rep(0, (ncol(geno_cases) + ncol(geno_int)))
@@ -320,13 +468,17 @@ for (i in 1:100){
   print(i)
 }
 
-# # Set col names to the genes
+# Set col names to the genes
 # colnames(prox_int_genes_p) = colnames(prox_ext_genes_p) = genes
+colnames(prox_ext_genes_p) = genes
 # colnames(prox_weighted_int_genes_p) = colnames(prox_weighted_ext_genes_p) = genes
+colnames(prox_weighted_ext_genes_p) = genes
 # colnames(prox2_int_genes_p) = colnames(prox2_ext_genes_p) = colnames(prox2_all_genes_p) = genes
 # colnames(iecat_genes_p) = genes
 # 
-# colnames(prox_ext_genes_p_adj) = colnames(prox_weighted_ext_genes_p_adj) = genes
+colnames(prox_ext_genes_p_adj) = colnames(prox_weighted_ext_genes_p_adj) = genes
+# colnames(prox_ext_genes_p_adj_unrounded) = colnames(prox_weighted_ext_genes_p_adj_unrounded) = genes
+# colnames(prox_ext_genes_p_adj_rounded) = colnames(prox_weighted_ext_genes_p_adj_rounded) = genes
 # colnames(prox2_ext_genes_p_adj) = colnames(prox2_all_genes_p_adj) = genes
 # colnames(iecat_genes_p_adj) = genes
 # colnames(skato_int_genes_p) = colnames(skato_ext_genes_p) = colnames(skato_all_genes_p) = genes
@@ -334,22 +486,29 @@ for (i in 1:100){
 # colnames(burden_int_genes_p) = colnames(burden_ext_genes_p) = colnames(burden_all_genes_p) = genes
 
 # Set file path name
-# file_path = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, "_maf", maf, ".txt")
+file_path = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, "_maf", maf, ".txt")
 
-colnames(allele_data) = c("case_mac", "case_maf", "unadj_cc_mac", "unadj_cc_maf", "adj_cc_mac", "adj_cc_maf", "gene")
+# colnames(allele_data) = c("case_mac", "case_maf", "unadj_cc_mac", "unadj_cc_maf", "adj_cc_mac", "adj_cc_maf", "gene")
 
 # Save the proportion estimates
-write.table(data.frame(prop_ests_cc), paste0(dir_out, "T1e_cc_prop_ests_", int_prune, "_v_", ext_prune, "_", Pop1, '_', Pop2, "_", scen, "_maf", maf, ".txt"), quote=F, row.names=F)
-write.table(data.frame(allele_data), paste0(dir_out, "T1e_MACs_MAFs_", int_prune, "_v_", ext_prune, "_", Pop1, '_', Pop2, "_", scen, "_maf", maf, ".txt"), quote=F, row.names=F)
+# write.table(data.frame(prop_ests_cc), paste0(dir_out, "T1e_cc_prop_ests_", int_prune, "_v_", ext_prune, "_", Pop1, '_', Pop2, "_", scen, "_maf", maf, ".txt"), quote=F, row.names=F)
+# write.table(data.frame(allele_data_unadj), paste0(dir_out, "T1e_MACs_MAFs_unadj_", file_path), quote=F, row.names=F)
+# write.table(data.frame(allele_data_adj), paste0(dir_out, "T1e_MACs_MAFs_adj_", file_path), quote=F, row.names=F)
+# write.table(data.frame(allele_data_adj_unrounded), paste0(dir_out, "T1e_MACs_MAFs_adj_unrounded_", file_path), quote=F, row.names=F)
+# write.table(data.frame(ac_af_data), paste0(dir_out, "ac_af_data_", file_path), quote=F, row.names=F)
 
-# # ProxECAT
+# ProxECAT
 # write.table(prox_int_genes_p, paste0(dir_out, "T1e_gene_prox_int_", file_path), quote=F, row.names=F, col.names=T)
-# write.table(prox_ext_genes_p, paste0(dir_out, "T1e_gene_prox_ext_", file_path), quote=F, row.names=F, col.names=T)
-# write.table(prox_ext_genes_p_adj, paste0(dir_out, "T1e_gene_prox_ext_adj_", file_path), quote=F, row.names=F, col.names=T)
-# # ProxECAT-weighted
+write.table(prox_ext_genes_p, paste0(dir_out, "T1e_gene_prox_ext_", file_path), quote=F, row.names=F, col.names=T)
+write.table(prox_ext_genes_p_adj, paste0(dir_out, "T1e_gene_prox_ext_adj_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox_ext_genes_p_adj_unrounded, paste0(dir_out, "T1e_gene_prox_ext_adj_unrounded_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox_ext_genes_p_adj_rounded, paste0(dir_out, "T1e_gene_prox_ext_adj_rounded_", file_path), quote=F, row.names=F, col.names=T)
+# ProxECAT-weighted
 # write.table(prox_weighted_int_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_int_", file_path), quote=F, row.names=F, col.names=T)
-# write.table(prox_weighted_ext_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_ext_", file_path), quote=F, row.names=F, col.names=T)
-# write.table(prox_weighted_ext_genes_p_adj, paste0(dir_out, "T1e_gene_prox_weighted_ext_adj_", file_path), quote=F, row.names=F, col.names=T)
+write.table(prox_weighted_ext_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_ext_", file_path), quote=F, row.names=F, col.names=T)
+write.table(prox_weighted_ext_genes_p_adj, paste0(dir_out, "T1e_gene_prox_weighted_ext_adj_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox_weighted_ext_genes_p_adj_unrounded, paste0(dir_out, "T1e_gene_prox_weighted_ext_adj_unrounded_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox_weighted_ext_genes_p_adj_rounded, paste0(dir_out, "T1e_gene_prox_weighted_ext_adj_rounded_", file_path), quote=F, row.names=F, col.names=T)
 # # LogProx
 # write.table(prox2_int_genes_p, paste0(dir_out, "T1e_gene_prox2_int_", file_path), quote=F, row.names=F, col.names=T)
 # write.table(prox2_ext_genes_p, paste0(dir_out, "T1e_gene_prox2_ext_", file_path), quote=F, row.names=F, col.names=T)

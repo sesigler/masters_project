@@ -96,9 +96,11 @@ merge_cases = function(cases_power, cases_t1e, leg, genes_power) {
 # Function to calculate the allele counts/frequencies
 calc_allele_freqs = function(geno, n) {
   
-  counts = data.frame(count = rowSums(geno)) %>% 
-    mutate(mac = ifelse(count>n, 2*n-count, count)) %>%
-    mutate(maf = mac/(2*n))
+  # counts = data.frame(count = rowSums(geno)) %>% 
+  #   mutate(mac = ifelse(count>n, 2*n-count, count)) %>%
+  #   mutate(maf = mac/(2*n))
+  counts = data.frame(ac = rowSums(geno)) %>% 
+    mutate(af = ac/(2*n))
   
   return(counts)
 }
@@ -116,12 +118,17 @@ calc_allele_freqs_all = function(counts_cases, counts_int, counts_cc, Ncase, Nin
 # Function to calculate allele counts/freqs for reference datasets
 calc_allele_freqs_ref = function(Pop, hap_ref, Nref) {
   
-  counts_ref = data.frame(count = rowSums(hap_ref)) %>% 
-    mutate(mac = ifelse(count > Nref, 2*Nref-count, count)) %>%
-    mutate(maf = mac/(2*Nref))
+  # counts_ref = data.frame(count = rowSums(hap_ref)) %>% 
+  #   mutate(mac = ifelse(count > Nref, 2*Nref-count, count)) %>%
+  #   mutate(maf = mac/(2*Nref))
+  # 
+  # Pop <- tolower(Pop)
+  # colnames(counts_ref) <- c(paste0("count_", Pop), paste0("mac_", Pop), paste0("maf_", Pop))
+  counts_ref = data.frame(ac = rowSums(hap_ref)) %>% 
+    mutate(af = ac/(2*Nref))
   
   Pop <- tolower(Pop)
-  colnames(counts_ref) <- c(paste0("count_", Pop), paste0("mac_", Pop), paste0("maf_", Pop))
+  colnames(counts_ref) <- c(paste0("ac_", Pop), paste0("af_", Pop))
   
   return(counts_ref)
 }
@@ -142,58 +149,100 @@ est_props = function(counts, Pop1, Pop2, maf) {
   Pop2 <- tolower(Pop2)
   
   # variants that are common in at least one dataset
-  common <- which(counts$maf > maf | counts[, paste0("maf_", Pop1)] > maf | counts[, paste0("maf_", Pop2)] > maf) 
+  # common <- which(counts$maf > maf | counts[, paste0("maf_", Pop1)] > maf | counts[, paste0("maf_", Pop2)] > maf)
+  # need to filter for both sides of the maf
+  common <- which(counts$af > maf & counts$af < 1-maf | counts[, paste0("af_", Pop1)] > maf & counts[, paste0("af_", Pop1)] < 1-maf | 
+                    counts[, paste0("af_", Pop2)] > maf & counts[, paste0("af_", Pop2)] < 1-maf)
+  
   
   # Subset counts dataframe to only common variants
   common_df <- counts[common,]
   
   # Use summix to calculate ancestry proportion estimates
+  # prop_est <- summix(data = common_df,
+  #                    reference=c(paste0("maf_", Pop1), #AFR
+  #                                paste0("maf_", Pop2)), #NFE
+  #                    observed="maf") #leave out pi.start argument
   prop_est <- summix(data = common_df,
-                     reference=c(paste0("maf_", Pop1), #AFR
-                                 paste0("maf_", Pop2)), #NFE
-                     observed="maf") #leave out pi.start argument
+                     reference=c(paste0("af_", Pop1), #AFR
+                                 paste0("af_", Pop2)), #NFE
+                     observed="af") #leave out pi.start argument
   
   return(prop_est)
 }
 
 # Use summix to update AFs of common controls dataset
-calc_adjusted_AF = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref, Ncc, round_adj_mac) {
+calc_adjusted_AF = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref, Ncc) {
   
   Pop1 <- tolower(Pop1)
   Pop2 <- tolower(Pop2)
   
+  # adj_AF <- adjAF(data = counts,
+  #                 reference = c(paste0("maf_", Pop1), paste0("maf_", Pop2)),
+  #                 observed = "maf",
+  #                 pi.target = c(pi_tar1, pi_tar2), 
+  #                 pi.observed = c(prop_est[, paste0("maf_", Pop1)], prop_est[, paste0("maf_", Pop2)]),
+  #                 adj_method = "average",
+  #                 N_reference = c(Nref, Nref),
+  #                 N_observed = Ncc,
+  #                 filter = TRUE)
   adj_AF <- adjAF(data = counts,
-                  reference = c(paste0("maf_", Pop1), paste0("maf_", Pop2)),
-                  observed = "maf",
-                  pi.target = c(pi_tar1, pi_tar2), #last one is AFR proportion
-                  pi.observed = c(prop_est[, paste0("maf_", Pop1)], prop_est[, paste0("maf_", Pop2)]),
+                  reference = c(paste0("af_", Pop1), paste0("af_", Pop2)),
+                  observed = "af",
+                  pi.target = c(pi_tar1, pi_tar2), 
+                  pi.observed = c(prop_est[, paste0("af_", Pop1)], prop_est[, paste0("af_", Pop2)]),
                   adj_method = "average",
                   N_reference = c(Nref, Nref),
                   N_observed = Ncc,
                   filter = TRUE) 
   
+  # # Check adjustments between unadj AF and case AF
+  # plot(cc_refs$af, count_cases$af)
+  # abline(0, 1)
+  # 
+  # CCC_dat = CCC(targetAFs, adjustedAFs)$rho.c
+  # 
+  # # and adj AF and case AF
+  # plot(adj_AF$adjusted.AF$adjustedAF, count_cases$af)
+  # abline(0, 1)
+  
   # Add adj AF to data frame
-  counts$adj_maf <- adj_AF$adjusted.AF$adjustedAF
+  # counts$adj_maf <- adj_AF$adjusted.AF$adjustedAF
+  counts$adj_af <- adj_AF$adjusted.AF$adjustedAF
+  
+  # Calculate the MINOR adjusted AF
+  counts$adj_maf <- ifelse(counts$adj_af > .5, 1-counts$adj_af, counts$adj_af)
+  
+  # Calculate the adjusted Minor AC using the effective samples size
+  # Want to use effective sample size bc we essentially "remove" the NFE individuals from the pop when adjusting
+  # counts$adj_mac <- floor(counts$adj_maf*(2*adj_AF$effective.sample.size))
+  counts$adj_mac <- floor(counts$adj_maf*(2*Ncc))
+  
+  # Return just the adjusted data
+  counts_adj <- counts[, c("adj_mac", "adj_maf")]
+  
+  # Rename columns so they are same as other data frames
+  colnames(counts_adj) <- c("ac", "af")
   
   # Set AFs < 0 = 0 
   # Fixed in Summix2
   # counts$adj_maf[counts$adj_maf < 0] <- 0
   
   # Add adj ACs
-  if (round_adj_mac) {
-    counts$adj_mac <- round(counts$adj_maf*(2*Ncc))
-  } else {
-    counts$adj_mac <- counts$adj_maf*(2*Ncc)
-  }
-  
-  # Re-check that ACs and AFs are the minor ones (may be higher after adjustment)
-  counts_minor = calc_adj_allele_freqs(counts, Ncc)
-  
-  # Create data frame with only the 2 adj MAC and AF columns
-  counts_adj <- counts_minor[, c("adj_mac2", "adj_maf2")]
-  
-  # Rename columns so they are same as other data frames
-  colnames(counts_adj) <- c("mac", "maf")
+  # if (round_adj_mac) {
+  #   counts$adj_mac <- round(counts$adj_maf*(2*Ncc))
+  # } else {
+  #   counts$adj_mac <- counts$adj_maf*(2*Ncc)
+  # }
+  # 
+  # # Re-check that ACs and AFs are the minor ones (may be higher after adjustment)
+  # counts_minor = calc_adj_allele_freqs(counts, Ncc)
+  # 
+  # # Create data frame with only the 2 adj MAC and AF columns
+  # counts_adj <- counts_minor[, c("adj_mac2", "adj_maf2")]
+  # 
+  # # Rename columns so they are same as other data frames
+  # colnames(counts_adj) <- c("mac", "maf")
   
   return(counts_adj)
 }

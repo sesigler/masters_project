@@ -121,22 +121,25 @@ prox_gene_data_prep = function(data.cases, data.controls, common) {
 
 # Function for formatting data and running statistical test for ProxECAT by gene
 # not using the long format that LogProx uses
-prox_gene_data_prep2 = function(count.cases, count.controls, leg, control_group, adj, common, round_macs) {
+prox_gene_data_prep2 = function(count.cases, count.controls, leg, control_group, adj, common) {
   
+  # data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case", group="int") %>% 
+  #   filter(mac!=0) %>% select(-count)
   data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case", group="int") %>% 
-    filter(mac!=0) %>% select(-count)
+    filter(ac!=0)
   
   if (control_group == "int") {
+    # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="int") %>% 
+    #   filter(mac!=0) %>% select(-count)
     data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="int") %>% 
-      filter(mac!=0) %>% select(-count)
+      filter(ac!=0)
   } else if (control_group == "ext") {
-    if (adj) {
-      data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
-        filter(mac!=0)
-    } else {
-      data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
-        filter(mac!=0) %>% select(-count)
-    }
+    # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
+    #   filter(mac!=0)
+    data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
+      filter(ac!=0)
+    # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
+    #   filter(mac!=0) %>% select(-count)
   } else {
     stop("ERROR: 'control_group' must be a character string of either 'int' or 'ext'")
   }
@@ -146,12 +149,9 @@ prox_gene_data_prep2 = function(count.cases, count.controls, leg, control_group,
   data.prox = data.frame(rbind(data.cases, data.controls)) %>% mutate(across(all_of(names), as.factor)) %>% 
     filter(!(id %in% common$id))
   
-  if (round_macs) {
-    counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = round(sum(mac)))
-  } else {
-    counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(mac))
-  }
-  
+  # counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(mac))
+  counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(ac))
+
   counts_wide = tidyr::pivot_wider(counts_gene, names_from=c(case, fun), values_from=n,
                                    values_fill=0, names_sep="_")
   
