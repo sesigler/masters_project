@@ -96,10 +96,12 @@ merge_cases = function(cases_power, cases_t1e, leg, genes_power) {
 # Function to calculate the allele counts/frequencies
 calc_allele_freqs = function(geno, n) {
   
-  # counts = data.frame(count = rowSums(geno)) %>% 
+  # counts = data.frame(count = rowSums(geno)) %>%
   #   mutate(mac = ifelse(count>n, 2*n-count, count)) %>%
   #   mutate(maf = mac/(2*n))
-  counts = data.frame(ac = rowSums(geno)) %>% 
+  
+  # Adelle's way
+  counts = data.frame(ac = rowSums(geno)) %>%
     mutate(af = ac/(2*n))
   
   return(counts)
@@ -118,15 +120,17 @@ calc_allele_freqs_all = function(counts_cases, counts_int, counts_cc, Ncase, Nin
 # Function to calculate allele counts/freqs for reference datasets
 calc_allele_freqs_ref = function(Pop, hap_ref, Nref) {
   
-  # counts_ref = data.frame(count = rowSums(hap_ref)) %>% 
+  # counts_ref = data.frame(count = rowSums(hap_ref)) %>%
   #   mutate(mac = ifelse(count > Nref, 2*Nref-count, count)) %>%
   #   mutate(maf = mac/(2*Nref))
   # 
   # Pop <- tolower(Pop)
   # colnames(counts_ref) <- c(paste0("count_", Pop), paste0("mac_", Pop), paste0("maf_", Pop))
-  counts_ref = data.frame(ac = rowSums(hap_ref)) %>% 
-    mutate(af = ac/(2*Nref))
   
+  # Adelle's way
+  counts_ref = data.frame(ac = rowSums(hap_ref)) %>%
+    mutate(af = ac/(2*Nref))
+
   Pop <- tolower(Pop)
   colnames(counts_ref) <- c(paste0("ac_", Pop), paste0("af_", Pop))
   
@@ -150,8 +154,11 @@ est_props = function(counts, Pop1, Pop2, maf) {
   
   # variants that are common in at least one dataset
   # common <- which(counts$maf > maf | counts[, paste0("maf_", Pop1)] > maf | counts[, paste0("maf_", Pop2)] > maf)
+  
+  
+  # Adelle's way
   # need to filter for both sides of the maf
-  common <- which(counts$af > maf & counts$af < 1-maf | counts[, paste0("af_", Pop1)] > maf & counts[, paste0("af_", Pop1)] < 1-maf | 
+  common <- which(counts$af > maf & counts$af < 1-maf | counts[, paste0("af_", Pop1)] > maf & counts[, paste0("af_", Pop1)] < 1-maf |
                     counts[, paste0("af_", Pop2)] > maf & counts[, paste0("af_", Pop2)] < 1-maf)
   
   
@@ -163,6 +170,8 @@ est_props = function(counts, Pop1, Pop2, maf) {
   #                    reference=c(paste0("maf_", Pop1), #AFR
   #                                paste0("maf_", Pop2)), #NFE
   #                    observed="maf") #leave out pi.start argument
+  
+  # Adelle's way
   prop_est <- summix(data = common_df,
                      reference=c(paste0("af_", Pop1), #AFR
                                  paste0("af_", Pop2)), #NFE
@@ -186,6 +195,8 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref
   #                 N_reference = c(Nref, Nref),
   #                 N_observed = Ncc,
   #                 filter = TRUE)
+  
+  # Adelle's way
   adj_AF <- adjAF(data = counts,
                   reference = c(paste0("af_", Pop1), paste0("af_", Pop2)),
                   observed = "af",
