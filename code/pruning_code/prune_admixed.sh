@@ -4,10 +4,14 @@
 
 # Simulate an admixed African American pop composed of AFR and NFE haplotypes
 # Then prune haplotypes accordingly
+# Note: nsim based off of max AFR and NFE individuals needed between both scenarios 1 and 2
 
 pop1=AFR
 pop2=NFE
-nsim=23000
+nhaps=100000
+nsim=42000
+Npop1=56000
+Npop2=28000
 pcase=160
 pconf=80
 
@@ -18,47 +22,45 @@ start=$(($end-99))
 #WD=/storage/math/projects/compinfo/simulations
 WD=/home/math/siglersa
 
-cd ${WD}/admixed/${pop1}_${pop2}_pops/${pcase}v100v${pconf}
-
-### replace the first lines of the Expected MAC Bins R script with the necessary variables
-#Pop="Pop = '$pop1'"
-#Pcase="p_case = $pcase"
-#Pconf="p_conf = $pconf"
-#Nsim="Nsim = $nsim"
-#sed -i "1c${Pop}" ${WD}/code/expected_MAC_bins_cases.R 
-#sed -i "2c${Pcase}" ${WD}/code/expected_MAC_bins_cases.R 
-#sed -i "3c${Pconf}" ${WD}/code/expected_MAC_bins_cases.R 
-#sed -i "4c${Nsim}" ${WD}/code/expected_MAC_bins_cases.R 
-
-### calculate the necessary expected variants (just need AFR)
-#/storage/singularity/mixtures.sif Rscript ${WD}/code/expected_MAC_bins_cases.R
-
+cd ${WD}/admixed/${pop1}_${pop2}_pops/Sim_42k/${pcase}v100v${pconf}
 
 ### use RAREsim to prune to pcase % functional and 100% synonymous
 for rep in $(eval echo "{$start..$end}")
 do 
 
 ### Copy megan's .controls.haps.gz file into my directory then gunzip it
-cp /storage/math/projects/RAREsim/Cases/Sim_20k/${pop1}/data/chr19.block37.${pop1}.sim${rep}.controls.haps.gz .
-gunzip chr19.block37.${pop1}.sim${rep}.controls.haps.gz
+#cp /storage/math/projects/RAREsim/Cases/Sim_20k/${pop1}/data/chr19.block37.${pop1}.sim${rep}.controls.haps.gz .
+#gunzip chr19.block37.${pop1}.sim${rep}.controls.haps.gz
+
+# gunzip the .controls.haps.gz file
+gunzip ${WD}/Sim_100k/${pop1}/data/chr19.block37.${pop1}.sim${rep}.${nhaps}.controls.haps.gz
 
 ### extract the AFR haplotypes
 python3 ${WD}/raresim/extract.py \
-    -i chr19.block37.${pop1}.sim${rep}.controls.haps \
+    -i ${WD}/Sim_100k/${pop1}/data/chr19.block37.${pop1}.sim${rep}.${nhaps}.controls.haps \
     -o chr19.block37.${pop1}.reduced.sim${rep}.controls.haps \
-    -n 37000 \
-    --seed 123
+    -n $Npop1 \
+    --seed $rep
+
+#gzip the gunzipped hap file
+gzip ${WD}/Sim_100k/${pop1}/data/chr19.block37.${pop1}.sim${rep}.${nhaps}.controls.haps
 
 ### Copy megan's .controls.haps.gz file into my directory then gunzip it
-cp /storage/math/projects/RAREsim/Cases/Sim_20k/${pop2}/data/chr19.block37.${pop2}.sim${rep}.controls.haps.gz .
-gunzip chr19.block37.${pop2}.sim${rep}.controls.haps.gz
+#cp /storage/math/projects/RAREsim/Cases/Sim_20k/${pop2}/data/chr19.block37.${pop2}.sim${rep}.controls.haps.gz .
+#gunzip chr19.block37.${pop2}.sim${rep}.controls.haps.gz
+
+# gunzip the .controls.haps.gz file
+gunzip ${WD}/Sim_100k/${pop2}/data/chr19.block37.${pop2}.sim${rep}.${nhaps}.controls.haps.gz
 
 ### extract the NFE haplotypes
 python3 ${WD}/raresim/extract.py \
-    -i chr19.block37.${pop2}.sim${rep}.controls.haps \
+    -i ${WD}/Sim_100k/${pop2}/data/chr19.block37.${pop2}.sim${rep}.${nhaps}.controls.haps \
     -o chr19.block37.${pop2}.reduced.sim${rep}.controls.haps \
-    -n 9000 \
-    --seed 123
+    -n $Npop2 \
+    --seed $rep
+
+#gzip the gunzipped hap file
+gzip ${WD}/Sim_100k/${pop2}/data/chr19.block37.${pop2}.sim${rep}.${nhaps}.controls.haps
 
 ### combine the extracted AFR and NFE haplotype files 
 paste chr19.block37.${pop1}.reduced.sim${rep}.controls.haps-sample chr19.block37.${pop2}.reduced.sim${rep}.controls.haps-sample -d " " | gzip > chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.gz
@@ -69,11 +71,12 @@ python3 ${WD}/raresim/convert.py \
     -o chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.sm
 
 ### prune the haplotypes down to pcase % functional and 100% synonymous variants
+# input legend file only needs to change if admixture porportion changes
 python3 ${WD}/raresim/sim.py \
     -m chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.sm \
     --functional_bins ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop1}_fun_${pcase}.txt \
     --synonymous_bins ${WD}/mastersProject/Input/MAC_bin_estimates_${nsim}_${pop1}_syn_100.txt \
-    -l chr19.block37.${pop1}_${pop2}.sim${rep}.copy.legend \
+    -l ${WD}/admixed/${pop1}_${pop2}_pops/160v100v80/chr19.block37.${pop1}_${pop2}.sim${rep}.copy.legend \
     -L chr19.block37.${pop1}_${pop2}.sim${rep}.${pcase}fun.100syn.legend \
     -H chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pcase}fun.100syn.haps.gz
 
