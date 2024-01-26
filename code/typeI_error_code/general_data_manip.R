@@ -175,13 +175,15 @@ est_props = function(counts, Pop1, Pop2, maf) {
   prop_est <- summix(data = common_df,
                      reference=c(paste0("af_", Pop1), #AFR
                                  paste0("af_", Pop2)), #NFE
-                     observed="af") #leave out pi.start argument
+                     observed="af", 
+                     goodness.of.fit = TRUE, 
+                     override_removeSmallRef = TRUE) #show estimates for anc w/ <1% AFs
   
   return(prop_est)
 }
 
 # Use summix to update AFs of common controls dataset
-calc_adjusted_AF = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref, Ncc) {
+calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc) {
   
   Pop1 <- tolower(Pop1)
   Pop2 <- tolower(Pop2)
@@ -200,8 +202,8 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, prop_est, pi_tar1, pi_tar2, Nref
   adj_AF <- adjAF(data = counts,
                   reference = c(paste0("af_", Pop1), paste0("af_", Pop2)),
                   observed = "af",
-                  pi.target = c(pi_tar1, pi_tar2), 
-                  pi.observed = c(prop_est[, paste0("af_", Pop1)], prop_est[, paste0("af_", Pop2)]),
+                  pi.target = c(case_est[, paste0("af_", Pop1)], case_est[, paste0("af_", Pop2)]), 
+                  pi.observed = c(control_est[, paste0("af_", Pop1)], control_est[, paste0("af_", Pop2)]),
                   adj_method = "average",
                   N_reference = c(Nref, Nref),
                   N_observed = Ncc,
