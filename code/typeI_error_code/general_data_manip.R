@@ -47,28 +47,30 @@ make_long = function(counts, leg, case, group) {
   temp = counts %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case=case, group=group)
   
   # remove the monomorphic variants 
-  temp2 = temp %>% filter(mac!=0)
+  # temp2 = temp %>% filter(mac!=0)
+  temp2 = temp %>% filter(ac!=0)
   
   # repeat each variant mac times
-  out = data.frame(lapply(temp2, rep, temp2$mac)) %>% select(-count, -mac, -maf)
+  # out = data.frame(lapply(temp2, rep, temp2$mac)) %>% select(-count, -mac, -maf)
+  out = data.frame(lapply(temp2, rep, temp2$ac)) %>% select(-ac, -af)
   
   return(out)
 }
 
 # version that doesn't deselect count since the adjusted count files don't have that col
-make_long_adj = function(counts, leg, case, group) {
-  
-  # add information to the counts
-  temp = counts %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case=case, group=group)
-  
-  # remove the monomorphic variants 
-  temp2 = temp %>% filter(mac!=0)
-  
-  # repeat each variant mac times
-  out = data.frame(lapply(temp2, rep, temp2$mac)) %>% select(-mac, -maf)
-  
-  return(out)
-}
+# make_long_adj = function(counts, leg, case, group) {
+#   
+#   # add information to the counts
+#   temp = counts %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case=case, group=group)
+#   
+#   # remove the monomorphic variants 
+#   temp2 = temp %>% filter(mac!=0)
+#   
+#   # repeat each variant mac times
+#   out = data.frame(lapply(temp2, rep, temp2$mac)) %>% select(-mac, -maf)
+#   
+#   return(out)
+# }
 
 # Merge the case datasets for power and t1e calculations
 merge_cases = function(cases_power, cases_t1e, leg, genes_power) {
@@ -110,9 +112,13 @@ calc_allele_freqs = function(geno, n) {
 # Function to calculate allele counts/freqs for all datasets
 calc_allele_freqs_all = function(counts_cases, counts_int, counts_cc, Ncase, Nint, Ncc) {
   
-  counts_all = data.frame(count = counts_cases$count + counts_int$count + counts_cc$count) %>% 
-    mutate(mac = ifelse(count > (Ncase+Nint+Ncc), 2*(Ncase+Nint+Ncc)-count, count)) %>%
-    mutate(maf = mac/(2*(Ncase+Nint+Ncc)))
+  # counts_all = data.frame(count = counts_cases$count + counts_int$count + counts_cc$count) %>% 
+  #   mutate(mac = ifelse(count > (Ncase+Nint+Ncc), 2*(Ncase+Nint+Ncc)-count, count)) %>%
+  #   mutate(maf = mac/(2*(Ncase+Nint+Ncc)))
+  
+  # Adelle's way
+  counts_all = data.frame(ac = counts_cases$ac + counts_int$ac + counts_cc$ac) %>% 
+    mutate(af = ac/(2*(Ncase+Nint+Ncc)))
   
   return(counts_all)
 }
@@ -138,13 +144,13 @@ calc_allele_freqs_ref = function(Pop, hap_ref, Nref) {
 }
 
 # Function to calculate adjusted MACs and MAFs
-calc_adj_allele_freqs = function(counts, Ncc) {
-  
-  counts = counts %>% mutate(adj_mac2 = ifelse(adj_mac>Ncc, 2*Ncc-adj_mac, adj_mac)) %>%
-    mutate(adj_maf2 = ifelse(adj_maf>0.5, 1-adj_maf, adj_maf))
-  
-  return(counts)
-}
+# calc_adj_allele_freqs = function(counts, Ncc) {
+#   
+#   counts = counts %>% mutate(adj_mac2 = ifelse(adj_mac>Ncc, 2*Ncc-adj_mac, adj_mac)) %>%
+#     mutate(adj_maf2 = ifelse(adj_maf>0.5, 1-adj_maf, adj_maf))
+#   
+#   return(counts)
+# }
 
 # Estimate ancestry proportions using only common variants
 est_props = function(counts, Pop1, Pop2, maf) {
@@ -158,8 +164,9 @@ est_props = function(counts, Pop1, Pop2, maf) {
   
   # Adelle's way
   # need to filter for both sides of the maf
-  common <- which(counts$af > maf & counts$af < 1-maf | counts[, paste0("af_", Pop1)] > maf & counts[, paste0("af_", Pop1)] < 1-maf |
-                    counts[, paste0("af_", Pop2)] > maf & counts[, paste0("af_", Pop2)] < 1-maf)
+  common <- which((counts$af > maf & counts$af < 1-maf) | 
+                    (counts[, paste0("af_", Pop1)] > maf & counts[, paste0("af_", Pop1)] < 1-maf) |
+                    (counts[, paste0("af_", Pop2)] > maf & counts[, paste0("af_", Pop2)] < 1-maf))
   
   
   # Subset counts dataframe to only common variants
@@ -229,7 +236,7 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc
   # Calculate the adjusted Minor AC using the effective samples size
   # Want to use effective sample size bc we essentially "remove" the NFE individuals from the pop when adjusting
   # counts$adj_mac <- floor(counts$adj_maf*(2*adj_AF$effective.sample.size))
-  counts$adj_mac <- floor(counts$adj_maf*(2*Ncc))
+  counts$adj_mac <- round(counts$adj_maf*(2*Ncc))
   
   # Return just the adjusted data
   counts_adj <- counts[, c("adj_mac", "adj_maf")]
