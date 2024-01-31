@@ -121,30 +121,33 @@ prox_gene_data_prep = function(data.cases, data.controls, common) {
 
 # Function for formatting data and running statistical test for ProxECAT by gene
 # not using the long format that LogProx uses
-prox_gene_data_prep2 = function(count.cases, count.controls, leg, control_group, adj, common) {
+prox_gene_data_prep2 = function(count.cases, count.controls, leg, common) {
   
   # data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case", group="int") %>% 
   #   filter(mac!=0) %>% select(-count)
-  data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case", group="int") %>% 
+  data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case") %>% 
     filter(ac!=0)
   
-  if (control_group == "int") {
-    # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="int") %>% 
-    #   filter(mac!=0) %>% select(-count)
-    data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="int") %>% 
-      filter(ac!=0)
-  } else if (control_group == "ext") {
-    # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
-    #   filter(mac!=0)
-    data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
-      filter(ac!=0)
-    # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
-    #   filter(mac!=0) %>% select(-count)
-  } else {
-    stop("ERROR: 'control_group' must be a character string of either 'int' or 'ext'")
-  }
+  data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control") %>% 
+    filter(ac!=0)
   
-  names <- c("id", "gene", "fun", "case", "group")
+  # if (control_group == "int") {
+  #   # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="int") %>% 
+  #   #   filter(mac!=0) %>% select(-count)
+  #   data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="int") %>% 
+  #     filter(ac!=0)
+  # } else if (control_group == "ext") {
+  #   # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
+  #   #   filter(mac!=0)
+  #   data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
+  #     filter(ac!=0)
+  #   # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
+  #   #   filter(mac!=0) %>% select(-count)
+  # } else {
+  #   stop("ERROR: 'control_group' must be a character string of either 'int' or 'ext'")
+  # }
+  
+  names <- c("id", "gene", "fun", "case")
   
   data.prox = data.frame(rbind(data.cases, data.controls)) %>% mutate(across(all_of(names), as.factor)) %>% 
     filter(!(id %in% common$id))
@@ -213,173 +216,173 @@ logprox_gene_data_prep = function(data.prox2, current.gene, data.all) {
 
 
 # Function for formatting data and running statistical test for LogProx
-logprox_data_prep = function(leg, counts.cases, counts.int, counts.cc, common.ext, common.all, adj) {
-  
-  # convert genotypes into long format for ProxECAT v2
-  data.cases = make_long(counts.cases, leg, "case", "int")
-  data.int = make_long(counts.int, leg, "control", "int")
-  
-  if (adj) {
-    data.cc = make_long_adj(counts.cc, leg, "control", "ext") #doesn't have count column
-  }
-  else {
-    data.cc = make_long(counts.cc, leg, "control", "ext")
-  }
-  
-  # combine the data together AND REMOVE COMMON VARIANTS
-  data.prox = data.frame(lapply(rbind(data.cases, data.cc), factor)) %>% 
-    filter(!(id %in% common.ext$id))
-  
-  data.all = data.frame(lapply(rbind(data.cases, data.int, data.cc), factor)) %>% 
-    filter(!(id %in% common.all$id))
-  
-  # fit the ProxECATv2 model
-  glm.prox = glm(fun ~ case, data=data.prox, family="binomial") 
-  glm.all.prox = glm(fun ~ case + group, data=data.all, family="binomial")
-  
-  # save the p-value for case/control status
-  p.prox = summary(glm.prox)$coefficients[2,4]
-  p.prox.all = summary(glm.all.prox)$coefficients[2,4]
-  
-  out <- list(p.prox, p.prox.all)
-  
-  return(out) 
-  
-}
+# logprox_data_prep = function(leg, counts.cases, counts.int, counts.cc, common.ext, common.all, adj) {
+#   
+#   # convert genotypes into long format for ProxECAT v2
+#   data.cases = make_long(counts.cases, leg, "case", "int")
+#   data.int = make_long(counts.int, leg, "control", "int")
+#   
+#   if (adj) {
+#     data.cc = make_long_adj(counts.cc, leg, "control", "ext") #doesn't have count column
+#   }
+#   else {
+#     data.cc = make_long(counts.cc, leg, "control", "ext")
+#   }
+#   
+#   # combine the data together AND REMOVE COMMON VARIANTS
+#   data.prox = data.frame(lapply(rbind(data.cases, data.cc), factor)) %>% 
+#     filter(!(id %in% common.ext$id))
+#   
+#   data.all = data.frame(lapply(rbind(data.cases, data.int, data.cc), factor)) %>% 
+#     filter(!(id %in% common.all$id))
+#   
+#   # fit the ProxECATv2 model
+#   glm.prox = glm(fun ~ case, data=data.prox, family="binomial") 
+#   glm.all.prox = glm(fun ~ case + group, data=data.all, family="binomial")
+#   
+#   # save the p-value for case/control status
+#   p.prox = summary(glm.prox)$coefficients[2,4]
+#   p.prox.all = summary(glm.all.prox)$coefficients[2,4]
+#   
+#   out <- list(p.prox, p.prox.all)
+#   
+#   return(out) 
+#   
+# }
 
 # Function for formatting data and running statistical test for LogProx
 # for testing cases vs internal controls only
-logprox_int_prep = function(leg, counts.cases, counts.int, common) {
-  
-  # convert genotypes into long format for ProxECAT v2
-  data.cases = make_long(counts.cases, leg, "case", "int")
-  data.int = make_long(counts.int, leg, "control", "int")
-  
-  # combine the data together AND REMOVE COMMON VARIANTS
-  data.int = data.frame(lapply(rbind(data.cases, data.int), factor)) %>% 
-    filter(!(id %in% common$id))
-  
-  # fit the ProxECATv2 model
-  glm.int = glm(fun ~ case, data=data.int, family="binomial") 
-  
-  # save the p-value for case/control status
-  p.int = summary(glm.int)$coefficients[2,4]
-  
-  return(p.int) 
-  
-}
+# logprox_int_prep = function(leg, counts.cases, counts.int, common) {
+#   
+#   # convert genotypes into long format for ProxECAT v2
+#   data.cases = make_long(counts.cases, leg, "case", "int")
+#   data.int = make_long(counts.int, leg, "control", "int")
+#   
+#   # combine the data together AND REMOVE COMMON VARIANTS
+#   data.int = data.frame(lapply(rbind(data.cases, data.int), factor)) %>% 
+#     filter(!(id %in% common$id))
+#   
+#   # fit the ProxECATv2 model
+#   glm.int = glm(fun ~ case, data=data.int, family="binomial") 
+#   
+#   # save the p-value for case/control status
+#   p.int = summary(glm.int)$coefficients[2,4]
+#   
+#   return(p.int) 
+#   
+# }
 
 # Function for formatting data and running statistical test for iECAT-O
 # Changed so that I can filter by either fun or syn variants
 # NOTE: Whichever leg I input is what gets filtered out
-iecat_data_prep = function(geno.cases, geno.int, leg, common, counts.cc, Ncc) {
-  
-  # create case/control phenotype matrices for iECAT/SKAT
-  pheno.int = rep(0, (ncol(geno.cases) + ncol(geno.int))) 
-  pheno.int[1:ncol(geno.cases)] = 1
-  
-  # subset the synonymous variants from the legend file
-  # leg.syn = leg %>% filter(fun=="syn")
-  
-  # create combined genotype matrices and remove the synonymous & common variants
-  # geno.int.all = cbind(geno.cases, geno.int)[-union(leg.syn$row, common$row),]
-  # geno.ext = counts.cc[-union(leg.syn$row, common$row),]
-  geno.int.all = cbind(geno.cases, geno.int)[-union(leg$row, common$row),]
-  geno.ext = counts.cc[-union(leg$row, common$row),]
-  
-  # null model object
-  # distinguishes between cases and internal controls
-  obj.int = SKAT_Null_Model(as.numeric(pheno.int) ~ 1, out_type="D") # D-dichotomous
-  
-  # create MAC matrix for external controls
-  # geno.ext.adj needs to be adj MAC counts but only for FUNC variants and RARE variants, so subset those
-  # a0 is MAC. a1 is Major ACs, so it's just ncol(hap)-a0
-  # a0+a1 should sum to 20000 bc full hap file
-  tbl = data.frame(a0=geno.ext$mac) %>% mutate(a1=2*Ncc-a0)
-  
-  # call the iECAT function
-  re = iECAT(t(geno.int.all), obj.int, as.matrix(tbl), method="optimal")
-  
-  # extract the p-values (iECAT-O and SKAT-O internal)
-  out = list(re$p.value, re$p.value.internal)
-  
-  return(out)
-}
+# iecat_data_prep = function(geno.cases, geno.int, leg, common, counts.cc, Ncc) {
+#   
+#   # create case/control phenotype matrices for iECAT/SKAT
+#   pheno.int = rep(0, (ncol(geno.cases) + ncol(geno.int))) 
+#   pheno.int[1:ncol(geno.cases)] = 1
+#   
+#   # subset the synonymous variants from the legend file
+#   # leg.syn = leg %>% filter(fun=="syn")
+#   
+#   # create combined genotype matrices and remove the synonymous & common variants
+#   # geno.int.all = cbind(geno.cases, geno.int)[-union(leg.syn$row, common$row),]
+#   # geno.ext = counts.cc[-union(leg.syn$row, common$row),]
+#   geno.int.all = cbind(geno.cases, geno.int)[-union(leg$row, common$row),]
+#   geno.ext = counts.cc[-union(leg$row, common$row),]
+#   
+#   # null model object
+#   # distinguishes between cases and internal controls
+#   obj.int = SKAT_Null_Model(as.numeric(pheno.int) ~ 1, out_type="D") # D-dichotomous
+#   
+#   # create MAC matrix for external controls
+#   # geno.ext.adj needs to be adj MAC counts but only for FUNC variants and RARE variants, so subset those
+#   # a0 is MAC. a1 is Major ACs, so it's just ncol(hap)-a0
+#   # a0+a1 should sum to 20000 bc full hap file
+#   tbl = data.frame(a0=geno.ext$mac) %>% mutate(a1=2*Ncc-a0)
+#   
+#   # call the iECAT function
+#   re = iECAT(t(geno.int.all), obj.int, as.matrix(tbl), method="optimal")
+#   
+#   # extract the p-values (iECAT-O and SKAT-O internal)
+#   out = list(re$p.value, re$p.value.internal)
+#   
+#   return(out)
+# }
 
 
 # Function for formatting data and running statistical test for SKAT-O
 # Changed so that I can filter by either fun or syn variants
 # NOTE: Whichever leg I input is what gets filtered out
-skato_data_prep = function(geno.cases, geno.int, geno.cc, leg, common.ext, common.all) {
-  
-  # create case/control phenotype matrices for SKAT
-  pheno.ext = rep(0, (ncol(geno.cases) + ncol(geno.cc))) 
-  pheno.ext[1:ncol(geno.cases)] = 1
-  
-  pheno.all = rep(0, (ncol(geno.cases) + ncol(geno.int) + ncol(geno.cc))) 
-  pheno.all[1:ncol(geno.cases)] = 1
-  
-  # subset the synonymous variants from the legend file
-  # leg.syn = leg %>% filter(fun=="syn")
-  
-  # create combined genotype matrices and remove the synonymous & common variants
-  # geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg.syn$row, common.ext$row),] # SKAT (just cases & external controls)
-  # geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg.syn$row, common.all$row),] # SKAT (all)
-  geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg$row, common.ext$row),] # SKAT (just cases & external controls)
-  geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg$row, common.all$row),] # SKAT (all)
-  
-  # null model object
-  obj.ext = SKAT_Null_Model(as.numeric(pheno.ext) ~ 1, out_type="D") # D-dichotomous
-  obj.all = SKAT_Null_Model(as.numeric(pheno.all) ~ 1, out_type="D") # D-dichotomous
-  
-  # call the SKAT function
-  re.skat = SKATBinary(t(geno.cases.cc), obj.ext, method="SKATO") # SKAT-O based on the unified approach
-  re.all = SKATBinary(t(geno.all), obj.all, method="SKATO") # SKAT-O based on the unified approach   
-  
-  # extract the p-valus
-  out = list(re.skat$p.value, re.all$p.value)
-  
-  return(out)
-}
+# skato_data_prep = function(geno.cases, geno.int, geno.cc, leg, common.ext, common.all) {
+#   
+#   # create case/control phenotype matrices for SKAT
+#   pheno.ext = rep(0, (ncol(geno.cases) + ncol(geno.cc))) 
+#   pheno.ext[1:ncol(geno.cases)] = 1
+#   
+#   pheno.all = rep(0, (ncol(geno.cases) + ncol(geno.int) + ncol(geno.cc))) 
+#   pheno.all[1:ncol(geno.cases)] = 1
+#   
+#   # subset the synonymous variants from the legend file
+#   # leg.syn = leg %>% filter(fun=="syn")
+#   
+#   # create combined genotype matrices and remove the synonymous & common variants
+#   # geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg.syn$row, common.ext$row),] # SKAT (just cases & external controls)
+#   # geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg.syn$row, common.all$row),] # SKAT (all)
+#   geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg$row, common.ext$row),] # SKAT (just cases & external controls)
+#   geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg$row, common.all$row),] # SKAT (all)
+#   
+#   # null model object
+#   obj.ext = SKAT_Null_Model(as.numeric(pheno.ext) ~ 1, out_type="D") # D-dichotomous
+#   obj.all = SKAT_Null_Model(as.numeric(pheno.all) ~ 1, out_type="D") # D-dichotomous
+#   
+#   # call the SKAT function
+#   re.skat = SKATBinary(t(geno.cases.cc), obj.ext, method="SKATO") # SKAT-O based on the unified approach
+#   re.all = SKATBinary(t(geno.all), obj.all, method="SKATO") # SKAT-O based on the unified approach   
+#   
+#   # extract the p-valus
+#   out = list(re.skat$p.value, re.all$p.value)
+#   
+#   return(out)
+# }
 
 # Function for formatting data and running statistical test for SKAT or Burden tests
 # Changed so that I can filter by either fun or syn variants
 # NOTE: Whichever leg I input is what gets filtered out
-skat_data_prep = function(geno.cases, geno.int, geno.cc, leg, common.int, common.ext, common.all, meth) {
-  
-  # create case/control phenotype matrices for SKAT
-  pheno.int = rep(0, (ncol(geno.cases) + ncol(geno.int))) 
-  pheno.int[1:ncol(geno.cases)] = 1 
-  
-  pheno.ext = rep(0, (ncol(geno.cases) + ncol(geno.cc))) 
-  pheno.ext[1:ncol(geno.cases)] = 1
-  
-  pheno.all = rep(0, (ncol(geno.cases) + ncol(geno.int) + ncol(geno.cc))) 
-  pheno.all[1:ncol(geno.cases)] = 1
-  
-  # subset the synonymous variants from the legend file
-  # leg.syn = leg %>% filter(fun=="syn")
-  
-  # create combined genotype matrices and remove the synonymous & common variants
-  # geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg.syn$row, common.ext$row),] # SKAT (just cases & external controls)
-  # geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg.syn$row, common.all$row),] # SKAT (all)
-  geno.cases.int = cbind(geno.cases, geno.int)[-union(leg$row, common.int$row),] # SKAT internal 
-  geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg$row, common.ext$row),] # SKAT external
-  geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg$row, common.all$row),] # SKAT (all)
-  
-  # null model object
-  obj.int = SKAT_Null_Model(as.numeric(pheno.int) ~ 1, out_type="D") # D-dichotomous
-  obj.ext = SKAT_Null_Model(as.numeric(pheno.ext) ~ 1, out_type="D") # D-dichotomous
-  obj.all = SKAT_Null_Model(as.numeric(pheno.all) ~ 1, out_type="D") # D-dichotomous
-  
-  # call the SKAT function
-  re.int = SKATBinary(t(geno.cases.int), obj.int, method=meth) # internal
-  re.ext = SKATBinary(t(geno.cases.cc), obj.ext, method=meth) # external
-  re.all = SKATBinary(t(geno.all), obj.all, method=meth) # all
-  
-  
-  # extract the p-valus
-  out = list(re.int$p.value, re.ext$p.value, re.all$p.value)
-  
-  return(out)
-}
+# skat_data_prep = function(geno.cases, geno.int, geno.cc, leg, common.int, common.ext, common.all, meth) {
+#   
+#   # create case/control phenotype matrices for SKAT
+#   pheno.int = rep(0, (ncol(geno.cases) + ncol(geno.int))) 
+#   pheno.int[1:ncol(geno.cases)] = 1 
+#   
+#   pheno.ext = rep(0, (ncol(geno.cases) + ncol(geno.cc))) 
+#   pheno.ext[1:ncol(geno.cases)] = 1
+#   
+#   pheno.all = rep(0, (ncol(geno.cases) + ncol(geno.int) + ncol(geno.cc))) 
+#   pheno.all[1:ncol(geno.cases)] = 1
+#   
+#   # subset the synonymous variants from the legend file
+#   # leg.syn = leg %>% filter(fun=="syn")
+#   
+#   # create combined genotype matrices and remove the synonymous & common variants
+#   # geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg.syn$row, common.ext$row),] # SKAT (just cases & external controls)
+#   # geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg.syn$row, common.all$row),] # SKAT (all)
+#   geno.cases.int = cbind(geno.cases, geno.int)[-union(leg$row, common.int$row),] # SKAT internal 
+#   geno.cases.cc = cbind(geno.cases, geno.cc)[-union(leg$row, common.ext$row),] # SKAT external
+#   geno.all = cbind(geno.cases, geno.int, geno.cc)[-union(leg$row, common.all$row),] # SKAT (all)
+#   
+#   # null model object
+#   obj.int = SKAT_Null_Model(as.numeric(pheno.int) ~ 1, out_type="D") # D-dichotomous
+#   obj.ext = SKAT_Null_Model(as.numeric(pheno.ext) ~ 1, out_type="D") # D-dichotomous
+#   obj.all = SKAT_Null_Model(as.numeric(pheno.all) ~ 1, out_type="D") # D-dichotomous
+#   
+#   # call the SKAT function
+#   re.int = SKATBinary(t(geno.cases.int), obj.int, method=meth) # internal
+#   re.ext = SKATBinary(t(geno.cases.cc), obj.ext, method=meth) # external
+#   re.all = SKATBinary(t(geno.all), obj.all, method=meth) # all
+#   
+#   
+#   # extract the p-valus
+#   out = list(re.int$p.value, re.ext$p.value, re.all$p.value)
+#   
+#   return(out)
+# }
