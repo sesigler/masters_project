@@ -488,3 +488,9 @@ p_hist_unadjccAF_afr1 <- ggplot(cc_afr %>% filter(gene == "ZNF333" & mac_afr == 
                           geom_histogram(bins=20, color = "black", fill = "white") +
                           facet_wrap(~gene)
 p_hist_unadjccAF_afr1
+
+hists_afr_mac0_1 <- ggarrange(p_hist_caseAF_afr0, p_hist_caseAF_afr1, p_hist_adjccAF_afr0, 
+                              p_hist_adjccAF_afr1, p_hist_unadjccAF_afr0, p_hist_unadjccAF_afr1, ncol=2, nrow=3)
+hists_afr_mac0_1
+ggsave(file = paste0(dir_out, 'rare_AF_hists_refAFR_mac0_1_', Pop1, '_', Pop2, '_', scen, '_', folder, '_', int_prune, '_v_', ext_prune, '_maf', maf, '.jpg'), 
+       plot = hists_afr_mac0_1, height = 8, width = 16, units = 'in')
