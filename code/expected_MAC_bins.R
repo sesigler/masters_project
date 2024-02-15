@@ -6,21 +6,23 @@
 library(RAREsim)
 library(dplyr)
 
-Pop = 'NFE'
-p_case = 120
-p_conf = 99
-Nsim = 20000
+Pop = 'AFR'
+p_case = 160
+p_conf = 80
+Nsim = 42000
 reg_size = 19.029 
 
 
-dir_leg = paste0("/storage/math/projects/RAREsim/Cases/Sim_20k/", Pop, "/data/")
+# dir_leg = paste0("/storage/math/projects/RAREsim/Cases/Sim_20k/", Pop, "/data/")
+dir_leg = paste0("/home/math/siglersa/Sim_100k/", Pop, "/data/")
 dir = "/storage/math/projects/compinfo/simulations/input/"
+dir_out = "/home/math/siglersa/mastersProject/Input/"
 
-dir_leg = "C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/"
-dir = "C:/Users/sagee/OneDrive/Documents/HendricksLab/mastersProject/input/"
+# dir_leg = "C:/Users/sagee/Documents/HendricksLab/mastersProject/input/"
+# dir = "C:/Users/sagee/Documents/HendricksLab/mastersProject/input/"
 
 ### prep the legend file
-leg = read.table(paste0(dir_leg, "chr19.block37.", Pop, ".sim1.copy.legend"), sep='\t', header=T)
+leg = read.table(paste0(dir_leg, "chr19.block37.", Pop, ".sim1.100000.copy.legend"), sep='\t', header=T)
 #leg$fun = ifelse(leg$fun=="synonymous SNV", "syn", "fun")
 #leg$exonic[grepl("exonic", leg$exonic)] = "exonic"
 #leg$gene[grepl("ZNF333", leg$gene)] = "ZNF333"
@@ -109,8 +111,8 @@ bins_syn_exp = expected_variants(Total_num_var = exp_var_syn, mac_bin_prop = mac
 bins_syn_conf = expected_variants(Total_num_var = (p_conf/100)*exp_var_syn, mac_bin_prop = mac_syn_sim)
 
 ### write file with bin estimates
-write.table(bins_fun_cases, paste0(dir, "MAC_bin_estimates_", Nsim, "_", Pop, "_fun_", p_case, ".txt"), row.names=F, quote=F, sep='\t')
-write.table(bins_fun_exp, paste0(dir, "MAC_bin_estimates_", Nsim, "_", Pop, "_fun_100.txt"), row.names=F, quote=F, sep='\t')
-write.table(bins_fun_conf, paste0(dir, "MAC_bin_estimates_", Nsim, "_", Pop, "_fun_", p_conf, ".txt"), row.names=F, quote=F, sep='\t')
-write.table(bins_syn_exp, paste0(dir, "MAC_bin_estimates_", Nsim, "_", Pop, "_syn_100.txt"), row.names=F, quote=F, sep='\t')
-write.table(bins_syn_conf, paste0(dir, "MAC_bin_estimates_", Nsim, "_", Pop, "_syn_", p_conf, ".txt"), row.names=F, quote=F, sep='\t')
+write.table(bins_fun_cases, paste0(dir_out, "MAC_bin_estimates_", Nsim, "_", Pop, "_fun_", p_case, ".txt"), row.names=F, quote=F, sep='\t')
+write.table(bins_fun_exp, paste0(dir_out, "MAC_bin_estimates_", Nsim, "_", Pop, "_fun_100.txt"), row.names=F, quote=F, sep='\t')
+write.table(bins_fun_conf, paste0(dir_out, "MAC_bin_estimates_", Nsim, "_", Pop, "_fun_", p_conf, ".txt"), row.names=F, quote=F, sep='\t')
+write.table(bins_syn_exp, paste0(dir_out, "MAC_bin_estimates_", Nsim, "_", Pop, "_syn_100.txt"), row.names=F, quote=F, sep='\t')
+write.table(bins_syn_conf, paste0(dir_out, "MAC_bin_estimates_", Nsim, "_", Pop, "_syn_", p_conf, ".txt"), row.names=F, quote=F, sep='\t')
