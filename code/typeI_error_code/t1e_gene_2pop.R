@@ -41,13 +41,13 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 
 dir_leg = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Sim_42k/', folder, '/')
 dir_in = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Sim_42k/', folder, '/datasets/', scen, '/')
-dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/')
+dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/Sim_42k/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/')
 
 dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
 dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
-dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
-# 
+# dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
+
 # dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
 # dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/'
@@ -111,13 +111,13 @@ for (i in 1:10){
   geno_cc = make_geno(hap_cc)
   
   # calculate the allele counts/frequencies
-  count_cases = calc_allele_freqs(geno_cases, Ncase)
-  count_int = calc_allele_freqs(geno_int, Nint)
-  count_cc = calc_allele_freqs(geno_cc, Ncc)
-  count_all = calc_allele_freqs_all(count_cases, count_int, count_cc, Ncase, Nint, Ncc)
+  count_cases = calc_allele_freqs(geno_cases, Ncase, Pop=NULL)
+  count_int = calc_allele_freqs(geno_int, Nint, Pop=NULL)
+  count_cc = calc_allele_freqs(geno_cc, Ncc, Pop=NULL)
+  # count_all = calc_allele_freqs_all(count_cases, count_int, count_cc, Ncase, Nint, Ncc)
   
-  count_ref_pop1 = calc_allele_freqs_ref(Pop1, hap_ref_pop1, Nref)
-  count_ref_pop2 = calc_allele_freqs_ref(Pop2, hap_ref_pop2, Nref)
+  count_ref_pop1 = calc_allele_freqs(hap_ref_pop1, Nref, Pop=Pop1)
+  count_ref_pop2 = calc_allele_freqs(hap_ref_pop2, Nref, Pop=Pop2)
   
   cc_refs = cbind(count_cc, count_ref_pop1, count_ref_pop2)
   case_refs = cbind(count_cases, count_ref_pop1, count_ref_pop2)
@@ -135,17 +135,17 @@ for (i in 1:10){
   count_cc_adj = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref, Ncc)
 
   # identify the common variants
-  common_int = leg[which((count_cases$af > maf & count_cases$af < 1-maf) | (count_int$af > maf & count_int$af < 1-maf)),]
-  common_ext = leg[which((count_cases$af > maf & count_cases$af < 1-maf) | (count_cc$af > maf & count_cc$af < 1-maf)),]
-  common_all = leg[which((count_cases$af > maf & count_cases$af < 1-maf) | (count_int$af > maf & count_int$af < 1-maf) | (count_cc$af > maf & count_cc$af < 1-maf)),]
+  common_int = leg[which(count_cases$maf > maf | count_int$maf > maf),]
+  common_ext = leg[which(count_cases$maf > maf | count_cc$maf > maf),]
+  common_all = leg[which(count_cases$maf > maf | count_int$maf > maf | count_cc$maf > maf),]
 
-  common_ext_adj = leg[which((count_cases$af > maf & count_cases$af < 1-maf) | count_cc_adj$af > maf),]
-  common_all_adj = leg[which((count_cases$af > maf & count_cases$af < 1-maf) | (count_int$af > maf & count_int$af < 1-maf) | count_cc_adj$af > maf),]
+  common_ext_adj = leg[which(count_cases$maf > maf | count_cc_adj$maf > maf),]
+  common_all_adj = leg[which(count_cases$maf > maf | count_int$maf > maf | count_cc_adj$maf > maf),]
 
   # proxECAT
-  counts_int_wide = prox_gene_data_prep2(count_cases, count_int, leg, common_int)
-  counts_ext_wide = prox_gene_data_prep2(count_cases, count_cc, leg, common_ext)
-  counts_ext_wide_adj = prox_gene_data_prep2(count_cases, count_cc_adj, leg, common_ext_adj)
+  counts_int_wide = prox_gene_data_prep(count_cases, count_int, leg, common_int)
+  counts_ext_wide = prox_gene_data_prep(count_cases, count_cc, leg, common_ext)
+  counts_ext_wide_adj = prox_gene_data_prep(count_cases, count_cc_adj, leg, common_ext_adj)
 
   # Store the proxECAT and proxECAT-weighted p-values
   prox_int_genes_p = rbind(prox_int_genes_p, counts_int_wide$prox)
@@ -158,131 +158,131 @@ for (i in 1:10){
   
   ##############################################################################
   # Adjust AFs at the gene level instead of variant level
-  count_ext_ref <- cbind(count_cases[, c("ac", "af")], cc_refs)
-  colnames(count_ext_ref)[1:4] <- c("ac_case", "af_case", "ac_cc", "af_cc")
-  count_ext_ref = count_ext_ref %>% mutate(row = leg$row, gene = leg$gene, id = leg$id, fun = leg$fun)
-
-  common_ext2 = leg[which((count_ext_ref$af_case > maf & count_ext_ref$af_case < 1-maf) | (count_ext_ref$af_cc > maf & count_ext_ref$af_cc < 1-maf)),]
-
-  count_ext_ref2 = count_ext_ref %>% filter(!(id %in% common_ext2$id))
-
-  names <- c("gene","id", "fun")
-
-  count_ext_ref2 = count_ext_ref2 %>% mutate(across(all_of(names), as.factor))
-
-  data_ext_syn = count_ext_ref2 %>% filter(fun == "syn")
-  data_ext_fun = count_ext_ref2 %>% filter(fun == "fun")
-
-  data_ext_syn2 = data_ext_syn %>% group_by(gene) %>% summarise(af_case = sum(af_case), af_cc = sum(af_cc), af_afr = sum(af_afr), af_nfe = sum(af_nfe),
-                                                                ac_case = sum(ac_case), ac_cc = sum(ac_cc), ac_afr = sum(ac_afr), ac_nfe = sum(ac_nfe))
-
-  adj_AF_syn <- adjAF(data = data_ext_syn2,
-                      reference = c("af_afr", "af_nfe"),
-                      observed = "af_cc",
-                      pi.target = c(case_est_prop[, "af_afr"], case_est_prop[, "af_nfe"]),
-                      pi.observed = c(cc_est_prop[, "af_afr"], cc_est_prop[, "af_nfe"]),
-                      adj_method = "average",
-                      N_reference = c(Nref, Nref),
-                      N_observed = Ncc,
-                      filter = TRUE)
-
-  # Add adj AF to data frame
-  data_ext_syn2$adj_af <- adj_AF_syn$adjusted.AF$adjustedAF
-
-  # Calculate the MINOR adjusted AF
-  data_ext_syn2$adj_maf <- ifelse(data_ext_syn2$adj_af > .5, 1-data_ext_syn2$adj_af, data_ext_syn2$adj_af)
-
-  # Calculate the MINOR adjusted AC
-  data_ext_syn2$adj_mac <- round(data_ext_syn2$adj_maf*(2*Ncc))
-
-  # Same for fun variants
-  data_ext_fun2 = data_ext_fun %>% group_by(gene) %>% summarise(af_case = sum(af_case), af_cc = sum(af_cc), af_afr = sum(af_afr), af_nfe = sum(af_nfe),
-                                                                ac_case = sum(ac_case), ac_cc = sum(ac_cc), ac_afr = sum(ac_afr), ac_nfe = sum(ac_nfe))
-
-  adj_AF_fun <- adjAF(data = data_ext_fun2,
-                      reference = c("af_afr", "af_nfe"),
-                      observed = "af_cc",
-                      pi.target = c(case_est_prop[, "af_afr"], case_est_prop[, "af_nfe"]),
-                      pi.observed = c(cc_est_prop[, "af_afr"], cc_est_prop[, "af_nfe"]),
-                      adj_method = "average",
-                      N_reference = c(Nref, Nref),
-                      N_observed = Ncc,
-                      filter = TRUE)
-
-  # Add adj AF to data frame
-  data_ext_fun2$adj_af <- adj_AF_fun$adjusted.AF$adjustedAF
-
-  # Calculate the MINOR adjusted AF
-  data_ext_fun2$adj_maf <- ifelse(data_ext_fun2$adj_af > .5, 1-data_ext_fun2$adj_af, data_ext_fun2$adj_af)
-
-  # Calculate the MINOR adjusted AC
-  data_ext_fun2$adj_mac <- round(data_ext_fun2$adj_maf*(2*Ncc))
-  
-  # Combine fun and syn data for plotting
-  data_ext_syn2$fun <- "syn"
-  data_ext_fun2$fun <- "fun"
-  data_ext2 <- rbind(data_ext_fun2, data_ext_syn2)
-
-  library(ggplot2)
-  g1 <- ggplot(data_ext2 %>% filter(fun == "fun"), aes(x=adj_maf, y=af_case)) +
-    geom_point() +
-    geom_abline(intercept = 0, slope = 1) +
-    theme_bw() +
-    xlab("Adjusted AF") + ylab("AFR AF") +
-    geom_text(mapping = aes(x = 0.002, y = 0.007),
-              label = paste0("CCC fun = ", round(DescTools::CCC(data_ext_fun2$adj_maf, data_ext_fun2$af_case)$rho.c$est, 6)))
-  g1
-  
-  names <- c("id", "gene", "fun", "case")
-  
-  data.case = data_ext2[, c("gene", "ac_case", "fun")]
-  data.case$case <- "case"
-  colnames(data.case)[2] <- "ac"
-  
-  data.cc = data_ext2[, c("gene", "ac_cc", "fun")]
-  data.cc$case <- "control"
-  colnames(data.cc)[2] <- "ac"
-  
-  data.cc.adj = data_ext2[, c("gene", "adj_mac", "fun")]
-  data.cc.adj$case <- "control"
-  colnames(data.cc.adj)[2] <- "ac"
-  
-  names <- c("gene", "fun", "case")
-  data.prox = data.frame(rbind(data.case, data.cc)) %>% mutate(across(all_of(names), as.factor))
-  data.prox.adj = data.frame(rbind(data.case, data.cc.adj)) %>% mutate(across(all_of(names), as.factor))
-
-  counts.gene = tidyr::pivot_wider(data.prox, names_from=c(case, fun), values_from=ac,
-                                   values_fill=0, names_sep="_")
-  counts.gene.adj = tidyr::pivot_wider(data.prox.adj, names_from=c(case, fun), values_from=ac,
-                                       values_fill=0, names_sep="_")
-  
-  counts.gene = counts.gene %>% mutate(case_ratio = case_fun/case_syn,
-                                       control_ratio = control_fun/control_syn)
-  
-  counts.gene.adj = counts.gene.adj %>% mutate(case_ratio = case_fun/case_syn,
-                                               control_ratio = control_fun/control_syn)
-  
-  # Calculate medians
-  median.case.ratio = median(counts.gene$case_ratio)
-  median.control.ratio = median(counts.gene$control_ratio)
-  
-  median.case.ratio.adj = median(counts.gene.adj$case_ratio)
-  median.control.ratio.adj = median(counts.gene.adj$control_ratio)
-  
-  # Calculate the weighted values and the p-values
-  counts.gene = counts.gene %>% mutate(case_fun_w = case_fun / median.case.ratio,
-                                       control_fun_w = control_fun / median.control.ratio) %>% 
-    mutate(prox = ifelse((case_fun + control_fun < 5) | (case_syn + control_syn < 5), NA, 
-                         proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-           prox_w = ifelse((case_fun_w + control_fun_w < 5) | (case_syn + control_syn < 5), NA, 
-                           proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
-  
-  counts.gene.adj = counts.gene.adj %>% mutate(case_fun_w = case_fun / median.case.ratio.adj,
-                                               control_fun_w = control_fun / median.control.ratio.adj) %>% 
-    mutate(prox = ifelse((case_fun + control_fun < 5) | (case_syn + control_syn < 5), NA, 
-                         proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-           prox_w = ifelse((case_fun_w + control_fun_w < 5) | (case_syn + control_syn < 5), NA, 
-                           proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+  # count_ext_ref <- cbind(count_cases[, c("ac", "af")], cc_refs)
+  # colnames(count_ext_ref)[1:4] <- c("ac_case", "af_case", "ac_cc", "af_cc")
+  # count_ext_ref = count_ext_ref %>% mutate(row = leg$row, gene = leg$gene, id = leg$id, fun = leg$fun)
+  # 
+  # common_ext2 = leg[which((count_ext_ref$af_case > maf & count_ext_ref$af_case < 1-maf) | (count_ext_ref$af_cc > maf & count_ext_ref$af_cc < 1-maf)),]
+  # 
+  # count_ext_ref2 = count_ext_ref %>% filter(!(id %in% common_ext2$id))
+  # 
+  # names <- c("gene","id", "fun")
+  # 
+  # count_ext_ref2 = count_ext_ref2 %>% mutate(across(all_of(names), as.factor))
+  # 
+  # data_ext_syn = count_ext_ref2 %>% filter(fun == "syn")
+  # data_ext_fun = count_ext_ref2 %>% filter(fun == "fun")
+  # 
+  # data_ext_syn2 = data_ext_syn %>% group_by(gene) %>% summarise(af_case = sum(af_case), af_cc = sum(af_cc), af_afr = sum(af_afr), af_nfe = sum(af_nfe),
+  #                                                               ac_case = sum(ac_case), ac_cc = sum(ac_cc), ac_afr = sum(ac_afr), ac_nfe = sum(ac_nfe))
+  # 
+  # adj_AF_syn <- adjAF(data = data_ext_syn2,
+  #                     reference = c("af_afr", "af_nfe"),
+  #                     observed = "af_cc",
+  #                     pi.target = c(case_est_prop[, "af_afr"], case_est_prop[, "af_nfe"]),
+  #                     pi.observed = c(cc_est_prop[, "af_afr"], cc_est_prop[, "af_nfe"]),
+  #                     adj_method = "average",
+  #                     N_reference = c(Nref, Nref),
+  #                     N_observed = Ncc,
+  #                     filter = TRUE)
+  # 
+  # # Add adj AF to data frame
+  # data_ext_syn2$adj_af <- adj_AF_syn$adjusted.AF$adjustedAF
+  # 
+  # # Calculate the MINOR adjusted AF
+  # data_ext_syn2$adj_maf <- ifelse(data_ext_syn2$adj_af > .5, 1-data_ext_syn2$adj_af, data_ext_syn2$adj_af)
+  # 
+  # # Calculate the MINOR adjusted AC
+  # data_ext_syn2$adj_mac <- round(data_ext_syn2$adj_maf*(2*Ncc))
+  # 
+  # # Same for fun variants
+  # data_ext_fun2 = data_ext_fun %>% group_by(gene) %>% summarise(af_case = sum(af_case), af_cc = sum(af_cc), af_afr = sum(af_afr), af_nfe = sum(af_nfe),
+  #                                                               ac_case = sum(ac_case), ac_cc = sum(ac_cc), ac_afr = sum(ac_afr), ac_nfe = sum(ac_nfe))
+  # 
+  # adj_AF_fun <- adjAF(data = data_ext_fun2,
+  #                     reference = c("af_afr", "af_nfe"),
+  #                     observed = "af_cc",
+  #                     pi.target = c(case_est_prop[, "af_afr"], case_est_prop[, "af_nfe"]),
+  #                     pi.observed = c(cc_est_prop[, "af_afr"], cc_est_prop[, "af_nfe"]),
+  #                     adj_method = "average",
+  #                     N_reference = c(Nref, Nref),
+  #                     N_observed = Ncc,
+  #                     filter = TRUE)
+  # 
+  # # Add adj AF to data frame
+  # data_ext_fun2$adj_af <- adj_AF_fun$adjusted.AF$adjustedAF
+  # 
+  # # Calculate the MINOR adjusted AF
+  # data_ext_fun2$adj_maf <- ifelse(data_ext_fun2$adj_af > .5, 1-data_ext_fun2$adj_af, data_ext_fun2$adj_af)
+  # 
+  # # Calculate the MINOR adjusted AC
+  # data_ext_fun2$adj_mac <- round(data_ext_fun2$adj_maf*(2*Ncc))
+  # 
+  # # Combine fun and syn data for plotting
+  # data_ext_syn2$fun <- "syn"
+  # data_ext_fun2$fun <- "fun"
+  # data_ext2 <- rbind(data_ext_fun2, data_ext_syn2)
+  # 
+  # library(ggplot2)
+  # g1 <- ggplot(data_ext2 %>% filter(fun == "fun"), aes(x=adj_maf, y=af_case)) +
+  #   geom_point() +
+  #   geom_abline(intercept = 0, slope = 1) +
+  #   theme_bw() +
+  #   xlab("Adjusted AF") + ylab("AFR AF") +
+  #   geom_text(mapping = aes(x = 0.002, y = 0.007),
+  #             label = paste0("CCC fun = ", round(DescTools::CCC(data_ext_fun2$adj_maf, data_ext_fun2$af_case)$rho.c$est, 6)))
+  # g1
+  # 
+  # names <- c("id", "gene", "fun", "case")
+  # 
+  # data.case = data_ext2[, c("gene", "ac_case", "fun")]
+  # data.case$case <- "case"
+  # colnames(data.case)[2] <- "ac"
+  # 
+  # data.cc = data_ext2[, c("gene", "ac_cc", "fun")]
+  # data.cc$case <- "control"
+  # colnames(data.cc)[2] <- "ac"
+  # 
+  # data.cc.adj = data_ext2[, c("gene", "adj_mac", "fun")]
+  # data.cc.adj$case <- "control"
+  # colnames(data.cc.adj)[2] <- "ac"
+  # 
+  # names <- c("gene", "fun", "case")
+  # data.prox = data.frame(rbind(data.case, data.cc)) %>% mutate(across(all_of(names), as.factor))
+  # data.prox.adj = data.frame(rbind(data.case, data.cc.adj)) %>% mutate(across(all_of(names), as.factor))
+  # 
+  # counts.gene = tidyr::pivot_wider(data.prox, names_from=c(case, fun), values_from=ac,
+  #                                  values_fill=0, names_sep="_")
+  # counts.gene.adj = tidyr::pivot_wider(data.prox.adj, names_from=c(case, fun), values_from=ac,
+  #                                      values_fill=0, names_sep="_")
+  # 
+  # counts.gene = counts.gene %>% mutate(case_ratio = case_fun/case_syn,
+  #                                      control_ratio = control_fun/control_syn)
+  # 
+  # counts.gene.adj = counts.gene.adj %>% mutate(case_ratio = case_fun/case_syn,
+  #                                              control_ratio = control_fun/control_syn)
+  # 
+  # # Calculate medians
+  # median.case.ratio = median(counts.gene$case_ratio)
+  # median.control.ratio = median(counts.gene$control_ratio)
+  # 
+  # median.case.ratio.adj = median(counts.gene.adj$case_ratio)
+  # median.control.ratio.adj = median(counts.gene.adj$control_ratio)
+  # 
+  # # Calculate the weighted values and the p-values
+  # counts.gene = counts.gene %>% mutate(case_fun_w = case_fun / median.case.ratio,
+  #                                      control_fun_w = control_fun / median.control.ratio) %>% 
+  #   mutate(prox = ifelse((case_fun + control_fun < 5) | (case_syn + control_syn < 5), NA, 
+  #                        proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+  #          prox_w = ifelse((case_fun_w + control_fun_w < 5) | (case_syn + control_syn < 5), NA, 
+  #                          proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
+  # 
+  # counts.gene.adj = counts.gene.adj %>% mutate(case_fun_w = case_fun / median.case.ratio.adj,
+  #                                              control_fun_w = control_fun / median.control.ratio.adj) %>% 
+  #   mutate(prox = ifelse((case_fun + control_fun < 5) | (case_syn + control_syn < 5), NA, 
+  #                        proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
+  #          prox_w = ifelse((case_fun_w + control_fun_w < 5) | (case_syn + control_syn < 5), NA, 
+  #                          proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
   ################################################################################
 
   ### Prep data for other methods
@@ -356,7 +356,7 @@ for (i in 1:10){
   iecat_genes_adj = c()
 
   genes = levels(droplevels(as.factor(leg$gene)))
-  g = 1
+  # g = 1
   # gene_counts = leg %>% count(gene)
   # loop through the genes
   for(g in 1:length(genes)){
@@ -400,33 +400,33 @@ for (i in 1:10){
     iecat_genes_adj = c(iecat_genes_adj, re_gene_adj$p.value)
 
     # call the SKAT-O functions
-    skato_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O external
     skato_int_gene = SKATBinary(t(Z_int), obj_int, method="SKATO") # SKAT-O internal
+    skato_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O external
     skato_all_gene = SKATBinary(t(Z_all), obj_all, method="SKATO") # SKAT-O internal+external
 
     # Save SKAT-O p-values
-    skato_ext_genes = c(skato_ext_genes, skato_ext_gene$p.value)
     skato_int_genes = c(skato_int_genes, skato_int_gene$p.value)
+    skato_ext_genes = c(skato_ext_genes, skato_ext_gene$p.value)
     skato_all_genes = c(skato_all_genes, skato_all_gene$p.value)
 
     # Call the SKAT functions
-    skat_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKAT") # SKAT external
     skat_int_gene = SKATBinary(t(Z_int), obj_int, method="SKAT") # SKAT internal
+    skat_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKAT") # SKAT external
     skat_all_gene = SKATBinary(t(Z_all), obj_all, method="SKAT") # SKAT internal+external
 
     # Save the SKAT p-values
-    skat_ext_genes = c(skat_ext_genes, skat_ext_gene$p.value)
     skat_int_genes = c(skat_int_genes, skat_int_gene$p.value)
+    skat_ext_genes = c(skat_ext_genes, skat_ext_gene$p.value)
     skat_all_genes = c(skat_all_genes, skat_all_gene$p.value)
 
     # Call the Burden functions
-    burden_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="Burden") # Burden external
     burden_int_gene = SKATBinary(t(Z_int), obj_int, method="Burden") # Burden internal
+    burden_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="Burden") # Burden external
     burden_all_gene = SKATBinary(t(Z_all), obj_all, method="Burden") # Burden internal+external
 
     # Save the Burden p-values
-    burden_ext_genes = c(burden_ext_genes, burden_ext_gene$p.value)
     burden_int_genes = c(burden_int_genes, burden_int_gene$p.value)
+    burden_ext_genes = c(burden_ext_genes, burden_ext_gene$p.value)
     burden_all_genes = c(burden_all_genes, burden_all_gene$p.value)
   }
 
@@ -446,12 +446,12 @@ for (i in 1:10){
   skato_ext_genes_p = rbind(skato_ext_genes_p, skato_ext_genes)
   skato_all_genes_p = rbind(skato_all_genes_p, skato_all_genes)
 
-  skat_ext_genes_p = rbind(skat_ext_genes_p, skat_ext_genes)
   skat_int_genes_p = rbind(skat_int_genes_p, skat_int_genes)
+  skat_ext_genes_p = rbind(skat_ext_genes_p, skat_ext_genes)
   skat_all_genes_p = rbind(skat_all_genes_p, skat_all_genes)
 
-  burden_ext_genes_p = rbind(burden_ext_genes_p, burden_ext_genes)
   burden_int_genes_p = rbind(burden_int_genes_p, burden_int_genes)
+  burden_ext_genes_p = rbind(burden_ext_genes_p, burden_ext_genes)
   burden_all_genes_p = rbind(burden_all_genes_p, burden_all_genes)
   
   print(i)
