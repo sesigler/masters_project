@@ -13,67 +13,30 @@
 #' @param Ncc: Number of individuals in the common controls
 ##############################################################################
 
-### Determine the number of rare fun and syn minor alleles in a dataset FROM THE COUNTS DF
-rare_counts = function(counts, leg.fun, leg.syn, maf){
-  
-  fun.counts = counts[leg.fun$row, ]
-  rare.fun = which(fun.counts$maf <= maf)
-  out.fun = sum(fun.counts[rare.fun, ]$mac)
-  
-  syn.counts = counts[leg.syn$row, ]
-  rare.syn = which(syn.counts$maf <= maf)
-  out.syn = sum(syn.counts[rare.syn, ]$mac)
-  
-  out = c(out.fun, out.syn)
-  
-  return(out)
-}
-
-
 # Function for formatting data and running statistical test for ProxECAT
-# NOTE: This version does not filter out variants that are common in at least
-# one of the datasets
-# prox_data_prep = function(leg.fun, leg.syn, counts.cases, counts.ctrl, maf) {
+# prox_data_prep = function(leg, counts.cases, counts.controls, common, controls.type, adj) {
 # 
-#   counts.prox = c()
+#   # convert genotypes into long format for ProxECAT v2
+#   data.cases = make_long(counts.cases, leg, "case", "int")
+#   if (adj){
+#     data.controls = make_long_adj(counts.controls, leg, "control", controls.type) #doesn't have count column
+#   } else{
+#     data.controls = make_long(counts.controls, leg, "control", controls.type)
+#   }
 # 
-#   case.fun = rare_counts(counts.cases, leg.fun, leg.syn, maf)
-#   counts.prox = c(counts.prox, c(case.fun[1], case.fun[2]))
+#   # combine the data together AND REMOVE COMMON VARIANTS
+#   data.prox = data.frame(lapply(rbind(data.cases, data.controls), factor)) %>%
+#     filter(!(id %in% common$id))
 # 
-#   ctrl.fun = rare_counts(counts.ctrl, leg.fun, leg.syn, maf)
-#   counts.prox = c(counts.prox, c(ctrl.fun[1], ctrl.fun[2]))
+#   # getting overall counts for functional & case status
+#   counts.prox = data.prox %>% count(case, fun)
 # 
 #   # Run proxECAT
-#   prox = proxecat(counts.prox[1], counts.prox[2], counts.prox[3], counts.prox[4])
+#   prox = proxecat(counts.prox$n[1], counts.prox$n[2], counts.prox$n[3], counts.prox$n[4])
 # 
 #   # return p-value
-#   return(prox$p.value)
+#   return(prox$p)
 # }
-
-# Function for formatting data and running statistical test for ProxECAT
-prox_data_prep = function(leg, counts.cases, counts.controls, common, controls.type, adj) {
-
-  # convert genotypes into long format for ProxECAT v2
-  data.cases = make_long(counts.cases, leg, "case", "int")
-  if (adj){
-    data.controls = make_long_adj(counts.controls, leg, "control", controls.type) #doesn't have count column
-  } else{
-    data.controls = make_long(counts.controls, leg, "control", controls.type)
-  }
-
-  # combine the data together AND REMOVE COMMON VARIANTS
-  data.prox = data.frame(lapply(rbind(data.cases, data.controls), factor)) %>%
-    filter(!(id %in% common$id))
-
-  # getting overall counts for functional & case status
-  counts.prox = data.prox %>% count(case, fun)
-
-  # Run proxECAT
-  prox = proxecat(counts.prox$n[1], counts.prox$n[2], counts.prox$n[3], counts.prox$n[4])
-
-  # return p-value
-  return(prox$p)
-}
 
 # Function for formatting data and running statistical test for ProxECAT
 # for testing cases vs internal controls only
@@ -99,93 +62,44 @@ prox_data_prep = function(leg, counts.cases, counts.controls, common, controls.t
 # }
 
 # Function for formatting data and running statistical test for ProxECAT by gene
-prox_gene_data_prep = function(data.cases, data.controls, common) {
-  
-  data.prox = data.frame(lapply(rbind(data.cases, data.controls), factor)) %>%
-    filter(!(id %in% common$id))
-  
-  counts_gene = data.prox %>% count(gene, case, fun)
-  counts_wide = tidyr::pivot_wider(counts_gene, names_from=c(case, fun), values_from=n,
-                                       values_fill=0, names_sep="_")
-  counts_wide = counts_wide %>% mutate(case_ratio = case_fun/case_syn,
-                                               control_ratio = control_fun/control_syn,
-                                               case_fun_w = case_fun/median(case_ratio),
-                                               control_fun_w = control_fun/median(control_ratio)) %>%
-    mutate(prox = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA,
-                             proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-           prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA,
-                               proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
-  
-  return(counts_wide)
-}
-
-# Function for formatting data and running statistical test for ProxECAT by gene
 # not using the long format that LogProx uses
-prox_gene_data_prep2 = function(count.cases, count.controls, leg, common) {
+prox_gene_data_prep = function(count.cases, count.controls, leg, common) {
   
   # data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case", group="int") %>% 
   #   filter(mac!=0) %>% select(-count)
   data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case") %>% 
-    filter(ac!=0)
+    filter(mac!=0) %>% select(-ac, -af)
   
   data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control") %>% 
-    filter(ac!=0)
-  
-  # if (control_group == "int") {
-  #   # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="int") %>% 
-  #   #   filter(mac!=0) %>% select(-count)
-  #   data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="int") %>% 
-  #     filter(ac!=0)
-  # } else if (control_group == "ext") {
-  #   # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
-  #   #   filter(mac!=0)
-  #   data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
-  #     filter(ac!=0)
-  #   # data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control", group="ext") %>% 
-  #   #   filter(mac!=0) %>% select(-count)
-  # } else {
-  #   stop("ERROR: 'control_group' must be a character string of either 'int' or 'ext'")
-  # }
+    filter(mac!=0) %>% select(-ac, -af)
   
   names <- c("id", "gene", "fun", "case")
   
   data.prox = data.frame(rbind(data.cases, data.controls)) %>% mutate(across(all_of(names), as.factor)) %>% 
     filter(!(id %in% common$id))
   
-  # counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(mac))
-  counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(ac))
+  counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(mac))
 
   counts_wide = tidyr::pivot_wider(counts_gene, names_from=c(case, fun), values_from=n,
                                    values_fill=0, names_sep="_")
   
-  # For some reason this just makes case_fun_w and control_fun_w the same as
-  # case_syn and control_syn, respectively. Not sure why so had to rework code
-  # counts_wide = counts_wide %>% mutate(case_ratio = case_fun/case_syn,
-  #                                      control_ratio = control_fun/control_syn,
-  #                                      case_fun_w = case_fun/median(case_ratio),
-  #                                      control_fun_w = control_fun/median(control_ratio)) %>%
-  #   mutate(prox = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA,
-  #                        proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-  #          prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA,
-  #                          proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
-  
   # Calculate the ratios
-  counts_wide = counts_wide %>% mutate(case_ratio = case_fun/case_syn,
+  counts_wide2 = counts_wide %>% mutate(case_ratio = case_fun/case_syn,
                                        control_ratio = control_fun/control_syn)
-  
+
   # Calculate medians
-  median_case_ratio = median(counts_wide$case_ratio)
-  median_control_ratio = median(counts_wide$control_ratio)
-  
+  median_case_ratio = median(counts_wide2$case_ratio)
+  median_control_ratio = median(counts_wide2$control_ratio)
+
   # Calculate the weighted values and the p-values
-  counts_wide = counts_wide %>% mutate(case_fun_w = case_fun / median_case_ratio,
-                                         control_fun_w = control_fun / median_control_ratio) %>% 
-    mutate(prox = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA, 
+  counts_wide3 = counts_wide2 %>% mutate(case_fun_w = case_fun / median_case_ratio,
+                                         control_fun_w = control_fun / median_control_ratio) %>%
+    mutate(prox = ifelse(case_fun + control_fun < 5 | case_syn + control_syn < 5, NA,
                          proxecat(case_fun, case_syn, control_fun, control_syn)$p.value),
-           prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA, 
+           prox_w = ifelse(case_fun_w + control_fun_w < 5 | case_syn + control_syn < 5, NA,
                            proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
   
-  return(counts_wide)
+  return(counts_wide3)
 }
 
 # Function for formatting data and running statistical test for LogProx
