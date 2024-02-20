@@ -6,6 +6,8 @@
 # My chr19.block37.NFE.sim${rep}.all.${pcase}fun.${pcase}syn.haps.sm
 # My chr19.block37.NFE.sim${rep}.${pcase}fun.${pcase}syn.legend
 
+
+##made some comments here too
 library(data.table)
 library(dplyr)
 
@@ -33,7 +35,7 @@ colnames(comp) <- c('mn_hap_gz_length', 'mn_hap_sm_length', 'mn_leg_length',
 
 j <- 7
 for (j in 1:100) {
-  
+  ###Also made some comments here  
   # read in Megan's files
   meg_hap_gz = fread(paste0(meg_dir, 'chr19.block37.', Pop, '.sim', j, '.controls.haps.gz'))
   # meg_hap_sm = fread(paste0(meg_dir, 'chr19.block37.', Pop, '.sim', j, '.controls.haps.sm'))
@@ -47,7 +49,7 @@ for (j in 1:100) {
   comp[j, 1] <- nrow(meg_hap_gz)
   comp[j, 2] <- nrow(meg_hap_sm)
   comp[j, 3] <- nrow(meg_leg)
-  
+  #more comments!
   comp[j, 4] <- nrow(my_hap_gz)
   comp[j, 5] <- nrow(my_hap_sm)
   comp[j, 6] <- nrow(my_leg)
