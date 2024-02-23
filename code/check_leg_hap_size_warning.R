@@ -6,6 +6,7 @@
 # My chr19.block37.NFE.sim${rep}.all.${pcase}fun.${pcase}syn.haps.sm
 # My chr19.block37.NFE.sim${rep}.${pcase}fun.${pcase}syn.legend
 
+#Added comment based on Adelle's peer review 
 library(data.table)
 library(dplyr)
 
@@ -19,7 +20,7 @@ folder = '100v80'
 # int_prune = 100
 # ext_prune = 80
 
-
+# Added another comment based on Adelle's peer review suggestion
 meg_dir = '/storage/math/projects/RAREsim/Cases/Sim_20k/NFE/data/'
 my_dir = paste0('/home/math/siglersa/mastersProject/20K_NFE/', pruning, '/', folder, '/attempt2_combine_MACbins_legFiles_differ/')
 
