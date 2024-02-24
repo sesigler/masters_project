@@ -230,6 +230,188 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc
   return(counts_adj)
 }
 
+
+#' flip_file
+#' 
+#' @description
+#' Function the flip values for a specified file at variants with an AF >= 1-maf
+#' 
+#' @param file_to_flip the file to be updated
+#' @param flip the rows of the legend file specifying which variants need to be flipped
+#' @param N number of individuals, only for flipping adjusted common controls
+#' @param file_type string specifying what file is to be flipped
+#' 
+#' @return the specified file with the relevant values flipped at the variants in flip
+
+flip_file = function(file_to_flip, flip, N=NULL, file_type) {
+  
+  # Make copy of original file
+  file2 = file_to_flip
+  
+  if (file_type == "leg") {
+    
+    # Flip ref allele in file2 with alt allele in file
+    file2$a0[flip$row] <- file_to_flip$a1[flip$row]
+    
+    # Flip alt allele in leg2 with ref allele in leg
+    file2$a1[flip$row] <- file_to_flip$a0[flip$row]
+    
+    return(file2)
+    
+  } else if (file_type == "geno") {
+    
+    # Flip the alternate allele counts at the relevant variants
+    file2[flip$row,] <- 2-file_to_flip[flip$row,]
+    
+    return(file2)
+    
+  } else if (file_type == "count") {
+    
+    # Flip the AFs at the variants that need to be flipped
+    file2$af[flip$row] <- 1-file_to_flip$af[flip$row]
+    
+    # Update the ACs of the variants that were flipped
+    file2$ac[flip$row] <- round(file2$af[flip$row]*(2*N))
+    
+    return(file2)
+    
+  } else {
+    stop("ERROR: 'file_type' must be a string of either 'leg', 'geno', or 'count'")
+  }
+  
+}
+
+#' flip_data
+#' 
+#' @description
+#' Function to flip the relevant datasets at variants where AF >= 1-maf for each possible scenario
+#' 
+#' @param leg legend file
+#' @param flip the rows of the legend file specifying which variants need to be flipped
+#' @param geno.case genotype matrix for the cases
+#' @param geno.int genotype matric for the internal controls, default value is NULL
+#' @param geno.cc genotype matric for the common controls, default value is NULL
+#' @param count.cc.adj adjusted AC and AF dataframe for the commcon controls, default value is NULL
+#' @param Ncase number of individuals in the cases
+#' @param Nint number of individuals in the internal controls, default value is NULL
+#' @param Ncc number of individuals in the common controls, default value is NULL
+#' @param cntrl string specifying the type(s) of controls used, options are int, ext, and all
+#' @param adj boolean value specifying if the common controls used are adjusted or unadjusted, default value is false
+#' 
+#' @return a list of all the relevant files that could be flipped, returns the unaltered files if no variants needed to be flipped
+
+flip_data = function(leg, flip, geno.case, geno.int=NULL, geno.cc=NULL, count.cc.adj=NULL, Ncase, Nint=NULL, Ncc=NULL, cntrl, adj=FALSE) {
+  
+  if (nrow(flip) != 0) {
+    
+    if (cntrl == "int") {
+      
+      # Create new leg file
+      leg2 = flip_file(leg, flip, N=NULL, file_type="leg") 
+      
+      # Update geno files
+      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
+      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
+      
+      # Recalculate ac/af 
+      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
+      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
+      
+      # Return all changed files
+      return(list(leg2, geno_cases2, geno_int2, count_cases2, count_int2))
+      
+    } else if (cntrl == "ext" & !adj) {
+      
+      # Create new leg file
+      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
+      
+      # Update geno files
+      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
+      geno_cc2 = flip_file(geno_cc, flip, N=NULL, file_type="geno")
+      
+      # Recalculate ac/af 
+      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
+      count_cc2 = calc_allele_freqs(geno_cc2, Ncc, Pop=NULL)
+      
+      # Return all changed files
+      return(list(leg2, geno_cases2, geno_cc2, count_cases2, count_cc2))
+      
+    } else if (cntrl == "ext" & adj) {
+      
+      # Create new leg file
+      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
+      
+      # Update geno files
+      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
+      
+      # Recalculate ac/af 
+      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
+      count_cc_adj2 = flip_file(count_cc_adj, flip, N=Ncc, file_type="count")
+      
+      # Return all changed files
+      return(list(leg2, geno_cases2, count_cases2, count_cc_adj2))
+      
+    } else if (cntrl == "all" & !adj) {
+      
+      # Create new leg file
+      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
+      
+      # Update geno files
+      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
+      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
+      geno_cc2 = flip_file(geno_cc, flip, N=NULL, file_type="geno")
+      
+      # Recalculate ac/af 
+      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
+      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
+      count_cc2 = calc_allele_freqs(geno_cc2, Ncc, Pop=NULL)
+      
+      # Return all changed files
+      return(list(leg2, geno_cases2, geno_int2, geno_cc2, count_cases2, count_int2, count_cc2))
+      
+    } else if (cntrl == "all" & adj) {
+      
+      # Create new leg file
+      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
+      
+      # Update geno files
+      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
+      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
+      
+      # Recalculate ac/af 
+      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
+      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
+      count_cc_adj2 = flip_file(count_cc_adj, flip, N=Ncc, file_type="count")
+      
+      
+      # Return all changed files
+      return(list(leg2, geno_cases2, geno_int2, count_cases2, count_int2, count_cc_adj2))
+      
+    }
+    
+  } else if (cntrl == "int") {
+    
+    # Return all relevant files
+    return(list(leg, geno_cases, geno_int, count_cases, count_int))
+    
+  } else if (cntrl == "ext" & !adj) {
+    
+    return(list(leg, geno_cases, geno_cc, count_cases, count_cc))
+    
+  } else if (cntrl == "ext" & adj) {
+    
+    return(list(leg, geno_cases, count_cases, count_cc))
+    
+  } else if (cntrl == "all" & !adj) {
+    
+    return(list(leg, geno_cases, geno_int, geno_cc, count_cases, count_int, count_cc))
+    
+  } else if (cntrl == "all" & adj) {
+    
+    return(list(leg, geno_cases, geno_int, count_cases, count_int, count_cc))
+  }
+}
+
 # version that doesn't deselect count since the adjusted count files don't have that col
 # make_long_adj = function(counts, leg, case, group) {
 #   

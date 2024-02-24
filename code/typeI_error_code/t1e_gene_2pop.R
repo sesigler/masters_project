@@ -15,11 +15,11 @@ source("/home/math/siglersa/code/functions/methods_funcs.R")
 source("/home/math/siglersa/code/functions/summix2_adjAF.R")
 source("/home/math/siglersa/code/functions/summix2_summix.R")
 
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
 
 # pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 # data = 'by_gene'
@@ -44,8 +44,8 @@ dir_in = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Sim_42k/
 dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/Sim_42k/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/')
 
-# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
-# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
+dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
+dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
 
 # dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
@@ -76,8 +76,8 @@ iecat_genes_p_adj = c() #iECAT-O
 
 # loop through the simulation replicates
 set.seed(1) 
-# i=1
-for (i in 1:100){
+i=1
+for (i in 1:10){
   
   # read in the legend file
   # leg = read_leg_homo(dir_leg, Pop, i)
@@ -136,28 +136,25 @@ for (i in 1:100){
   
   # Account for scenario where AF > 0.999
   # Identify variants where AF >= 1-maf
-  flip_int = leg[which(count_cases$af >= 0.94 | count_int$af >= 1-maf),]
+  flip_int = leg[which(count_cases$af >= 1-maf | count_int$af >= 1-maf),]
   flip_ext = leg[which(count_cases$af >= 1-maf | count_cc$af >= 1-maf),]
   flip_all = leg[which(count_cases$af >= 1-maf | count_int$af >= 1-maf | count_cc$af > 1-maf),]
   
   flip_ext_adj = leg[which(count_cases$af >= 1-maf | count_cc_adj$af >= 1-maf),]
   flip_all_adj = leg[which(count_cases$af >= 1-maf | count_int$af >= 1-maf | count_cc_adj$af >= 1-maf),]
+  
+  flip = leg[which(count_cases$af >= 1-maf | count_int$af >= 1-maf | count_cc_adj$af >= 0.93),]
 
   if (nrow(flip) != 0) {
     
     if (cntrl == "int") {
       
       # Create new leg file
-      leg2 = leg
-      leg2$a0[flip$row] <- leg$a1[flip$row]
-      leg2$a1[flip$row] <- leg$a0[flip$row]
+      leg2 = flip_file(leg, flip, N=NULL, file_type="leg") 
       
       # Update geno files
-      geno_cases2 = geno_cases
-      geno_cases2[flip$row,] <- 2-geno_cases[flip_int$row,]
-      
-      geno_int2 = geno_int
-      geno_int2[flip$row,] <- 2-geno_int[flip$row,]
+      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
+      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
       
       # Recalculate ac/af 
       count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
@@ -169,16 +166,11 @@ for (i in 1:100){
     } else if (cntrl == "ext" & !adj) {
       
       # Create new leg file
-      leg2 = leg
-      leg2$a0[flip$row] <- leg$a1[flip$row]
-      leg2$a1[flip$row] <- leg$a0[flip$row]
+      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
       
       # Update geno files
-      geno_cases2 = geno_cases
-      geno_cases2[flip$row,] <- 2-geno_cases[flip_int$row,]
-      
-      geno_cc2 = geno_cc
-      geno_cc2[flip$row,] <- 2-geno_cc[flip$row,]
+      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
+      geno_cc2 = flip_file(geno_cc, flip, N=NULL, file_type="geno")
       
       # Recalculate ac/af 
       count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
@@ -190,23 +182,53 @@ for (i in 1:100){
     } else if (cntrl == "ext" & adj) {
       
       # Create new leg file
-      leg2 = leg
-      leg2$a0[flip$row] <- leg$a1[flip$row]
-      leg2$a1[flip$row] <- leg$a0[flip$row]
+      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
       
       # Update geno files
-      geno_cases2 = geno_cases
-      geno_cases2[flip$row,] <- 2-geno_cases[flip_int$row,]
+      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
       
       # Recalculate ac/af 
       count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
+      count_cc_adj2 = flip_file(count_cc_adj, flip, N=Ncc, file_type="count")
       
-      ### START HERE ###
-      # Need to figure out how to flip adj cc
+      # Return all changed files
+      return(list(leg2, geno_cases2, count_cases2, count_cc_adj2))
+      
+    } else if (cntrl == "all" & !adj) {
+      
+      # Create new leg file
+      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
+      
+      # Update geno files
+      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
+      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
+      geno_cc2 = flip_file(geno_cc, flip, N=NULL, file_type="geno")
+      
+      # Recalculate ac/af 
+      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
+      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
       count_cc2 = calc_allele_freqs(geno_cc2, Ncc, Pop=NULL)
       
       # Return all changed files
-      return(list(leg2, geno_cases2, count_cases2, count_cc2))
+      return(list(leg2, geno_cases2, geno_int2, geno_cc2, count_cases2, count_int2, count_cc2))
+      
+    } else if (cntrl == "all" & adj) {
+      
+      # Create new leg file
+      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
+      
+      # Update geno files
+      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
+      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
+      
+      # Recalculate ac/af 
+      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
+      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
+      count_cc_adj2 = flip_file(count_cc_adj, flip, N=Ncc, file_type="count")
+
+      
+      # Return all changed files
+      return(list(leg2, geno_cases2, geno_int2, count_cases2, count_int2, count_cc_adj2))
       
     }
     
