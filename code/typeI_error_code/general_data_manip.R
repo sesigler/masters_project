@@ -310,15 +310,15 @@ flip_data = function(leg, flip, geno.case, geno.int=NULL, geno.cc=NULL, count.cc
       leg2 = flip_file(leg, flip, N=NULL, file_type="leg") 
       
       # Update geno files
-      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
-      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
+      geno.case2 = flip_file(geno.case, flip, N=NULL, file_type="geno")
+      geno.int2 = flip_file(geno.int, flip, N=NULL, file_type="geno")
       
       # Recalculate ac/af 
-      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
-      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
+      count.case = calc_allele_freqs(geno.case2, Ncase, Pop=NULL)
+      count.int = calc_allele_freqs(geno.int2, Nint, Pop=NULL)
       
       # Return all changed files
-      return(list(leg2, geno_cases2, geno_int2, count_cases2, count_int2))
+      return(list(leg2, geno.case2, geno.int2, count.case, count.int))
       
     } else if (cntrl == "ext" & !adj) {
       
@@ -326,15 +326,15 @@ flip_data = function(leg, flip, geno.case, geno.int=NULL, geno.cc=NULL, count.cc
       leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
       
       # Update geno files
-      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
-      geno_cc2 = flip_file(geno_cc, flip, N=NULL, file_type="geno")
+      geno.case2 = flip_file(geno.case, flip, N=NULL, file_type="geno")
+      geno.cc2 = flip_file(geno.cc, flip, N=NULL, file_type="geno")
       
       # Recalculate ac/af 
-      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
-      count_cc2 = calc_allele_freqs(geno_cc2, Ncc, Pop=NULL)
+      count.case = calc_allele_freqs(geno.case2, Ncase, Pop=NULL)
+      count.cc = calc_allele_freqs(geno.cc2, Ncc, Pop=NULL)
       
       # Return all changed files
-      return(list(leg2, geno_cases2, geno_cc2, count_cases2, count_cc2))
+      return(list(leg2, geno.case2, geno.cc2, count.case, count.cc))
       
     } else if (cntrl == "ext" & adj) {
       
@@ -342,14 +342,14 @@ flip_data = function(leg, flip, geno.case, geno.int=NULL, geno.cc=NULL, count.cc
       leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
       
       # Update geno files
-      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
+      geno.case2 = flip_file(geno.case, flip, N=NULL, file_type="geno")
       
       # Recalculate ac/af 
-      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
-      count_cc_adj2 = flip_file(count_cc_adj, flip, N=Ncc, file_type="count")
+      count.case = calc_allele_freqs(geno.case2, Ncase, Pop=NULL)
+      count.cc.adj2 = flip_file(count.cc.adj, flip, N=Ncc, file_type="count")
       
       # Return all changed files
-      return(list(leg2, geno_cases2, count_cases2, count_cc_adj2))
+      return(list(leg2, geno.case2, count.case, count.cc.adj2))
       
     } else if (cntrl == "all" & !adj) {
       
@@ -357,17 +357,17 @@ flip_data = function(leg, flip, geno.case, geno.int=NULL, geno.cc=NULL, count.cc
       leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
       
       # Update geno files
-      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
-      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
-      geno_cc2 = flip_file(geno_cc, flip, N=NULL, file_type="geno")
+      geno.case2 = flip_file(geno.case, flip, N=NULL, file_type="geno")
+      geno.int2 = flip_file(geno.int, flip, N=NULL, file_type="geno")
+      geno.cc2 = flip_file(geno.cc, flip, N=NULL, file_type="geno")
       
       # Recalculate ac/af 
-      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
-      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
-      count_cc2 = calc_allele_freqs(geno_cc2, Ncc, Pop=NULL)
+      count.case = calc_allele_freqs(geno.case2, Ncase, Pop=NULL)
+      count.int = calc_allele_freqs(geno.int2, Nint, Pop=NULL)
+      count.cc = calc_allele_freqs(geno.cc2, Ncc, Pop=NULL)
       
       # Return all changed files
-      return(list(leg2, geno_cases2, geno_int2, geno_cc2, count_cases2, count_int2, count_cc2))
+      return(list(leg2, geno.case2, geno.int2, geno.cc2, count.case, count.int, count.cc))
       
     } else if (cntrl == "all" & adj) {
       
@@ -375,40 +375,40 @@ flip_data = function(leg, flip, geno.case, geno.int=NULL, geno.cc=NULL, count.cc
       leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
       
       # Update geno files
-      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
-      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
+      geno.case2 = flip_file(geno.case, flip, N=NULL, file_type="geno")
+      geno.int2 = flip_file(geno.int, flip, N=NULL, file_type="geno")
       
       # Recalculate ac/af 
-      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
-      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
-      count_cc_adj2 = flip_file(count_cc_adj, flip, N=Ncc, file_type="count")
+      count.case = calc_allele_freqs(geno.case2, Ncase, Pop=NULL)
+      count.int = calc_allele_freqs(geno.int2, Nint, Pop=NULL)
+      count.cc.adj2 = flip_file(count.cc.adj, flip, N=Ncc, file_type="count")
       
       
       # Return all changed files
-      return(list(leg2, geno_cases2, geno_int2, count_cases2, count_int2, count_cc_adj2))
+      return(list(leg2, geno.case2, geno.int2, count.case, count.int, count.cc.adj2))
       
     }
     
   } else if (cntrl == "int") {
     
     # Return all relevant files
-    return(list(leg, geno_cases, geno_int, count_cases, count_int))
+    return(list(leg, geno.case, geno.int, count.case, count.int))
     
   } else if (cntrl == "ext" & !adj) {
     
-    return(list(leg, geno_cases, geno_cc, count_cases, count_cc))
+    return(list(leg, geno.case, geno.cc, count.case, count.cc))
     
   } else if (cntrl == "ext" & adj) {
     
-    return(list(leg, geno_cases, count_cases, count_cc))
+    return(list(leg, geno.case, count.case, count.cc.adj))
     
   } else if (cntrl == "all" & !adj) {
     
-    return(list(leg, geno_cases, geno_int, geno_cc, count_cases, count_int, count_cc))
+    return(list(leg, geno.case, geno.int, geno.cc, count.case, count.int, count.cc))
     
   } else if (cntrl == "all" & adj) {
     
-    return(list(leg, geno_cases, geno_int, count_cases, count_int, count_cc))
+    return(list(leg, geno.case, geno.int, count.case, count.int, count.cc.adj))
   }
 }
 
