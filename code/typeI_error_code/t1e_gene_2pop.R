@@ -30,7 +30,7 @@ folder = '160v100v80'
 p_case = 160
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = p_exp = int_prune = 100
 p_cc_fun = p_cc_syn = ext_prune = 100
-Ncase = Nint = 5000
+Ncase = Nic = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 Nref = 10000
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
@@ -92,10 +92,10 @@ for (i in 1:10){
   leg_fun = leg %>% filter(fun=="fun")
   
   # read in the haplotype files
-  hap_cases = read_hap(dir_in, Pop1, Pop2, i, scen, "cases", p_case_fun, p_case_syn)
+  hap_case = read_hap(dir_in, Pop1, Pop2, i, scen, "cases", p_case_fun, p_case_syn)
   # hap_cases_power = read_hap_homo(dir_in, Pop1, Pop2, i, scen, "cases", p_case_fun, p_case_syn) # pcase % fun 100% syn
   # hap_cases_t1e = read_hap_homo(dir_in, Pop1, Pop2, i, scen, "cases", p_int_fun, p_int_syn) # 100% fun 100% syn
-  hap_int = read_hap(dir_in, Pop1, Pop2, i, scen, "internal.controls", p_int_fun, p_int_syn)
+  hap_ic = read_hap(dir_in, Pop1, Pop2, i, scen, "internal.controls", p_int_fun, p_int_syn)
   hap_cc = read_hap(dir_in, Pop1, Pop2, i, scen, "common.controls", p_cc_fun, p_cc_syn)
   hap_ref_pop1 = read_ref(dir_in, Pop1, i, scen, p_exp, p_exp)
   hap_ref_pop2 = read_ref(dir_in, Pop2, i, scen, p_exp, p_exp)
@@ -106,13 +106,13 @@ for (i in 1:10){
   # hap_cases = merge_cases(hap_cases_power, hap_cases_t1e, leg, genes_power)
   
   # convert the haplotypes into genotypes
-  geno_cases = make_geno(hap_cases)
-  geno_int = make_geno(hap_int)
+  geno_case = make_geno(hap_case)
+  geno_ic = make_geno(hap_ic)
   geno_cc = make_geno(hap_cc)
   
   # calculate the allele counts/frequencies
-  count_cases = calc_allele_freqs(geno_cases, Ncase, Pop=NULL)
-  count_int = calc_allele_freqs(geno_int, Nint, Pop=NULL)
+  count_case = calc_allele_freqs(geno_case, Ncase, Pop=NULL)
+  count_ic = calc_allele_freqs(geno_ic, Nic, Pop=NULL)
   count_cc = calc_allele_freqs(geno_cc, Ncc, Pop=NULL)
   # count_all = calc_allele_freqs_all(count_cases, count_int, count_cc, Ncase, Nint, Ncc)
   
@@ -120,7 +120,7 @@ for (i in 1:10){
   count_ref_pop2 = calc_allele_freqs(hap_ref_pop2, Nref, Pop=Pop2)
   
   cc_refs = cbind(count_cc, count_ref_pop1, count_ref_pop2)
-  case_refs = cbind(count_cases, count_ref_pop1, count_ref_pop2)
+  case_refs = cbind(count_case, count_ref_pop1, count_ref_pop2)
 
   # Estimate ancestry proportions using only COMMON variants
   cc_est_prop = est_props(cc_refs, Pop1, Pop2, maf)
@@ -134,146 +134,79 @@ for (i in 1:10){
   # Calculate adjusted AFs
   count_cc_adj = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref, Ncc)
   
-  # Account for scenario where AF > 0.999
+  # Account for scenario where AF >= 1-maf
   # Identify variants where AF >= 1-maf
-  flip_int = leg[which(count_cases$af >= 1-maf | count_int$af >= 1-maf),]
-  flip_ext = leg[which(count_cases$af >= 1-maf | count_cc$af >= 1-maf),]
-  flip_all = leg[which(count_cases$af >= 1-maf | count_int$af >= 1-maf | count_cc$af > 1-maf),]
+  flip_int = leg[which(count_case$af >= 1-maf | count_ic$af >= 1-maf),]
+  flip_ext = leg[which(count_case$af >= 1-maf | count_cc$af >= 1-maf),]
+  flip_all = leg[which(count_case$af >= 1-maf | count_ic$af >= 1-maf | count_cc$af > 1-maf),]
   
-  flip_ext_adj = leg[which(count_cases$af >= 1-maf | count_cc_adj$af >= 1-maf),]
-  flip_all_adj = leg[which(count_cases$af >= 1-maf | count_int$af >= 1-maf | count_cc_adj$af >= 1-maf),]
+  flip_ext_adj = leg[which(count_case$af >= 1-maf | count_cc_adj$af >= 1-maf),]
+  flip_all_adj = leg[which(count_case$af >= 1-maf | count_ic$af >= 1-maf | count_cc_adj$af >= 1-maf),]
   
-  flip = leg[which(count_cases$af >= 1-maf | count_int$af >= 1-maf | count_cc_adj$af >= 0.93),]
-
-  if (nrow(flip) != 0) {
-    
-    if (cntrl == "int") {
-      
-      # Create new leg file
-      leg2 = flip_file(leg, flip, N=NULL, file_type="leg") 
-      
-      # Update geno files
-      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
-      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
-      
-      # Recalculate ac/af 
-      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
-      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
-      
-      # Return all changed files
-      return(list(leg2, geno_cases2, geno_int2, count_cases2, count_int2))
-      
-    } else if (cntrl == "ext" & !adj) {
-      
-      # Create new leg file
-      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
-      
-      # Update geno files
-      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
-      geno_cc2 = flip_file(geno_cc, flip, N=NULL, file_type="geno")
-      
-      # Recalculate ac/af 
-      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
-      count_cc2 = calc_allele_freqs(geno_cc2, Ncc, Pop=NULL)
-      
-      # Return all changed files
-      return(list(leg2, geno_cases2, geno_cc2, count_cases2, count_cc2))
-      
-    } else if (cntrl == "ext" & adj) {
-      
-      # Create new leg file
-      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
-      
-      # Update geno files
-      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
-      
-      # Recalculate ac/af 
-      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
-      count_cc_adj2 = flip_file(count_cc_adj, flip, N=Ncc, file_type="count")
-      
-      # Return all changed files
-      return(list(leg2, geno_cases2, count_cases2, count_cc_adj2))
-      
-    } else if (cntrl == "all" & !adj) {
-      
-      # Create new leg file
-      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
-      
-      # Update geno files
-      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
-      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
-      geno_cc2 = flip_file(geno_cc, flip, N=NULL, file_type="geno")
-      
-      # Recalculate ac/af 
-      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
-      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
-      count_cc2 = calc_allele_freqs(geno_cc2, Ncc, Pop=NULL)
-      
-      # Return all changed files
-      return(list(leg2, geno_cases2, geno_int2, geno_cc2, count_cases2, count_int2, count_cc2))
-      
-    } else if (cntrl == "all" & adj) {
-      
-      # Create new leg file
-      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
-      
-      # Update geno files
-      geno_cases2 = flip_file(geno_cases, flip, N=NULL, file_type="geno")
-      geno_int2 = flip_file(geno_int, flip, N=NULL, file_type="geno")
-      
-      # Recalculate ac/af 
-      count_cases2 = calc_allele_freqs(geno_cases2, Ncase, Pop=NULL)
-      count_int2 = calc_allele_freqs(geno_int2, Nint, Pop=NULL)
-      count_cc_adj2 = flip_file(count_cc_adj, flip, N=Ncc, file_type="count")
-
-      
-      # Return all changed files
-      return(list(leg2, geno_cases2, geno_int2, count_cases2, count_int2, count_cc_adj2))
-      
-    }
-    
-  } else if (cntrl == "int") {
-    
-    # Return all relevant files
-    return(list(leg, geno_cases, geno_int, count_cases, count_int))
-    
-  } else if (cntrl == "ext" & !adj) {
-    
-    return(list(leg, geno_cases, geno_cc, count_cases, count_cc))
-    
-  } else if (cntrl == "ext" & adj) {
-    
-    return(list(leg, geno_cases, count_cases, count_cc))
-    
-  } else if (cntrl == "all" & !adj) {
-    
-    return(list(leg, geno_cases, geno_int, geno_cc, count_cases, count_int, count_cc))
-    
-  } else if (cntrl == "all" & adj) {
-    
-    return(list(leg, geno_cases, geno_int, count_cases, count_int, count_cc))
-  }
+  int_data = flip_data(leg, flip_int, geno_case, geno_ic, geno.cc=NULL, 
+                       count_case, count_ic, count.cc=NULL, count.cc.adj=NULL, 
+                       Ncase, Nic, Ncc=NULL, cntrl="int", adj=FALSE)
   
-
+  leg_int = int_data[[1]]
+  geno_case_int = int_data[[2]]
+  geno_ic_int = int_data[[3]]
+  count_case_int = int_data[[4]]
+  count_ic_int = int_data[[5]]
+  
+  ext_data = flip_data(leg, flip_ext, geno_case, geno.ic=NULL, geno_cc, 
+                       count_case, count.ic=NULL, count_cc, count.cc.adj=NULL, 
+                       Ncase, Nic=NULL, Ncc, cntrl="ext", adj=FALSE)
+  
+  leg_ext = ext_data[[1]]
+  geno_case_ext = ext_data[[2]]
+  geno_cc_ext = ext_data[[3]]
+  count_case_ext = ext_data[[4]]
+  count_cc_ext = ext_data[[5]]
+  
+  all_data = flip_data(leg, flip_all, geno_case, geno_ic, geno_cc, 
+                       count_case, count_ic, count_cc, count.cc.adj=NULL, 
+                       Ncase, Nic, Ncc, cntrl="all", adj=FALSE)
+  
+  leg_all = all_data[[1]]
+  geno_case_all = all_data[[2]]
+  geno_ic_all = all_data[[3]]
+  geno_cc_all = all_data[[4]]
+  count_case_all = all_data[[5]]
+  count_ic_all = all_data[[6]]
+  count_cc_all = all_data[[7]]
+  
+  ext_adj_data = flip_data(leg, flip_ext_adj, geno_case, geno.ic=NULL, geno.cc=NULL, 
+                           count_case, count.ic=NULL, count.cc=NULL, count_cc_adj, 
+                           Ncase, Nic=NULL, Ncc, cntrl="ext", adj=TRUE)
+  
+  leg_ext_adj = ext_adj_data[[1]]
+  geno_case_ext_adj = ext_adj_data[[2]]
+  count_case_ext_adj = ext_adj_data[[3]]
+  count_cc_ext_adj = ext_adj_data[[4]]
+  
+  all_adj_data = flip_data(leg, flip_all_adj, geno_case, geno_ic, geno.cc=NULL, 
+                           count_case, count_ic, count.cc=NULL, count_cc_adj, 
+                           Ncase, Nic, Ncc, cntrl="all", adj=TRUE)
+  
+  leg_all_adj = all_adj_data[[1]]
+  geno_case_all_adj = all_adj_data[[2]]
+  geno_ic_all_adj = all_adj_data[[3]]
+  count_case_all_adj = all_adj_data[[4]]
+  count_ic_all_adj = all_adj_data[[5]]
+  count_cc_all_adj = all_adj_data[[6]]
+  
   # identify the common variants
-  common_int = leg[which(count_cases$maf > maf | count_int$maf > maf),]
-  common_ext = leg[which(count_cases$maf > maf | count_cc$maf > maf),]
-  common_all = leg[which(count_cases$maf > maf | count_int$maf > maf | count_cc$maf > maf),]
+  common_int = leg[which(count_case_int$af > maf | count_ic_int$af > maf),]
+  common_ext = leg[which(count_case_ext$af > maf | count_cc_ext$af > maf),]
+  common_all = leg[which(count_case_all$af > maf | count_ic_all$af > maf | count_cc_all$af > maf),]
 
-  common_ext_adj = leg[which(count_cases$maf > maf | count_cc_adj$maf > maf),]
-  common_all_adj = leg[which(count_cases$maf > maf | count_int$maf > maf | count_cc_adj$maf > maf),]
-
-  common_int = leg[which((count_cases$af > maf & count_cases$af < 1-maf) | (count_int$af > maf & count_int$af < 1-maf)),]
-  common_ext = leg[which((count_cases$af > maf & count_cases$af < 1-maf) | (count_cc$af > maf & count_cc$af < 1-maf)),]
-  common_all = leg[which((count_cases$af > maf & count_cases$af < 1-maf) | (count_int$af > maf & count_int$af < 1-maf) | (count_cc$af > maf & count_cc$af < 1-maf)),]
-
-  common_ext_adj = leg[which((count_cases$af > maf & count_cases$af < 1-maf) | (count_cc_adj$af > maf & count_cc_adj$af < 1-maf)),]
-  common_all_adj = leg[which((count_cases$af > maf & count_cases$af < 1-maf) | (count_int$af > maf & count_int$af < 1-maf) | (count_cc_adj$af > maf & count_cc_adj$af < 1-maf)),]
+  common_ext_adj = leg[which(count_case_ext_adj$af > maf | count_cc_ext_adj$af > maf),]
+  common_all_adj = leg[which(count_case_all_adj$af > maf | count_ic_all_adj$af > maf | count_cc_all_adj$af > maf),]
 
   # proxECAT
-  counts_int_wide = prox_gene_data_prep(count_cases, count_int, leg, common_int)
-  counts_ext_wide = prox_gene_data_prep(count_cases, count_cc, leg, common_ext)
-  counts_ext_wide_adj = prox_gene_data_prep(count_cases, count_cc_adj, leg, common_ext_adj)
+  counts_int_wide = prox_gene_data_prep(count_case_int, count_ic_int, leg_int, common_int)
+  counts_ext_wide = prox_gene_data_prep(count_case_ext, count_cc_ext, leg_ext, common_ext)
+  counts_ext_wide_adj = prox_gene_data_prep(count_case_ext_adj, count_cc_ext_adj, leg_ext_adj, common_ext_adj)
 
   # Store the proxECAT and proxECAT-weighted p-values
   prox_int_genes_p = rbind(prox_int_genes_p, counts_int_wide$prox)
@@ -286,148 +219,131 @@ for (i in 1:10){
 
   ##############################################################################
   # Adjust AFs at the gene level instead of variant level
-  count_ext_ref <- cbind(count_cases[, c("ac", "af", "mac", "maf")], cc_refs)
-  colnames(count_ext_ref)[1:8] <- c("ac_case", "af_case", "mac_case", "maf_case", "ac_cc", "af_cc", "mac_cc", "maf_cc")
-  count_ext_ref2 = count_ext_ref %>% mutate(row = leg$row, gene = leg$gene, id = leg$id, fun = leg$fun)
-
-  common_ext2 = leg[which((count_ext_ref2$af_case > maf & count_ext_ref2$af_case < 1-maf) | (count_ext_ref2$af_cc > maf & count_ext_ref2$af_cc < 1-maf)),]
-
-  count_ext_rare = count_ext_ref2 %>% filter(!(id %in% common_ext2$id))
-
-  # names <- c("gene","id", "fun")
-
-  count_ext_rare2 = count_ext_rare %>% mutate(across(all_of(c("gene","id", "fun")), as.factor))
-
-  data_ext_syn = count_ext_rare2 %>% filter(fun == "syn")
-  data_ext_fun = count_ext_rare2 %>% filter(fun == "fun")
-
-  syn_gene = data.frame(table(data_ext_syn$gene))
-  fun_gene = data.frame(table(data_ext_fun$gene))
-
-  data_ext_syn2 = data_ext_syn %>% group_by(gene) %>% summarise(af_case = sum(af_case), af_cc = sum(af_cc), af_afr = sum(af_afr), af_nfe = sum(af_nfe),
-                                                                ac_case = sum(ac_case), ac_cc = sum(ac_cc), ac_afr = sum(ac_afr), ac_nfe = sum(ac_nfe)) %>%
-    mutate(gaf_case = af_case/syn_gene$Freq, gaf_cc = af_cc/syn_gene$Freq, gaf_afr = af_afr/syn_gene$Freq, gaf_nfe = af_nfe/syn_gene$Freq)
-
-  adj_AF_syn <- adjAF(data = data_ext_syn2,
-                      reference = c("af_afr", "af_nfe"),
-                      observed = "af_cc",
-                      pi.target = c(case_est_prop[, "af_afr"], case_est_prop[, "af_nfe"]),
-                      pi.observed = c(cc_est_prop[, "af_afr"], cc_est_prop[, "af_nfe"]),
-                      adj_method = "average",
-                      N_reference = c(Nref, Nref),
-                      N_observed = Ncc,
-                      filter = TRUE)
-
-  # Add adj AF to data frame
-  data_ext_syn2$adj_af <- adj_AF_syn$adjusted.AF$adjustedAF
-
-  # Calculate the MINOR adjusted AF
-  data_ext_syn2$adj_maf <- ifelse(data_ext_syn2$adj_af > .5, 1-data_ext_syn2$adj_af, data_ext_syn2$adj_af)
-
-  # Calculate the MINOR adjusted AC
-  data_ext_syn2$adj_mac <- round(data_ext_syn2$adj_maf*(2*Ncc))
-
-  # Same for fun variants
-  data_ext_fun2 = data_ext_fun %>% group_by(gene) %>% summarise(af_case = sum(af_case), af_cc = sum(af_cc), af_afr = sum(af_afr), af_nfe = sum(af_nfe),
-                                                                ac_case = sum(ac_case), ac_cc = sum(ac_cc), ac_afr = sum(ac_afr), ac_nfe = sum(ac_nfe)) %>%
-    mutate(gaf_case = af_case/fun_gene$Freq, gaf_cc = af_cc/fun_gene$Freq, gaf_afr = af_afr/fun_gene$Freq, gaf_nfe = af_nfe/fun_gene$Freq)
-
-  adj_AF_fun <- adjAF(data = data_ext_fun2,
-                      reference = c("af_afr", "af_nfe"),
-                      observed = "af_cc",
-                      pi.target = c(case_est_prop[, "af_afr"], case_est_prop[, "af_nfe"]),
-                      pi.observed = c(cc_est_prop[, "af_afr"], cc_est_prop[, "af_nfe"]),
-                      adj_method = "average",
-                      N_reference = c(Nref, Nref),
-                      N_observed = Ncc,
-                      filter = TRUE)
-
-  # Add adj AF to data frame
-  data_ext_fun2$adj_af <- adj_AF_fun$adjusted.AF$adjustedAF
-
-  # Calculate the MINOR adjusted AF
-  data_ext_fun2$adj_maf <- ifelse(data_ext_fun2$adj_af > .5, 1-data_ext_fun2$adj_af, data_ext_fun2$adj_af)
-
-  # Calculate the MINOR adjusted AC
-  data_ext_fun2$adj_mac <- round(data_ext_fun2$adj_maf*(2*Ncc))
-
-  # Combine fun and syn data for plotting
-  colnames(data_ext_syn2) <- paste(colnames(data_ext_syn2), "syn", sep = "_")
-  colnames(data_ext_fun2) <- paste(colnames(data_ext_fun2), "fun", sep = "_")
-  data_prox <- cbind(data_ext_fun2[, c("gene_fun", "ac_case_fun", "ac_cc_fun")], data_ext_syn2[, c("ac_case_syn", "ac_cc_syn")])
-  data_prox_adj <- cbind(data_ext_fun2[, c("gene_fun", "ac_case_fun", "adj_mac_fun")], data_ext_syn2[, c("ac_case_syn", "adj_mac_syn")])
-
-  library(ggplot2)
-  g1 <- ggplot(data_ext2 %>% filter(fun == "fun"), aes(x=adj_maf, y=af_case)) +
-    geom_point() +
-    geom_abline(intercept = 0, slope = 1) +
-    theme_bw() +
-    xlab("Adjusted AF") + ylab("AFR AF") +
-    geom_text(mapping = aes(x = 0.002, y = 0.007),
-              label = paste0("CCC fun = ", round(DescTools::CCC(data_ext_fun2$adj_maf, data_ext_fun2$af_case)$rho.c$est, 6)))
-  g1
-
-  counts.gene = data_prox %>% mutate(case_ratio = ac_case_fun/ac_case_syn,
-                                     control_ratio = ac_cc_fun/ac_cc_syn)
-
-  counts.gene.adj = data_prox_adj %>% mutate(case_ratio = ac_case_fun/ac_case_syn,
-                                             control_ratio = adj_mac_fun/adj_mac_syn)
-
-  # Calculate medians
-  median.case.ratio = median(counts.gene$case_ratio)
-  median.control.ratio = median(counts.gene$control_ratio)
-
-  median.case.ratio.adj = median(counts.gene.adj$case_ratio)
-  median.control.ratio.adj = median(counts.gene.adj$control_ratio)
-
-  # Calculate the weighted values and the p-values
-  counts.gene2 = counts.gene %>% mutate(case_fun_w = ac_case_fun / median.case.ratio,
-                                        control_fun_w = ac_cc_fun / median.control.ratio) %>%
-    mutate(prox = ifelse((ac_case_fun + ac_cc_fun < 5) | (ac_case_syn + ac_cc_syn < 5), NA,
-                         proxecat(ac_case_fun, ac_case_syn, ac_cc_fun, ac_cc_syn)$p.value),
-           prox_w = ifelse((case_fun_w + control_fun_w < 5) | (ac_case_syn + ac_cc_syn < 5), NA,
-                           proxecat(case_fun_w, ac_case_syn, control_fun_w, ac_cc_syn)$p.value))
-
-  counts.gene.adj2 = counts.gene.adj %>% mutate(case_fun_w = ac_case_fun / median.case.ratio.adj,
-                                                control_fun_w = adj_mac_fun / median.control.ratio.adj) %>%
-    mutate(prox = ifelse((ac_case_fun + adj_mac_fun < 5) | (ac_case_syn + adj_mac_syn < 5), NA,
-                         proxecat(ac_case_fun, ac_case_syn, adj_mac_fun, adj_mac_syn)$p.value),
-           prox_w = ifelse((case_fun_w + control_fun_w < 5) | (ac_case_syn + adj_mac_syn < 5), NA,
-                           proxecat(case_fun_w, ac_case_syn, control_fun_w, adj_mac_syn)$p.value))
+  # count_ext_ref <- cbind(count_cases[, c("ac", "af", "mac", "maf")], cc_refs)
+  # colnames(count_ext_ref)[1:8] <- c("ac_case", "af_case", "mac_case", "maf_case", "ac_cc", "af_cc", "mac_cc", "maf_cc")
+  # count_ext_ref2 = count_ext_ref %>% mutate(row = leg$row, gene = leg$gene, id = leg$id, fun = leg$fun)
+  # 
+  # common_ext2 = leg[which((count_ext_ref2$af_case > maf & count_ext_ref2$af_case < 1-maf) | (count_ext_ref2$af_cc > maf & count_ext_ref2$af_cc < 1-maf)),]
+  # 
+  # count_ext_rare = count_ext_ref2 %>% filter(!(id %in% common_ext2$id))
+  # 
+  # count_ext_rare2 = count_ext_rare %>% mutate(across(all_of(c("gene","id", "fun")), as.factor))
+  # 
+  # data_ext_syn = count_ext_rare2 %>% filter(fun == "syn")
+  # data_ext_fun = count_ext_rare2 %>% filter(fun == "fun")
+  # 
+  # syn_gene = data.frame(table(data_ext_syn$gene))
+  # fun_gene = data.frame(table(data_ext_fun$gene))
+  # 
+  # data_ext_syn2 = data_ext_syn %>% group_by(gene) %>% summarise(af_case = sum(af_case), af_cc = sum(af_cc), af_afr = sum(af_afr), af_nfe = sum(af_nfe),
+  #                                                               ac_case = sum(ac_case), ac_cc = sum(ac_cc), ac_afr = sum(ac_afr), ac_nfe = sum(ac_nfe)) %>%
+  #   mutate(gaf_case = af_case/syn_gene$Freq, gaf_cc = af_cc/syn_gene$Freq, gaf_afr = af_afr/syn_gene$Freq, gaf_nfe = af_nfe/syn_gene$Freq)
+  # 
+  # adj_AF_syn <- adjAF(data = data_ext_syn2,
+  #                     reference = c("af_afr", "af_nfe"),
+  #                     observed = "af_cc",
+  #                     pi.target = c(case_est_prop[, "af_afr"], case_est_prop[, "af_nfe"]),
+  #                     pi.observed = c(cc_est_prop[, "af_afr"], cc_est_prop[, "af_nfe"]),
+  #                     adj_method = "average",
+  #                     N_reference = c(Nref, Nref),
+  #                     N_observed = Ncc,
+  #                     filter = TRUE)
+  # 
+  # # Add adj AF to data frame
+  # data_ext_syn2$adj_af <- adj_AF_syn$adjusted.AF$adjustedAF
+  # 
+  # # Calculate the MINOR adjusted AF
+  # data_ext_syn2$adj_maf <- ifelse(data_ext_syn2$adj_af > .5, 1-data_ext_syn2$adj_af, data_ext_syn2$adj_af)
+  # 
+  # # Calculate the MINOR adjusted AC
+  # data_ext_syn2$adj_mac <- round(data_ext_syn2$adj_maf*(2*Ncc))
+  # 
+  # # Same for fun variants
+  # data_ext_fun2 = data_ext_fun %>% group_by(gene) %>% summarise(af_case = sum(af_case), af_cc = sum(af_cc), af_afr = sum(af_afr), af_nfe = sum(af_nfe),
+  #                                                               ac_case = sum(ac_case), ac_cc = sum(ac_cc), ac_afr = sum(ac_afr), ac_nfe = sum(ac_nfe)) %>%
+  #   mutate(gaf_case = af_case/fun_gene$Freq, gaf_cc = af_cc/fun_gene$Freq, gaf_afr = af_afr/fun_gene$Freq, gaf_nfe = af_nfe/fun_gene$Freq)
+  # 
+  # adj_AF_fun <- adjAF(data = data_ext_fun2,
+  #                     reference = c("af_afr", "af_nfe"),
+  #                     observed = "af_cc",
+  #                     pi.target = c(case_est_prop[, "af_afr"], case_est_prop[, "af_nfe"]),
+  #                     pi.observed = c(cc_est_prop[, "af_afr"], cc_est_prop[, "af_nfe"]),
+  #                     adj_method = "average",
+  #                     N_reference = c(Nref, Nref),
+  #                     N_observed = Ncc,
+  #                     filter = TRUE)
+  # 
+  # # Add adj AF to data frame
+  # data_ext_fun2$adj_af <- adj_AF_fun$adjusted.AF$adjustedAF
+  # 
+  # # Calculate the MINOR adjusted AF
+  # data_ext_fun2$adj_maf <- ifelse(data_ext_fun2$adj_af > .5, 1-data_ext_fun2$adj_af, data_ext_fun2$adj_af)
+  # 
+  # # Calculate the MINOR adjusted AC
+  # data_ext_fun2$adj_mac <- round(data_ext_fun2$adj_maf*(2*Ncc))
+  # 
+  # # Combine fun and syn data for plotting
+  # colnames(data_ext_syn2) <- paste(colnames(data_ext_syn2), "syn", sep = "_")
+  # colnames(data_ext_fun2) <- paste(colnames(data_ext_fun2), "fun", sep = "_")
+  # data_prox <- cbind(data_ext_fun2[, c("gene_fun", "ac_case_fun", "ac_cc_fun")], data_ext_syn2[, c("ac_case_syn", "ac_cc_syn")])
+  # data_prox_adj <- cbind(data_ext_fun2[, c("gene_fun", "ac_case_fun", "adj_mac_fun")], data_ext_syn2[, c("ac_case_syn", "adj_mac_syn")])
+  # 
+  # library(ggplot2)
+  # g1 <- ggplot(data_ext2 %>% filter(fun == "fun"), aes(x=adj_maf, y=af_case)) +
+  #   geom_point() +
+  #   geom_abline(intercept = 0, slope = 1) +
+  #   theme_bw() +
+  #   xlab("Adjusted AF") + ylab("AFR AF") +
+  #   geom_text(mapping = aes(x = 0.002, y = 0.007),
+  #             label = paste0("CCC fun = ", round(DescTools::CCC(data_ext_fun2$adj_maf, data_ext_fun2$af_case)$rho.c$est, 6)))
+  # g1
+  # 
+  # counts.gene = data_prox %>% mutate(case_ratio = ac_case_fun/ac_case_syn,
+  #                                    control_ratio = ac_cc_fun/ac_cc_syn)
+  # 
+  # counts.gene.adj = data_prox_adj %>% mutate(case_ratio = ac_case_fun/ac_case_syn,
+  #                                            control_ratio = adj_mac_fun/adj_mac_syn)
+  # 
+  # # Calculate medians
+  # median.case.ratio = median(counts.gene$case_ratio)
+  # median.control.ratio = median(counts.gene$control_ratio)
+  # 
+  # median.case.ratio.adj = median(counts.gene.adj$case_ratio)
+  # median.control.ratio.adj = median(counts.gene.adj$control_ratio)
+  # 
+  # # Calculate the weighted values and the p-values
+  # counts.gene2 = counts.gene %>% mutate(case_fun_w = ac_case_fun / median.case.ratio,
+  #                                       control_fun_w = ac_cc_fun / median.control.ratio) %>%
+  #   mutate(prox = ifelse((ac_case_fun + ac_cc_fun < 5) | (ac_case_syn + ac_cc_syn < 5), NA,
+  #                        proxecat(ac_case_fun, ac_case_syn, ac_cc_fun, ac_cc_syn)$p.value),
+  #          prox_w = ifelse((case_fun_w + control_fun_w < 5) | (ac_case_syn + ac_cc_syn < 5), NA,
+  #                          proxecat(case_fun_w, ac_case_syn, control_fun_w, ac_cc_syn)$p.value))
+  # 
+  # counts.gene.adj2 = counts.gene.adj %>% mutate(case_fun_w = ac_case_fun / median.case.ratio.adj,
+  #                                               control_fun_w = adj_mac_fun / median.control.ratio.adj) %>%
+  #   mutate(prox = ifelse((ac_case_fun + adj_mac_fun < 5) | (ac_case_syn + adj_mac_syn < 5), NA,
+  #                        proxecat(ac_case_fun, ac_case_syn, adj_mac_fun, adj_mac_syn)$p.value),
+  #          prox_w = ifelse((case_fun_w + control_fun_w < 5) | (ac_case_syn + adj_mac_syn < 5), NA,
+  #                          proxecat(case_fun_w, ac_case_syn, control_fun_w, adj_mac_syn)$p.value))
   ################################################################################
 
   ### Prep data for other methods
-  # convert genotypes into long format for ProxECAT v2
-  data_cases = make_long(count_cases, leg, "case", "int")
-  data_int = make_long(count_int, leg, "control", "int")
-  data_cc = make_long(count_cc, leg, "control", "ext")
-  data_cc_adj = make_long(count_cc_adj, leg, "control", "ext")
-
-  # combine the data together
-  data_int = data.frame(lapply(rbind(data_cases, data_int), factor)) %>%
-    filter(!(id %in% common_int$id))
-
-  data_prox = data.frame(lapply(rbind(data_cases, data_cc), factor)) %>%
-    filter(!(id %in% common_ext$id))
-
-  data_all = data.frame(lapply(rbind(data_cases, data_int, data_cc), factor)) %>%
-    filter(!(id %in% common_all$id))
-
-  data_prox_adj = data.frame(lapply(rbind(data_cases, data_cc_adj), factor)) %>%
-    filter(!(id %in% common_ext_adj$id))
-
-  data_all_adj = data.frame(lapply(rbind(data_cases, data_int, data_cc_adj), factor)) %>%
-    filter(!(id %in% common_all_adj$id))
+  # convert genotypes into long format for ProxECAT v2, combine datasets, and remove common variants
+  data_int = format_logprox_data(leg_int, count_case_int, count_ic_int, control_type="int", count.control2=NULL, common_int, data.all=FALSE)
+  data_prox = format_logprox_data(leg_ext, count_case_ext, count_cc_ext, control_type="ext", count.control2=NULL, common_ext, data.all=FALSE)
+  data_all = format_logprox_data(leg_all, count_case_all, count_ic_all, control_type="int", count.control2=count_cc_all, common_all, data.all=TRUE)
+  data_prox_adj = format_logprox_data(leg_ext_adj, count_case_ext_adj, count_cc_ext_adj, control_type="ext", count.control2=NULL, common_ext_adj, data.all=FALSE)
+  data_all_adj = format_logprox_data(leg_all_adj, count_case_all_adj, count_ic_all_adj, control_type="int", count.control2=count_cc_all_adj, common_all_adj, data.all=TRUE)
 
   # create case/control phenotype matrices for iECAT/SKAT
-  pheno_int = rep(0, (ncol(geno_cases) + ncol(geno_int)))
-  pheno_int[1:ncol(geno_cases)] = 1
+  pheno_int = rep(0, (ncol(geno_case_int) + ncol(geno_ic_int)))
+  pheno_int[1:ncol(geno_case_int)] = 1
 
-  pheno_ext = rep(0, (ncol(geno_cases) + ncol(geno_cc)))
-  pheno_ext[1:ncol(geno_cases)] = 1
+  pheno_ext = rep(0, (ncol(geno_case_ext) + ncol(geno_cc_ext)))
+  pheno_ext[1:ncol(geno_case_ext)] = 1
 
-  pheno_all = rep(0, (ncol(geno_cases) + ncol(geno_int) + ncol(geno_cc)))
-  pheno_all[1:ncol(geno_cases)] = 1
+  pheno_all = rep(0, (ncol(geno_case_all) + ncol(geno_ic_all) + ncol(geno_cc_all)))
+  pheno_all[1:ncol(geno_case_all)] = 1
 
   # null model object
   obj_int = SKAT_Null_Model(as.numeric(pheno_int) ~ 1, out_type="D") # D-dichotomous
@@ -435,26 +351,26 @@ for (i in 1:10){
   obj_all = SKAT_Null_Model(as.numeric(pheno_all) ~ 1, out_type="D") # D-dichotomous
 
   # create combined genotype matrices
-  geno_int_all = cbind(geno_cases, geno_int, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
-  geno_int_all_adj = cbind(geno_cases, geno_int, gene=leg$gene)[-union(leg_syn$row, common_all_adj$row),] #iECAT-O
+  geno_iecat_int = cbind(geno_case_all, geno_ic_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
+  geno_iecat_int_adj = cbind(geno_case_all_adj, geno_ic_all_adj, gene=leg$gene)[-union(leg_syn$row, common_all_adj$row),] #iECAT-O
 
-  geno_ext = cbind(count_cc, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
-  geno_ext_adj = cbind(count_cc_adj, gene=leg$gene)[-union(leg_syn$row, common_all_adj$row),] #iECAT-O
+  geno_iecat_ext = cbind(count_cc_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
+  geno_iecat_ext_adj = cbind(count_cc_all_adj, gene=leg$gene)[-union(leg_syn$row, common_all_adj$row),] #iECAT-O
 
-  geno_cases_int = cbind(geno_cases, geno_int, gene=leg$gene)[-union(leg_syn$row, common_int$row),] #internal
-  geno_cases_cc = cbind(geno_cases, geno_cc, gene=leg$gene)[-union(leg_syn$row, common_ext$row),] #external
-  geno_all = cbind(geno_cases, geno_int, geno_cc, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #internal+external
+  geno_skat_int = cbind(geno_case_int, geno_ic_int, gene=leg$gene)[-union(leg_syn$row, common_int$row),] #internal
+  geno_skat_ext = cbind(geno_case_ext, geno_cc_ext, gene=leg$gene)[-union(leg_syn$row, common_ext$row),] #external
+  geno_skat_all = cbind(geno_case_all, geno_ic_all, geno_cc_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #internal+external
 
   # some colnames are same from cbinding the geno matrices, need to make them unique
-  colnames(geno_int_all) <- make.unique(colnames(geno_int_all))
-  colnames(geno_int_all_adj) <- make.unique(colnames(geno_int_all_adj))
-  colnames(geno_cases_int) <- make.unique(colnames(geno_cases_int))
-  colnames(geno_cases_cc) <- make.unique(colnames(geno_cases_cc))
-  colnames(geno_all) <- make.unique(colnames(geno_all))
+  colnames(geno_iecat_int) <- make.unique(colnames(geno_iecat_int))
+  colnames(geno_iecat_int_adj) <- make.unique(colnames(geno_iecat_int_adj))
+  colnames(geno_skat_int) <- make.unique(colnames(geno_skat_int))
+  colnames(geno_skat_ext) <- make.unique(colnames(geno_skat_ext))
+  colnames(geno_skat_all) <- make.unique(colnames(geno_skat_all))
 
   # create MAC matrix for external controls
-  tbl = data.frame(a0=geno_ext$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_ext$gene)
-  tbl_adj = data.frame(a0=geno_ext_adj$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_ext_adj$gene)
+  tbl = data.frame(a0=geno_iecat_ext$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_iecat_ext$gene)
+  tbl_adj = data.frame(a0=geno_iecat_int_adj$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_iecat_int_adj$gene)
 
   # call ProxECATv2/iECAT/SKAT once per gene
   prox2_int_genes = prox2_ext_genes = prox2_all_genes = c()
@@ -491,20 +407,20 @@ for (i in 1:10){
     prox2_all_genes_adj = c(prox2_all_genes_adj, prox2_all_adj)
 
     ### Prepare data for iECAT and SKAT methods
-    Z_int_all = geno_int_all %>% filter(gene == genes[g]) %>% select(-gene) #iECAT
-    Z_int_all_adj = geno_int_all_adj %>% filter(gene == genes[g]) %>% select(-gene) #iECAT
+    Z_iecat = geno_iecat_int %>% filter(gene == genes[g]) %>% select(-gene) #iECAT
+    Z_iecat_adj = geno_iecat_int_adj %>% filter(gene == genes[g]) %>% select(-gene) #iECAT
 
-    Z_int = geno_cases_int %>% filter(gene == genes[g]) %>% select(-gene)
-    Z_ext = geno_cases_cc %>% filter(gene == genes[g]) %>% select(-gene)
-    Z_all = geno_all %>% filter(gene == genes[g]) %>% select(-gene)
+    Z_int = geno_skat_int %>% filter(gene == genes[g]) %>% select(-gene)
+    Z_ext = geno_skat_ext %>% filter(gene == genes[g]) %>% select(-gene)
+    Z_all = geno_skat_all %>% filter(gene == genes[g]) %>% select(-gene)
 
     # subset the MAC matrix for the external controls for iECAT
     tbl_gene = tbl %>% filter(gene == genes[g]) %>% select(-gene)
     tbl_gene_adj = tbl_adj %>% filter(gene == genes[g]) %>% select(-gene)
 
     # call the iECAT-O function
-    re_gene = iECAT(t(Z_int_all), obj_int, as.matrix(tbl_gene), method="optimal")
-    re_gene_adj = iECAT(t(Z_int_all_adj), obj_int, as.matrix(tbl_gene_adj), method="optimal")
+    re_gene = iECAT(t(Z_iecat), obj_int, as.matrix(tbl_gene), method="optimal")
+    re_gene_adj = iECAT(t(Z_iecat_adj), obj_int, as.matrix(tbl_gene_adj), method="optimal")
 
     # Save the iECAT-O p-values
     iecat_genes = c(iecat_genes, re_gene$p.value)
