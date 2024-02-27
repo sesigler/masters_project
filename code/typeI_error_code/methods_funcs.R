@@ -68,17 +68,15 @@ prox_gene_data_prep = function(count.cases, count.controls, leg, common) {
   # data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case", group="int") %>% 
   #   filter(mac!=0) %>% select(-count)
   data.cases = count.cases %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="case") %>% 
-    filter(mac!=0) %>% select(-ac, -af)
+    filter(ac!=0)
   
   data.controls = count.controls %>% mutate(id=leg$id, gene=leg$gene, fun=leg$fun, case="control") %>% 
-    filter(mac!=0) %>% select(-ac, -af)
-  
-  names <- c("id", "gene", "fun", "case")
-  
-  data.prox = data.frame(rbind(data.cases, data.controls)) %>% mutate(across(all_of(names), as.factor)) %>% 
+    filter(ac!=0)
+
+  data.prox = data.frame(rbind(data.cases, data.controls)) %>% mutate(across(all_of(c("id", "gene", "fun", "case")), as.factor)) %>% 
     filter(!(id %in% common$id))
   
-  counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(mac))
+  counts_gene = data.prox %>% group_by(gene, case, fun) %>% summarise(n = sum(ac))
 
   counts_wide = tidyr::pivot_wider(counts_gene, names_from=c(case, fun), values_from=n,
                                    values_fill=0, names_sep="_")
@@ -100,6 +98,31 @@ prox_gene_data_prep = function(count.cases, count.controls, leg, common) {
                            proxecat(case_fun_w, case_syn, control_fun_w, control_syn)$p.value))
   
   return(counts_wide3)
+}
+
+# Function to format data for logProx
+format_logprox_data = function(leg, count.case, count.control, control_type, count.control2=NULL, common, data.all=FALSE) {
+  
+  # Convert datasets to long format
+  data.case = make_long(count.case, leg, "case", "int")
+  data.control = make_long(count.control, leg, "control", control_type)
+  
+  if (data.all) {
+    # Make long common control data
+    data.control2 = make_long(count.control2, leg, "control", "ext")
+    
+    # cbind all data and filter out common variants
+    data.out = data.frame(lapply(rbind(data.case, data.control, data.control2), factor)) %>%
+      filter(!(id %in% common$id))
+    
+    return(data.out)
+  }
+  
+  # cbind data and filter out common variants
+  data.out = data.frame(lapply(rbind(data.case, data.control), factor)) %>%
+    filter(!(id %in% common$id))
+  
+  return(data.out)
 }
 
 # Function for formatting data and running statistical test for LogProx
