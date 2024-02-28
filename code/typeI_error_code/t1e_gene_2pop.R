@@ -114,7 +114,6 @@ for (i in 1:10){
   count_case = calc_allele_freqs(geno_case, Ncase, Pop=NULL)
   count_ic = calc_allele_freqs(geno_ic, Nic, Pop=NULL)
   count_cc = calc_allele_freqs(geno_cc, Ncc, Pop=NULL)
-  # count_all = calc_allele_freqs_all(count_cases, count_int, count_cc, Ncase, Nint, Ncc)
   
   count_ref_pop1 = calc_allele_freqs(hap_ref_pop1, Nref, Pop=Pop1)
   count_ref_pop2 = calc_allele_freqs(hap_ref_pop2, Nref, Pop=Pop2)
@@ -134,7 +133,6 @@ for (i in 1:10){
   # Calculate adjusted AFs
   count_cc_adj = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref, Ncc)
   
-  # Account for scenario where AF >= 1-maf
   # Identify variants where AF >= 1-maf
   flip_int = leg[which(count_case$af >= 1-maf | count_ic$af >= 1-maf),]
   flip_ext = leg[which(count_case$af >= 1-maf | count_cc$af >= 1-maf),]
@@ -330,9 +328,11 @@ for (i in 1:10){
   ### Prep data for other methods
   # convert genotypes into long format for ProxECAT v2, combine datasets, and remove common variants
   data_int = format_logprox_data(leg_int, count_case_int, count_ic_int, control_type="int", count.control2=NULL, common_int, data.all=FALSE)
+  
   data_prox = format_logprox_data(leg_ext, count_case_ext, count_cc_ext, control_type="ext", count.control2=NULL, common_ext, data.all=FALSE)
-  data_all = format_logprox_data(leg_all, count_case_all, count_ic_all, control_type="int", count.control2=count_cc_all, common_all, data.all=TRUE)
   data_prox_adj = format_logprox_data(leg_ext_adj, count_case_ext_adj, count_cc_ext_adj, control_type="ext", count.control2=NULL, common_ext_adj, data.all=FALSE)
+  
+  data_all = format_logprox_data(leg_all, count_case_all, count_ic_all, control_type="int", count.control2=count_cc_all, common_all, data.all=TRUE)
   data_all_adj = format_logprox_data(leg_all_adj, count_case_all_adj, count_ic_all_adj, control_type="int", count.control2=count_cc_all_adj, common_all_adj, data.all=TRUE)
 
   # create case/control phenotype matrices for iECAT/SKAT
@@ -370,7 +370,7 @@ for (i in 1:10){
 
   # create MAC matrix for external controls
   tbl = data.frame(a0=geno_iecat_ext$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_iecat_ext$gene)
-  tbl_adj = data.frame(a0=geno_iecat_int_adj$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_iecat_int_adj$gene)
+  tbl_adj = data.frame(a0=geno_iecat_ext_adj$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_iecat_ext_adj$gene)
 
   # call ProxECATv2/iECAT/SKAT once per gene
   prox2_int_genes = prox2_ext_genes = prox2_all_genes = c()
