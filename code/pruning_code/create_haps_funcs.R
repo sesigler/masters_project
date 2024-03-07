@@ -65,52 +65,52 @@ prune_var = function(remove, haplotype, nsim){
 
 ### function to add rows of zeros back into the pruned haplotype file in the correct 
 # order. Haplotype pruned using RAREsim v2.1.1
-add_prune_var = function(leg_pcase, leg_pconf, hap_pconf, nsim){
-  
-  # Add row number to pconf legend file based on variant id in pcase legend file
-  pconf_rows = subset(leg_pcase, id %in% leg_pconf$id)
-  leg_pconf$row = pconf_rows$row
-  
-  # Subset rows that were pruned from pcase legend file
-  pruned_rows = subset(leg_pcase, !(id %in% leg_pconf$id))
-  
-  # create rows of zeros to add back in to hap.pconf
-  add =  data.frame(matrix(0, nrow=nrow(pruned_rows), ncol=(2*nsim)))
-  colnames(add) = colnames(hap_pconf)
-  
-  # add row numbers to the haplotypes
-  add$row = pruned_rows$row
-  hap_pconf$row = leg_pconf$row
-  
-  # add rows of zeros to the p_conf pruned haplotype
-  hap_out = rbind(hap_pconf, add)
-  
-  # make sure the variants are in the correct order to match the legend file
-  hap_out = hap_out[order(hap_out$row),]
-  
-  # remove the row numbers
-  hap_out = hap_out[,-c(ncol(hap_out))]
-  
-  return(hap_out)
-}
+# add_prune_var = function(leg_pcase, leg_pconf, hap_pconf, nsim){
+#   
+#   # Add row number to pconf legend file based on variant id in pcase legend file
+#   pconf_rows = subset(leg_pcase, id %in% leg_pconf$id)
+#   leg_pconf$row = pconf_rows$row
+#   
+#   # Subset rows that were pruned from pcase legend file
+#   pruned_rows = subset(leg_pcase, !(id %in% leg_pconf$id))
+#   
+#   # create rows of zeros to add back in to hap.pconf
+#   add =  data.frame(matrix(0, nrow=nrow(pruned_rows), ncol=(2*nsim)))
+#   colnames(add) = colnames(hap_pconf)
+#   
+#   # add row numbers to the haplotypes
+#   add$row = pruned_rows$row
+#   hap_pconf$row = leg_pconf$row
+#   
+#   # add rows of zeros to the p_conf pruned haplotype
+#   hap_out = rbind(hap_pconf, add)
+#   
+#   # make sure the variants are in the correct order to match the legend file
+#   hap_out = hap_out[order(hap_out$row),]
+#   
+#   # remove the row numbers
+#   hap_out = hap_out[,-c(ncol(hap_out))]
+#   
+#   return(hap_out)
+# }
 
 ### Determine the number of rare alleles in a dataset
-rare_var = function(legend_fun_idx, hap, maf){
-  
-  # Note: legend_fun_idx are the row indices of the haplotype file subset by 
-  # functional status (fun or syn)
-  
-  # Subset haplotype file to rows of legend file by functional status
-  hap_fun = hap[legend_fun_idx, ]
-  
-  # Calculate the AFs of each row of the haplotype file
-  hap_AF = rowSums(hap_fun)/ncol(hap)
-  
-  # Determine which rows of the haplotype file are rare variants
-  hap_rare = which(hap_AF <= maf)
-  
-  # Sum up number of rare alleles in the haplotype file
-  out = sum(rowSums(hap_fun[hap_rare, ]))
-  
-  return(out)
-}
+# rare_var = function(legend_fun_idx, hap, maf){
+#   
+#   # Note: legend_fun_idx are the row indices of the haplotype file subset by 
+#   # functional status (fun or syn)
+#   
+#   # Subset haplotype file to rows of legend file by functional status
+#   hap_fun = hap[legend_fun_idx, ]
+#   
+#   # Calculate the AFs of each row of the haplotype file
+#   hap_AF = rowSums(hap_fun)/ncol(hap)
+#   
+#   # Determine which rows of the haplotype file are rare variants
+#   hap_rare = which(hap_AF <= maf)
+#   
+#   # Sum up number of rare alleles in the haplotype file
+#   out = sum(rowSums(hap_fun[hap_rare, ]))
+#   
+#   return(out)
+# }
