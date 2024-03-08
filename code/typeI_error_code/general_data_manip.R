@@ -179,22 +179,12 @@ est_props = function(counts, Pop1, Pop2, maf) {
 #' @param Nref the number of individuals in the reference populations (assumes the number is the same for all reference pops)
 #' @param Ncc the number of individuals in the (common) controls
 #' 
-#' @return a dataframe with the adjusted MACs and MAFs for the controls for each variant in the region
+#' @return a dataframe with the adjusted ACs and AFs for the controls as well as the row number in case summix removed any variants in the adjustment
 
 calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc) {
   
   Pop1 <- tolower(Pop1)
   Pop2 <- tolower(Pop2)
-  
-  # adj_AF <- adjAF(data = counts,
-  #                 reference = c(paste0("maf_", Pop1), paste0("maf_", Pop2)),
-  #                 observed = "maf",
-  #                 pi.target = c(pi_tar1, pi_tar2), 
-  #                 pi.observed = c(prop_est[, paste0("maf_", Pop1)], prop_est[, paste0("maf_", Pop2)]),
-  #                 adj_method = "average",
-  #                 N_reference = c(Nref, Nref),
-  #                 N_observed = Ncc,
-  #                 filter = TRUE)
   
   # Adelle's way
   adj_AF <- adjAF(data = counts,
@@ -207,27 +197,42 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc
                   N_observed = Ncc,
                   filter = TRUE) 
   
-  # Add adj AF to dataframe
-  counts$adj_af <- adj_AF$adjusted.AF$adjustedAF
+  # Create new empty dataframe and add adj AF to dataframe
+  counts_adj <- as.data.frame(matrix(0,  nrow = length(adj_AF$adjusted.AF$adjustedAF), ncol = 3))
+  colnames(counts_adj) <- c("af", "ac", "row")
+  counts_adj$af <- adj_AF$adjusted.AF$adjustedAF
   
   # Add adj AC to dataframe
-  counts$adj_ac <- round(counts$adj_af*(2*Ncc))
+  counts_adj$ac <- round(counts_adj$af*(2*Ncc))
   
-  # Calculate the adjusted MINOR AF
-  # counts$adj_maf <- ifelse(counts$adj_af > .5, 1-counts$adj_af, counts$adj_af)
+  # Add row number back to dataframe
+  counts_adj$row <- adj_AF$adjusted.AF$row
   
-  # Calculate the adjusted Minor AC 
-  # counts$adj_mac <- round(counts$adj_maf*(2*Ncc))
+  # Return the dataframe in the same order as the other count dataframes
+  out <- counts_adj[, c("ac", "af", "row")]
   
-  # Return just the adjusted data
-  # counts_adj <- counts[, c("adj_ac", "adj_af", "adj_mac", "adj_maf")]
-  counts_adj <- counts[, c("adj_ac", "adj_af")]
+  return(out)
+}
+
+#' add_zero
+#' 
+#' @description
+#' Function to add rows of zeros back into a dataframe corresponding to the variants that were removed during summix's AF adjustment
+#' 
+#' @param df the dataframe to which rows of zero will be added
+#' @param adj_rows vector of rows that were not removed during adjustment
+#' 
+#' @return the updated dataframe with rows of zero at the variants that were removed
+
+add_zero = function(df, adj_rows) {
   
-  # Rename columns so they are same as other data frames
-  # colnames(counts_adj) <- c("ac", "af", "mac", "maf")
-  colnames(counts_adj) <- c("ac", "af")
+  # Make a copy of the datafram
+  df2 = df
   
-  return(counts_adj)
+  # Add zeros to the rows where variants were removed
+  df2[which(!(df2$row %in% adj_rows)), -ncol(df2)] = 0
+  
+  return(df2)
 }
 
 
@@ -248,32 +253,45 @@ flip_file = function(file_to_flip, flip, N=NULL, file_type) {
   # Make copy of original file
   file2 = file_to_flip
   
+  # Find the row indices of file_to_flip corresponding to the variants too be flipped 
+  # Row index may not align if variants were removed during summix adjustment
+  idx <- match(flip$row, file_to_flip$row)
+  
   if (file_type == "leg") {
-    
+
     # Flip ref allele in file2 with alt allele in file
-    file2$a0[flip$row] <- file_to_flip$a1[flip$row]
+    # file2$a0[flip$row] <- file_to_flip$a1[flip$row]
+    file2[idx, "a0"] <- file_to_flip[idx, "a1"]
     
     # Flip alt allele in leg2 with ref allele in leg
-    file2$a1[flip$row] <- file_to_flip$a0[flip$row]
+    # file2$a1[flip$row] <- file_to_flip$a0[flip$row]
+    file2[idx, "a1"] <- file_to_flip[idx, "a0"]
     
     return(file2)
     
   } else if (file_type == "geno") {
     
-    # Flip the alternate allele counts at the relevant variants
-    file2[flip$row,] <- 2-file_to_flip[flip$row,]
+    # Flip the alternate allele counts at the relevant variants, but don't flip the row column
+    # file2[flip$row, ] <- 2-file_to_flip[flip$row, ]
+    file2[idx, -ncol(file2)] <- 2-file_to_flip[idx, -ncol(file_to_flip)]
     
-    return(file2)
+    # Remove row column so it doesn't mess up calc_allele_freq in flip_data
+    file_out = file2[, -ncol(file2)]
+    
+    return(file_out)
     
   } else if (file_type == "count") {
     
     # Flip the AFs at the variants that need to be flipped
-    file2$af[flip$row] <- 1-file_to_flip$af[flip$row]
+    file2[idx, "af"] <- 1-file_to_flip[idx, "af"]
     
     # Update the ACs of the variants that were flipped
-    file2$ac[flip$row] <- round(file2$af[flip$row]*(2*N))
+    file2[idx, "ac"] <- round(file2[idx, "af"]*(2*N))
     
-    return(file2)
+    # Remove row column so it matches other count dataframes
+    file_out = file2[, -ncol(file2)]
+    
+    return(file_out)
     
   } else {
     stop("ERROR: 'file_type' must be a string of either 'leg', 'geno', or 'count'")
@@ -394,24 +412,31 @@ flip_data = function(leg, flip, geno.case, geno.ic=NULL, geno.cc=NULL, count.cas
     
   } else if (cntrl == "int") {
     
-    # Return all relevant files
-    return(list(leg, geno.case, geno.ic, count.case, count.ic))
+    # Return all relevant files with unnecessary row column removed
+    return(list(leg, geno.case[, -ncol(geno.case)], geno.ic[, -ncol(geno.ic)], 
+                count.case[, -ncol(count.case)], count.ic[, -ncol(count.ic)]))
     
   } else if (cntrl == "ext" & !adj) {
     
-    return(list(leg, geno.case, geno.cc, count.case, count.cc))
+    return(list(leg, geno.case[, -ncol(geno.case)], geno.cc[, -ncol(geno.cc)], 
+                count.case[, -ncol(count.case)], count.cc[, -ncol(count.cc)]))
     
   } else if (cntrl == "ext" & adj) {
     
-    return(list(leg, geno.case, count.case, count.cc.adj))
+    return(list(leg, geno.case[, -ncol(geno.case)], count.case[, -ncol(count.case)], 
+                count.cc.adj[, -ncol(count.cc.adj)]))
     
   } else if (cntrl == "all" & !adj) {
     
-    return(list(leg, geno.case, geno.ic, geno.cc, count.case, count.ic, count.cc))
+    return(list(leg, geno.case[, -ncol(geno.case)], geno.ic[, -ncol(geno.ic)], 
+                geno.cc[, -ncol(geno.cc)], count.case[, -ncol(count.case)], 
+                count.ic[, -ncol(count.ic)], count.cc[, -ncol(count.cc)]))
     
   } else if (cntrl == "all" & adj) {
     
-    return(list(leg, geno.case, geno.ic, count.case, count.ic, count.cc.adj))
+    return(list(leg, geno.case[, -ncol(geno.case)], geno.ic[, -ncol(geno.ic)], 
+                count.case[, -ncol(count.case)], count.ic[, -ncol(count.ic)], 
+                count.cc.adj[, -ncol(count.cc.adj)]))
   } else {
     stop("ERROR: Invalid cntrl variable input")
   }

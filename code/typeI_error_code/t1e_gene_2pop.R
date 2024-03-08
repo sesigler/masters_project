@@ -25,11 +25,11 @@ source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
 # data = 'by_gene'
 Pop1 = 'AFR'
 Pop2 = 'NFE'
-scen = 's2'
+scen = 's3'
 folder = '160v100v80'
 p_case = 160
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = p_exp = int_prune = 100
-p_cc_fun = p_cc_syn = ext_prune = 100
+p_cc_fun = p_cc_syn = ext_prune = 80
 Ncase = Nic = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 Nref = 10000
@@ -42,7 +42,7 @@ maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 dir_leg = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Sim_42k/', folder, '/')
 dir_in = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Sim_42k/', folder, '/datasets/', scen, '/')
 dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/Sim_42k/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
-# dir_out = paste0('/home/math/siglersa/mastersProject/Output/', pruning, '/', data, '/')
+# dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/')
 
 dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
 dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
@@ -76,8 +76,8 @@ iecat_genes_p_adj = c() #iECAT-O
 
 # loop through the simulation replicates
 set.seed(1) 
-i=1
-for (i in 1:10){
+i=2
+for (i in 1:5){
   
   # read in the legend file
   # leg = read_leg_homo(dir_leg, Pop, i)
@@ -130,17 +130,38 @@ for (i in 1:10){
   # prop_ests_cases <- rbind(prop_ests_cases, cases_est_prop)
   # prop_ests_int <- rbind(prop_ests_int, int_est_prop)
   
-  # Calculate adjusted AFs
-  count_cc_adj = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref, Ncc)
+  # Add row columns to all necessary geno and count datasets
+  geno_case$row <- 1:nrow(geno_case)
+  geno_ic$row <- 1:nrow(geno_ic)
+  geno_cc$row <- 1:nrow(geno_cc)
+  count_case$row <- 1:nrow(count_case)
+  count_ic$row <- 1:nrow(count_ic)
+  count_cc$row <- 1:nrow(count_cc)
+  cc_refs$row <- 1:nrow(cc_refs)
   
+  # Calculate adjusted AFs
+  cc_adj = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref, Ncc)
+  
+  # Add rows of zero back into dataframe where variants were removed
+  count_cc_adj = data.frame(matrix(0, nrow=nrow(count_cc), ncol=ncol(count_cc)))
+  colnames(count_cc_adj) <- c("ac", "af", "row")
+  count_cc_adj$row <- 1:nrow(count_cc)
+  count_cc_adj[which(count_cc_adj$row %in% cc_adj$row),] = cc_adj
+  
+  # Add rows of 0 back in to other datasets
+  count_case_adj = add_zero(count_case, cc_adj$row)
+  count_ic_adj = add_zero(count_ic, cc_adj$row)
+  geno_case_adj = add_zero(geno_case, cc_adj$row)
+  geno_ic_adj = add_zero(geno_ic, cc_adj$row)
+
   # Identify variants where AF >= 1-maf
   flip_int = leg[which(count_case$af >= 1-maf | count_ic$af >= 1-maf),]
   flip_ext = leg[which(count_case$af >= 1-maf | count_cc$af >= 1-maf),]
   flip_all = leg[which(count_case$af >= 1-maf | count_ic$af >= 1-maf | count_cc$af > 1-maf),]
   
-  flip_ext_adj = leg[which(count_case$af >= 1-maf | count_cc_adj$af >= 1-maf),]
-  flip_all_adj = leg[which(count_case$af >= 1-maf | count_ic$af >= 1-maf | count_cc_adj$af >= 1-maf),]
-  
+  flip_ext_adj = leg[which(count_case_adj$af >= 1-maf | count_cc_adj$af >= 1-maf),]
+  flip_all_adj = leg[which(count_case_adj$af >= 1-maf | count_ic_adj$af >= 1-maf | count_cc_adj$af >= 1-maf),]
+
   int_data = flip_data(leg, flip_int, geno_case, geno_ic, geno.cc=NULL, 
                        count_case, count_ic, count.cc=NULL, count.cc.adj=NULL, 
                        Ncase, Nic, Ncc=NULL, cntrl="int", adj=FALSE)
@@ -173,8 +194,8 @@ for (i in 1:10){
   count_ic_all = all_data[[6]]
   count_cc_all = all_data[[7]]
   
-  ext_adj_data = flip_data(leg, flip_ext_adj, geno_case, geno.ic=NULL, geno.cc=NULL, 
-                           count_case, count.ic=NULL, count.cc=NULL, count_cc_adj, 
+  ext_adj_data = flip_data(leg, flip_ext_adj, geno_case_adj, geno.ic=NULL, geno.cc=NULL, 
+                           count_case_adj, count.ic=NULL, count.cc=NULL, count_cc_adj, 
                            Ncase, Nic=NULL, Ncc, cntrl="ext", adj=TRUE)
   
   leg_ext_adj = ext_adj_data[[1]]
@@ -182,8 +203,8 @@ for (i in 1:10){
   count_case_ext_adj = ext_adj_data[[3]]
   count_cc_ext_adj = ext_adj_data[[4]]
   
-  all_adj_data = flip_data(leg, flip_all_adj, geno_case, geno_ic, geno.cc=NULL, 
-                           count_case, count_ic, count.cc=NULL, count_cc_adj, 
+  all_adj_data = flip_data(leg, flip_all_adj, geno_case_adj, geno_ic_adj, geno.cc=NULL, 
+                           count_case_adj, count_ic_adj, count.cc=NULL, count_cc_adj, 
                            Ncase, Nic, Ncc, cntrl="all", adj=TRUE)
   
   leg_all_adj = all_adj_data[[1]]
