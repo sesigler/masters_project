@@ -196,102 +196,66 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc
                   N_reference = c(Nref, Nref),
                   N_observed = Ncc,
                   filter = TRUE) 
+    
+  # Create dataframe to store adjusted ACs and AFs
+  counts_adj = data.frame(matrix(0, nrow = nrow(counts), ncol = 2))
+  colnames(counts_adj) <- c("ac", "af")
   
-  # Create new empty dataframe and add adj AF to dataframe
-  counts_adj <- as.data.frame(matrix(0,  nrow = length(adj_AF$adjusted.AF$adjustedAF), ncol = 3))
-  colnames(counts_adj) <- c("af", "ac", "row")
-  counts_adj$af <- adj_AF$adjusted.AF$adjustedAF
+  # If variants were removed during adjustment, this will add the adj AFs at the variants that weren't removed, leaving the rest as 0
+  # If no variants were removed during adjustment, this will still work
+  counts_adj[adj_AF$adjusted.AF$row, "af"] = adj_AF$adjusted.AF$adjustedAF
   
-  # Add adj AC to dataframe
+  # Calculate the updated ACs based on the adjusted AFs
   counts_adj$ac <- round(counts_adj$af*(2*Ncc))
   
-  # Add row number back to dataframe
-  counts_adj$row <- adj_AF$adjusted.AF$row
-  
-  # Return the dataframe in the same order as the other count dataframes
-  out <- counts_adj[, c("ac", "af", "row")]
-  
-  return(out)
-}
+  return(counts_adj)
 
-#' add_zero
-#' 
-#' @description
-#' Function to add rows of zeros back into a dataframe corresponding to the variants that were removed during summix's AF adjustment
-#' 
-#' @param df the dataframe to which rows of zero will be added
-#' @param adj_rows vector of rows that were not removed during adjustment
-#' 
-#' @return the updated dataframe with rows of zero at the variants that were removed
-
-add_zero = function(df, adj_rows) {
-  
-  # Make a copy of the datafram
-  df2 = df
-  
-  # Add zeros to the rows where variants were removed
-  df2[which(!(df2$row %in% adj_rows)), -ncol(df2)] = 0
-  
-  return(df2)
 }
 
 
 #' flip_file
 #' 
 #' @description
-#' Function the flip values for a specified file at variants with an AF >= 1-maf
+#' Function the flip values for a specified file at variants with an AF >= 1-maf. Used in flip_data function
 #' 
 #' @param file_to_flip the file to be updated
-#' @param flip the rows of the legend file specifying which variants need to be flipped
-#' @param N number of individuals, only for flipping adjusted common controls
-#' @param file_type string specifying what file is to be flipped
+#' @param flip the row indices corresponding to the variants that need to be flipped
+#' @param file_type string specifying what file is to be flipped, options are "leg", "geno", and "count". Note count is really referring to the adjusted common controls
+#' @param N number of individuals, only needed if flipping counts data, default value is NULL
 #' 
 #' @return the specified file with the relevant values flipped at the variants in flip
 
-flip_file = function(file_to_flip, flip, N=NULL, file_type) {
+flip_file = function(file_to_flip, flip, file_type, N=NULL) {
   
   # Make copy of original file
   file2 = file_to_flip
   
-  # Find the row indices of file_to_flip corresponding to the variants too be flipped 
-  # Row index may not align if variants were removed during summix adjustment
-  idx <- match(flip$row, file_to_flip$row)
-  
   if (file_type == "leg") {
 
     # Flip ref allele in file2 with alt allele in file
-    # file2$a0[flip$row] <- file_to_flip$a1[flip$row]
-    file2[idx, "a0"] <- file_to_flip[idx, "a1"]
+    file2[flip, "a0"] <- file_to_flip[flip, "a1"]
     
     # Flip alt allele in leg2 with ref allele in leg
-    # file2$a1[flip$row] <- file_to_flip$a0[flip$row]
-    file2[idx, "a1"] <- file_to_flip[idx, "a0"]
+    file2[flip, "a1"] <- file_to_flip[flip, "a0"]
     
     return(file2)
     
   } else if (file_type == "geno") {
     
-    # Flip the alternate allele counts at the relevant variants, but don't flip the row column
-    # file2[flip$row, ] <- 2-file_to_flip[flip$row, ]
-    file2[idx, -ncol(file2)] <- 2-file_to_flip[idx, -ncol(file_to_flip)]
+    # Flip the alternate allele counts at the relevant variants
+    file2[flip, ] <- 2-file_to_flip[flip, ]
     
-    # Remove row column so it doesn't mess up calc_allele_freq in flip_data
-    file_out = file2[, -ncol(file2)]
-    
-    return(file_out)
+    return(file2)
     
   } else if (file_type == "count") {
     
+    # Flip the ACs at the variants that need to be flipped
+    file2[flip, "ac"] <- (2*N)-file_to_flip[flip, "ac"]
+    
     # Flip the AFs at the variants that need to be flipped
-    file2[idx, "af"] <- 1-file_to_flip[idx, "af"]
+    file2[flip, "af"] <- 1-file_to_flip[flip, "af"]
     
-    # Update the ACs of the variants that were flipped
-    file2[idx, "ac"] <- round(file2[idx, "af"]*(2*N))
-    
-    # Remove row column so it matches other count dataframes
-    file_out = file2[, -ncol(file2)]
-    
-    return(file_out)
+    return(file2)
     
   } else {
     stop("ERROR: 'file_type' must be a string of either 'leg', 'geno', or 'count'")
@@ -307,139 +271,94 @@ flip_file = function(file_to_flip, flip, N=NULL, file_type) {
 #' @param leg legend file
 #' @param flip the rows of the legend file specifying which variants need to be flipped
 #' @param geno.case genotype matrix for the cases
-#' @param geno.ic genotype matric for the internal controls, default value is NULL
-#' @param geno.cc genotype matric for the common controls, default value is NULL
 #' @param count.case the dataframe of ACs and AFs for the cases
+#' @param Ncase number of individuals in the cases
+#' @param cntrl string specifying the type(s) of controls used, options are int, ext, and all
+#' @param geno.ic genotype matric for the internal controls, default value is NULL
 #' @param count.ic the dataframe of ACs and AFs for the internal controls, default value is NULL
+#' @param Nic number of individuals in the internal controls, default value is NULL
+#' @param geno.cc genotype matric for the common controls, default value is NULL
 #' @param count.cc the dataframe of ACs and AFs for the common controls, default value is NULL
 #' @param count.cc.adj adjusted AC and AF dataframe for the common controls, default value is NULL
-#' @param Ncase number of individuals in the cases
-#' @param Nic number of individuals in the internal controls, default value is NULL
 #' @param Ncc number of individuals in the common controls, default value is NULL
-#' @param cntrl string specifying the type(s) of controls used, options are int, ext, and all
 #' @param adj boolean value specifying if the common controls used are adjusted or unadjusted, default value is false
 #' 
-#' @return a list of all the relevant files that could be flipped, returns the unaltered files if no variants needed to be flipped
+#' @return a list of all files that could be flipped, returns the unaltered files if no variants needed to be flipped
 
-flip_data = function(leg, flip, geno.case, geno.ic=NULL, geno.cc=NULL, count.case, count.ic=NULL, count.cc=NULL, count.cc.adj=NULL, Ncase, Nic=NULL, Ncc=NULL, cntrl, adj=FALSE) {
+flip_data = function(leg, flip, geno.case, count.case, Ncase, cntrl, geno.ic=NULL, count.ic=NULL, Nic=NULL, geno.cc=NULL, count.cc=NULL, count.cc.adj=NULL, Ncc=NULL, adj=FALSE) {
   
-  if (nrow(flip) != 0) {
+  if (length(flip) != 0) {
+    
+    # Create new leg file
+    leg2 = flip_file(leg, flip, file_type="leg", N=NULL)
+    
+    # Create new case data files
+    geno.case2 = flip_file(geno.case, flip, file_type="geno", N=NULL)
+    count.case2 = flip_file(count.case, flip, file_type="count", N=Ncase)
     
     if (cntrl == "int") {
       
-      # Create new leg file
-      leg2 = flip_file(leg, flip, N=NULL, file_type="leg") 
-      
       # Update geno files
-      geno.case2 = flip_file(geno.case, flip, N=NULL, file_type="geno")
-      geno.ic2 = flip_file(geno.ic, flip, N=NULL, file_type="geno")
+      geno.ic2 = flip_file(geno.ic, flip, file_type="geno", N=NULL)
       
       # Recalculate ac/af 
-      count.case2 = calc_allele_freqs(geno.case2, Ncase, Pop=NULL)
-      count.ic2 = calc_allele_freqs(geno.ic2, Nic, Pop=NULL)
+      count.ic2 = flip_file(count.ic, flip, file_type="count", N=Nic)
       
-      # Return all changed files
-      return(list(leg2, geno.case2, geno.ic2, count.case2, count.ic2))
+      # Return all changed files, note some may be NULL
+      return(list(leg2, geno.case2, geno.ic2, geno.cc2=NULL, count.case2, count.ic2, count.cc2=NULL, count.cc.adj2=NULL))
       
     } else if (cntrl == "ext" & !adj) {
-      
-      # Create new leg file
-      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
-      
+
       # Update geno files
-      geno.case2 = flip_file(geno.case, flip, N=NULL, file_type="geno")
-      geno.cc2 = flip_file(geno.cc, flip, N=NULL, file_type="geno")
+      geno.cc2 = flip_file(geno.cc, flip, file_type="geno", N=NULL)
       
       # Recalculate ac/af 
-      count.case2 = calc_allele_freqs(geno.case2, Ncase, Pop=NULL)
-      count.cc2 = calc_allele_freqs(geno.cc2, Ncc, Pop=NULL)
+      count.cc2 = flip_file(count.cc, flip, file_type="count", N=Ncc)
       
-      # Return all changed files
-      return(list(leg2, geno.case2, geno.cc2, count.case2, count.cc2))
+      # Return all changed files, note some may be NULL
+      return(list(leg2, geno.case2, geno.ic2=NULL, geno.cc2, count.case2, count.ic2=NULL, count.cc2, count.cc.adj2=NULL))
       
     } else if (cntrl == "ext" & adj) {
       
-      # Create new leg file
-      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
-      
-      # Update geno files
-      geno.case2 = flip_file(geno.case, flip, N=NULL, file_type="geno")
-      
       # Recalculate ac/af 
-      count.case2 = calc_allele_freqs(geno.case2, Ncase, Pop=NULL)
-      count.cc.adj2 = flip_file(count.cc.adj, flip, N=Ncc, file_type="count")
+      count.cc.adj2 = flip_file(count.cc.adj, flip, file_type="count", N=Ncc)
       
-      # Return all changed files
-      return(list(leg2, geno.case2, count.case2, count.cc.adj2))
+      # Return all changed files, note some may be NULL
+      return(list(leg2, geno.case2, geno.ic2=NULL, geno.cc2=NULL, count.case2, count.ic2=NULL, count.cc2=NULL, count.cc.adj2))
       
     } else if (cntrl == "all" & !adj) {
       
-      # Create new leg file
-      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
-      
       # Update geno files
-      geno.case2 = flip_file(geno.case, flip, N=NULL, file_type="geno")
-      geno.ic2 = flip_file(geno.ic, flip, N=NULL, file_type="geno")
-      geno.cc2 = flip_file(geno.cc, flip, N=NULL, file_type="geno")
+      geno.ic2 = flip_file(geno.ic, flip, file_type="geno", N=NULL)
+      geno.cc2 = flip_file(geno.cc, flip, file_type="geno", N=NULL)
       
       # Recalculate ac/af 
-      count.case2 = calc_allele_freqs(geno.case2, Ncase, Pop=NULL)
-      count.ic2 = calc_allele_freqs(geno.ic2, Nic, Pop=NULL)
-      count.cc2 = calc_allele_freqs(geno.cc2, Ncc, Pop=NULL)
+      count.ic2 = flip_file(count.ic, flip, file_type="count", N=Nic)
+      count.cc2 = flip_file(count.cc, flip, file_type="count", N=Ncc)
       
-      # Return all changed files
-      return(list(leg2, geno.case2, geno.ic2, geno.cc2, count.case2, count.ic2, count.cc2))
+      # Return all changed files, note some may be NULL
+      return(list(leg2, geno.case2, geno.ic2, geno.cc2, count.case2, count.ic2, count.cc2, count.cc.adj2=NULL))
       
     } else if (cntrl == "all" & adj) {
-      
-      # Create new leg file
-      leg2 = flip_file(leg, flip, N=NULL, file_type="leg")
-      
+
       # Update geno files
-      geno.case2 = flip_file(geno.case, flip, N=NULL, file_type="geno")
-      geno.ic2 = flip_file(geno.ic, flip, N=NULL, file_type="geno")
+      geno.ic2 = flip_file(geno.ic, flip, file_type="geno", N=NULL)
       
       # Recalculate ac/af 
-      count.case2 = calc_allele_freqs(geno.case2, Ncase, Pop=NULL)
-      count.ic2 = calc_allele_freqs(geno.ic2, Nic, Pop=NULL)
-      count.cc.adj2 = flip_file(count.cc.adj, flip, N=Ncc, file_type="count")
+      count.ic2 = flip_file(count.ic, flip, file_type="count", N=Nic)
+      count.cc.adj2 = flip_file(count.cc.adj, flip, file_type="count", N=Ncc)
       
-      
-      # Return all changed files
-      return(list(leg2, geno.case2, geno.ic2, count.case2, count.ic2, count.cc.adj2))
+      # Return all changed files, note some may be NULL
+      return(list(leg2, geno.case2, geno.ic2, geno.cc2=NULL, count.case2, count.ic2, count.cc2=NULL, count.cc.adj2))
       
     }
     
-  } else if (cntrl == "int") {
-    
-    # Return all relevant files with unnecessary row column removed
-    return(list(leg, geno.case[, -ncol(geno.case)], geno.ic[, -ncol(geno.ic)], 
-                count.case[, -ncol(count.case)], count.ic[, -ncol(count.ic)]))
-    
-  } else if (cntrl == "ext" & !adj) {
-    
-    return(list(leg, geno.case[, -ncol(geno.case)], geno.cc[, -ncol(geno.cc)], 
-                count.case[, -ncol(count.case)], count.cc[, -ncol(count.cc)]))
-    
-  } else if (cntrl == "ext" & adj) {
-    
-    return(list(leg, geno.case[, -ncol(geno.case)], count.case[, -ncol(count.case)], 
-                count.cc.adj[, -ncol(count.cc.adj)]))
-    
-  } else if (cntrl == "all" & !adj) {
-    
-    return(list(leg, geno.case[, -ncol(geno.case)], geno.ic[, -ncol(geno.ic)], 
-                geno.cc[, -ncol(geno.cc)], count.case[, -ncol(count.case)], 
-                count.ic[, -ncol(count.ic)], count.cc[, -ncol(count.cc)]))
-    
-  } else if (cntrl == "all" & adj) {
-    
-    return(list(leg, geno.case[, -ncol(geno.case)], geno.ic[, -ncol(geno.ic)], 
-                count.case[, -ncol(count.case)], count.ic[, -ncol(count.ic)], 
-                count.cc.adj[, -ncol(count.cc.adj)]))
   } else {
-    stop("ERROR: Invalid cntrl variable input")
+    
+    # Return all unchanged datasets, note some may be NULL
+    return(list(leg, geno.case, geno.ic, geno.cc, count.case, count.ic, count.cc, count.cc.adj))
   }
+  
 }
 
 # version that doesn't deselect count since the adjusted count files don't have that col
