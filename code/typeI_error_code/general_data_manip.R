@@ -178,13 +178,17 @@ est_props = function(counts, Pop1, Pop2, maf) {
 #' @param control_est the proportion estimates from Summix for the controls
 #' @param Nref the number of individuals in the reference populations (assumes the number is the same for all reference pops)
 #' @param Ncc the number of individuals in the (common) controls
+#' @param Neff a boolean value, if True the effective sample size is used to calculate the adjusted ACs instead of Ncc, default value is False
 #' 
 #' @return a dataframe with the adjusted ACs and AFs for the controls as well as the row number in case summix removed any variants in the adjustment
 
-calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc) {
+calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc, Neff=FALSE) {
   
   Pop1 <- tolower(Pop1)
   Pop2 <- tolower(Pop2)
+  
+  # Add row index column to counts in case summix removes variants during adjustment 
+  counts$row <- 1:nrow(counts)
   
   # Adelle's way
   adj_AF <- adjAF(data = counts,
@@ -205,8 +209,17 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc
   # If no variants were removed during adjustment, this will still work
   counts_adj[adj_AF$adjusted.AF$row, "af"] = adj_AF$adjusted.AF$adjustedAF
   
-  # Calculate the updated ACs based on the adjusted AFs
-  counts_adj$ac <- round(counts_adj$af*(2*Ncc))
+  # Calculate the adjusted ACs based on the adjusted AFs
+  if (Neff) {
+    
+    # Use effective sample size
+    counts_adj$ac <- round(counts_adj$af*(2*adj_AF$effective.sample.size))
+    
+  } else {
+    
+    # Use number of common controls
+    counts_adj$ac <- round(counts_adj$af*(2*Ncc))
+  }
   
   return(counts_adj)
 
