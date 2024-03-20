@@ -13,30 +13,35 @@ my.power <- function(values, alpha=0.05){
 # Pop = 'AFR'
 # Nsim = '20K'
 # pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
-admx = '80-20' #AFR/NFE
+# admx = '80-20' #AFR/NFE
 Pop1 = 'AFR'
 Pop2 = 'NFE'
-scen = 's2'
-maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
+admx_pop1 = 80
+admx_pop2 = 20
 Nsim = '42k'
-Ncase = '5k'
-Ncc = '10k'  #Number of common controls: 'cc5k' or 'cc10k'
-Nref = '10k'
-int_prune = 100
-ext_prune = 100
+scen = 's1'
 folder = '160v100v80'
+int_prune = 100
+ext_prune = 80
+Ncase = Nic = 5000
+Ncc = 10000 #Number of common controls: 5000 or 10000 
+Nref = 10000
+maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
+sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_Nref', Nref)
 # data = 'by_gene'
 # method = 'skato' #Options: prox, prox_weighted, prox2, iecat, skato, skat, burden
 # type = 'ext' #Options: int, ext, all
 
+
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', Nsim, '_', Pop, '/', data, '/', folder, '/')
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', Pop1, '_', Pop2, '_pops/Sim_', Nsim, '/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
+dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', sim_params, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/', int_prune, 'v', ext_prune, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/checks/')
 
 file_path = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, "_maf", maf, ".txt")
-file_out = paste0(int_prune, "v", ext_prune, "_", Pop1, "_", Pop2, "_", admx, "_", scen, "_Nsim", Nsim, "_Ncase", Ncase, "_Ncc", Ncc, "_Nref", Nref, "_maf", maf, ".csv")
+file_out = paste0(int_prune, "v", ext_prune, "_", admx_pop1, Pop1, "_", admx_pop2, Pop2, "_", scen, "_Nsim", Nsim, "_Ncase", Ncase, "_Ncc", Ncc, "_Nref", Nref, "_maf", maf, ".csv")
 
 ### Type 1 error
 
@@ -52,11 +57,19 @@ file_out = paste0(int_prune, "v", ext_prune, "_", Pop1, "_", Pop2, "_", admx, "_
 # By gene
 prox_int = read.table(paste0(dir, "T1e_gene_prox_int_", file_path), header = T)
 prox_ext = read.table(paste0(dir, "T1e_gene_prox_ext_", file_path), header = T)
-prox_ext_adj = read.table(paste0(dir, "T1e_gene_prox_ext_adj_", file_path), header = T)
+# prox_ext_adj = read.table(paste0(dir, "T1e_gene_prox_ext_adj_", file_path), header = T)
+prox_ext_var_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_ext_var_adj_Ncc_", file_path), header = T)
+prox_ext_var_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_ext_var_adj_Neff_", file_path), header = T)
+prox_ext_gene_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_ext_gene_adj_Ncc_", file_path), header = T)
+prox_ext_gene_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_ext_gene_adj_Neff_", file_path), header = T)
 
 proxW_int = read.table(paste0(dir, "T1e_gene_prox_weighted_int_", file_path), header = T)
 proxW_ext = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_", file_path), header = T)
-proxW_ext_adj = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_adj_", file_path), header = T)
+# proxW_ext_adj = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_adj_", file_path), header = T)
+proxW_ext_var_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_var_adj_Ncc_", file_path), header = T)
+proxW_ext_var_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_var_adj_Neff_", file_path), header = T)
+proxW_ext_gene_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_gene_adj_Ncc_", file_path), header = T)
+proxW_ext_gene_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_gene_adj_Neff_", file_path), header = T)
 
 prox2_int = read.table(paste0(dir, "T1e_gene_prox2_int_", file_path), header = T)
 prox2_ext = read.table(paste0(dir, "T1e_gene_prox2_ext_", file_path), header = T)
@@ -90,11 +103,19 @@ burden_all = read.table(paste0(dir, "T1e_gene_burden_all_", file_path), header =
 # By gene
 prox_int = apply(prox_int, 2, my.power)
 prox_ext = apply(prox_ext, 2, my.power)
-prox_ext_adj = apply(prox_ext_adj, 2, my.power)
+# prox_ext_adj = apply(prox_ext_adj, 2, my.power)
+prox_ext_var_adj_Ncc = apply(prox_ext_var_adj_Ncc, 2, my.power)
+prox_ext_var_adj_Neff = apply(prox_ext_var_adj_Neff, 2, my.power)
+prox_ext_gene_adj_Ncc = apply(prox_ext_gene_adj_Ncc, 2, my.power)
+prox_ext_gene_adj_Neff = apply(prox_ext_gene_adj_Neff, 2, my.power)
 
 proxW_int = apply(proxW_int, 2, my.power)
 proxW_ext = apply(proxW_ext, 2, my.power)
-proxW_ext_adj = apply(proxW_ext_adj, 2, my.power)
+# proxW_ext_adj = apply(proxW_ext_adj, 2, my.power)
+proxW_ext_var_adj_Ncc = apply(proxW_ext_var_adj_Ncc, 2, my.power)
+proxW_ext_var_adj_Neff = apply(proxW_ext_var_adj_Neff, 2, my.power)
+proxW_ext_gene_adj_Ncc = apply(proxW_ext_gene_adj_Ncc, 2, my.power)
+proxW_ext_gene_adj_Neff = apply(proxW_ext_gene_adj_Neff, 2, my.power)
 
 prox2_int = apply(prox2_int, 2, my.power)
 prox2_ext = apply(prox2_ext, 2, my.power)
@@ -126,6 +147,10 @@ results = cbind(Gene=names(prox_int), prox_int, prox_ext, prox_ext_adj,
                 skat_int, skat_ext, skat_all,
                 burden_int, burden_ext, burden_all)
 
+results = cbind(Gene=names(prox_int), 
+                prox_int, prox_ext, prox_ext_var_adj_Ncc, prox_ext_var_adj_Neff, prox_ext_gene_adj_Ncc, prox_ext_gene_adj_Neff,
+                proxW_int, proxW_ext, proxW_ext_var_adj_Ncc, proxW_ext_var_adj_Neff, proxW_ext_gene_adj_Ncc, proxW_ext_gene_adj_Neff)
+
 # results = cbind(Gene=names(prox_ext), prox_ext, prox_ext_adj, proxW_ext, proxW_ext_adj)
 # 
 # results = cbind(Gene=names(prox_int), prox_int, prox_ext, proxW_int, proxW_ext,
@@ -143,6 +168,7 @@ results = cbind(Gene=names(prox_int), prox_int, prox_ext, prox_ext_adj,
 # write.csv(t(as.data.frame(t1e_pruning_out)), paste0(dir, "T1e_all_gene_", method, "_", type, "_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 # write.csv(as.data.frame(results), paste0(dir, "T1e_power_all_gene_", int_prune, "_v_", ext_prune, "_", Pop, "_", Ncc, "_maf", maf, ".csv"), quote=F, row.names=F)
 write.csv(as.data.frame(results), paste0(dir, "T1e_all_gene_", file_out), quote=F, row.names=F)
+write.csv(as.data.frame(results), paste0(dir, "T1e_all_prox_gene_adj_", file_out), quote=F, row.names=F)
 # write.csv(as.data.frame(results), paste0(dir, "T1e_all_gene_prox_Sim_42k_", file_out), quote=F, row.names=F)
 
 
