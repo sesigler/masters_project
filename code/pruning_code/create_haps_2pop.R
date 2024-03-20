@@ -16,29 +16,35 @@ source("/home/math/siglersa/code/functions/create_haps_funcs.R")
 # pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 Pop1 = 'AFR'
 Pop2 = 'NFE'
+admx_pop1 = 80
+admx_pop2 = 20
 p_case = 160
 p_conf = 80
-Nsim = 42000
-scen = 's3'
+Nsim = '42k'
+scen = 's2'
 folder = '160v100v80'
+Ncase = Nic = 5000
+Ncc = 10000
+Nref = 2000
 
 # Number of haplotypes in each dataset
-Ncase_pop1 = Nint_pop1 = 8000 #s1 = 8000, s2 = 10000
-Ncase_pop2 = Nint_pop2 = 2000 #s1 = 2000, s2 = 0
+Ncase_pop1 = Nic_pop1 = 10000 #s1 = 8000, s2 = 10000
+Ncase_pop2 = Nic_pop2 = 0 #s1 = 2000, s2 = 0
 
-Ncc_pop1 = 20000 #s1 = s2 = 16000 
-Ncc_pop2 = 0 #s1 = s2 = 4000
+Ncc_pop1 = 16000 #s1 = s2 = 16000 
+Ncc_pop2 = 4000 #s1 = s2 = 4000
 
-Nref_pop1 = Nref_pop2 = 20000
+Nref_pop1 = Nref_pop2 = 4000
 
 # Haplotype column indices
 pop1_cols = 1:56000
 pop2_cols = 56001:84000
 
 
-dir_leg = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Sim_42k/', folder, '/')
-dir_in = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Sim_42k/',  folder, '/')
-dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Sim_42k/',  folder, '/datasets/', scen, '/')
+
+dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/')
+dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/')
+dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/', 'Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_Nref', Nref, '/', scen, '/')
 
 # dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
 # dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
@@ -75,14 +81,14 @@ for(j in 1:100){
   
   # Select the columns for necessary data sets
   cases_pop1 = sort(sample(x=pop1_cols, size = Ncase_pop1, replace = FALSE))
-  int_pop1 = sort(sample(x=pop1_cols[! pop1_cols %in% cases_pop1], size = Nint_pop1, replace = FALSE))
-  cc_pop1 = sort(sample(x=pop1_cols[! pop1_cols %in% c(cases_pop1, int_pop1)], size = Ncc_pop1, replace = FALSE))
-  refs_pop1 = sort(sample(x=pop1_cols[! pop1_cols %in% c(cases_pop1, int_pop1, cc_pop1)], size = Nref_pop1, replace = FALSE))
+  ic_pop1 = sort(sample(x=pop1_cols[! pop1_cols %in% cases_pop1], size = Nic_pop1, replace = FALSE))
+  cc_pop1 = sort(sample(x=pop1_cols[! pop1_cols %in% c(cases_pop1, ic_pop1)], size = Ncc_pop1, replace = FALSE))
+  refs_pop1 = sort(sample(x=pop1_cols[! pop1_cols %in% c(cases_pop1, ic_pop1, cc_pop1)], size = Nref_pop1, replace = FALSE))
   
   cases_pop2 = sort(sample(x=pop2_cols, size = Ncase_pop2, replace = FALSE))
-  int_pop2 = sort(sample(x=pop2_cols[! pop2_cols %in% cases_pop2], size = Nint_pop2, replace = FALSE))
-  cc_pop2 = sort(sample(x=pop2_cols[! pop2_cols %in% c(cases_pop2, int_pop2)], size = Ncc_pop2, replace = FALSE))
-  refs_pop2 = sort(sample(x=pop2_cols[! pop2_cols %in% c(cases_pop2, int_pop2, cc_pop2)], size = Nref_pop2, replace = FALSE))
+  ic_pop2 = sort(sample(x=pop2_cols[! pop2_cols %in% cases_pop2], size = Nic_pop2, replace = FALSE))
+  cc_pop2 = sort(sample(x=pop2_cols[! pop2_cols %in% c(cases_pop2, ic_pop2)], size = Ncc_pop2, replace = FALSE))
+  refs_pop2 = sort(sample(x=pop2_cols[! pop2_cols %in% c(cases_pop2, ic_pop2, cc_pop2)], size = Nref_pop2, replace = FALSE))
   
   # subset the case haplotypes (pcase % fun and 100% syn)
   hap_cases_pcase = hap_pcase[, c(cases_pop1, cases_pop2)]
@@ -93,7 +99,7 @@ for(j in 1:100){
   
   # subset the pruned haplotypes for 100% pruned
   hap_cases = hap_exp_pruned[, c(cases_pop1, cases_pop2)]
-  hap_int = hap_exp_pruned[, c(int_pop1, int_pop2)]
+  hap_int = hap_exp_pruned[, c(ic_pop1, ic_pop2)]
   hap_cc = hap_exp_pruned[, c(cc_pop1, cc_pop2)]
   hap_refs_pop1 = hap_exp_pruned[, refs_pop1]
   hap_refs_pop2 = hap_exp_pruned[, refs_pop2]
@@ -116,7 +122,7 @@ for(j in 1:100){
   
   # Subset the datasets for the p_conf % pruned haplotype
   hap_cases_pconf = hap_all_pruned[, c(cases_pop1, cases_pop2)]
-  hap_int_pconf = hap_all_pruned[, c(int_pop1, int_pop2)]
+  hap_int_pconf = hap_all_pruned[, c(ic_pop1, ic_pop2)]
   hap_cc_pconf = hap_all_pruned[, c(cc_pop1, cc_pop2)]
   
   # write the haplotype files for the cases, internal and common controls p_conf % pruned
