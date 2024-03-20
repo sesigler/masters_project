@@ -15,16 +15,19 @@ source("/home/math/siglersa/code/functions/methods_funcs.R")
 source("/home/math/siglersa/code/functions/summix2_adjAF.R")
 source("/home/math/siglersa/code/functions/summix2_summix.R")
 
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
 
 # pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 # data = 'by_gene'
 Pop1 = 'AFR'
 Pop2 = 'NFE'
+admx_pop1 = 80
+admx_pop2 = 20
+Nsim = '42k'
 scen = 's3'
 folder = '160v100v80'
 p_case = 160
@@ -34,18 +37,16 @@ Ncase = Nic = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
 Nref = 10000
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
-# pi_tar1 = 1 #pi.target for AFR: 0.80 for s1 or 1 for s2
-# pi_tar2 = 0 #pi.target for NFE: 0.20 for s1 or 0 for s2
+sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_Nref', Nref)
 # genes_power = c("ADGRE5", "ADGRE3", "TECR") # genes used for cases (power)
 
-
-dir_leg = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Sim_42k/', folder, '/')
-dir_in = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Sim_42k/', folder, '/datasets/', scen, '/')
-dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/Sim_42k/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
+dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/')
+dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/', sim_params, '/', scen, '/')
+dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/')
 
-dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
-dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
+# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
+# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
 
 # dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
@@ -76,7 +77,7 @@ iecat_genes_p_adj = c() #iECAT-O
 
 # loop through the simulation replicates
 set.seed(1) 
-i=2
+# i=2
 for (i in 1:5){
   
   # read in the legend file
