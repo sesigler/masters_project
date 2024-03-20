@@ -13,11 +13,11 @@ source("/home/math/siglersa/code/functions/methods_funcs.R")
 source("/home/math/siglersa/code/functions/summix2_adjAF.R")
 source("/home/math/siglersa/code/functions/summix2_summix.R")
 
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
+source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
 
 # pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 # data = 'by_gene'
@@ -26,7 +26,7 @@ Pop2 = 'NFE'
 admx_pop1 = 80
 admx_pop2 = 20
 Nsim = '42k'
-scen = 's2'
+scen = 's1'
 folder = '160v100v80'
 p_case = 160
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = p_exp = int_prune = 100
@@ -44,8 +44,8 @@ dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2,
 dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/')
 
-# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
-# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
+dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
+dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
 
 # Vectors to store p-values
@@ -288,8 +288,8 @@ for (i in 1:5){
   prox_ext_p_gene_adj_Ncc = rbind(prox_ext_p_gene_adj_Ncc, counts_gene_adj_Ncc$prox)
   prox_ext_p_gene_adj_Neff = rbind(prox_ext_p_gene_adj_Neff, counts_gene_adj_Neff$prox)
   
-  proxW_ext_p_gene_adj_Ncc = rbind(prox_ext_p_gene_adj_Ncc, counts_gene_adj_Ncc$prox_w)
-  proxW_ext_p_gene_adj_Neff = rbind(prox_ext_p_gene_adj_Neff, counts_gene_adj_Neff$prox_w)
+  proxW_ext_p_gene_adj_Ncc = rbind(proxW_ext_p_gene_adj_Ncc, counts_gene_adj_Ncc$prox_w)
+  proxW_ext_p_gene_adj_Neff = rbind(proxW_ext_p_gene_adj_Neff, counts_gene_adj_Neff$prox_w)
   
   
   print(i)
