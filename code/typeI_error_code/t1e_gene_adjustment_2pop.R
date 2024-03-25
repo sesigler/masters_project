@@ -13,11 +13,11 @@ source("/home/math/siglersa/code/functions/methods_funcs.R")
 source("/home/math/siglersa/code/functions/summix2_adjAF.R")
 source("/home/math/siglersa/code/functions/summix2_summix.R")
 
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
 
 # pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 # data = 'by_gene'
@@ -44,8 +44,8 @@ dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2,
 dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/')
 
-dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
-dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
+# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
+# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
 
 # Vectors to store p-values
@@ -58,7 +58,7 @@ proxW_int_p = proxW_ext_p = proxW_ext_p_var_adj_Ncc = proxW_ext_p_var_adj_Neff =
 
 # loop through the simulation replicates
 set.seed(1) 
-# i=1
+# i=100
 for (i in 1:5){
   
   # read in the legend file
@@ -267,8 +267,8 @@ for (i in 1:5){
   # Run proxECAT and proxECAT-weighted using Ncc adj ACs
   counts_gene_adj_Ncc = data_prox_adj_Ncc %>% mutate(case_ratio = ac_case_fun/ac_case_syn,
                                                      control_ratio = adj_ac_Ncc_fun/adj_ac_Ncc_syn,
-                                                     case_fun_w = ac_case_fun/median(case_ratio),
-                                                     control_fun_w = adj_ac_Ncc_fun/median(control_ratio)) %>%
+                                                     case_fun_w = ac_case_fun/median(case_ratio, na.rm=TRUE),
+                                                     control_fun_w = adj_ac_Ncc_fun/median(control_ratio, na.rm=TRUE)) %>%
     mutate(prox = ifelse((ac_case_fun + adj_ac_Ncc_fun < 5) | (ac_case_syn + adj_ac_Ncc_syn < 5), NA,
                          proxecat(ac_case_fun, ac_case_syn, adj_ac_Ncc_fun, adj_ac_Ncc_syn)$p.value),
            prox_w = ifelse((case_fun_w + control_fun_w < 5) | (ac_case_syn + adj_ac_Ncc_syn < 5), NA,
@@ -277,8 +277,8 @@ for (i in 1:5){
   # Run proxECAT and proxECAT-weighted using Neff adj ACs
   counts_gene_adj_Neff = data_prox_adj_Neff %>% mutate(case_ratio = ac_case_fun/ac_case_syn,
                                                        control_ratio = adj_ac_Neff_fun/adj_ac_Neff_syn,
-                                                       case_fun_w = ac_case_fun/median(case_ratio),
-                                                       control_fun_w = adj_ac_Neff_fun/median(control_ratio)) %>%
+                                                       case_fun_w = ac_case_fun/median(case_ratio, na.rm=TRUE),
+                                                       control_fun_w = adj_ac_Neff_fun/median(control_ratio, na.rm=TRUE)) %>%
     mutate(prox = ifelse((ac_case_fun + adj_ac_Neff_fun < 5) | (ac_case_syn + adj_ac_Neff_syn < 5), NA,
                          proxecat(ac_case_fun, ac_case_syn, adj_ac_Neff_fun, adj_ac_Neff_syn)$p.value),
            prox_w = ifelse((case_fun_w + control_fun_w < 5) | (ac_case_syn + adj_ac_Neff_syn < 5), NA,
