@@ -38,8 +38,9 @@ prox_gene_data_prep = function(count.cases, count.controls, leg, common) {
                                        control_ratio = control_fun/control_syn)
 
   # Calculate medians
-  median_case_ratio = median(counts_wide2$case_ratio)
-  median_control_ratio = median(counts_wide2$control_ratio)
+  # Set na.rm to TRUE to avoid median ratio being NA if there's a divide by 0 problem
+  median_case_ratio = median(counts_wide2$case_ratio, na.rm = TRUE)
+  median_control_ratio = median(counts_wide2$control_ratio, na.rm = TRUE)
 
   # Calculate the weighted values and the p-values
   counts_wide3 = counts_wide2 %>% mutate(case_fun_w = case_fun / median_case_ratio,
