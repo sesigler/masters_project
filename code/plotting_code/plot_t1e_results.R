@@ -8,19 +8,24 @@ library(binom)
 library(data.table) # for fread
 
 # Pop = 'AFR'
-Nsim = '42k' #23k
-admx = '80-20'
+# admx = '80-20'
 Pop1 = 'AFR'
 Pop2 = 'NFE'
+admx_pop1 = 80
+admx_pop2 = 20
+Nsim = '42k' #23k
 scen = 's2'
-maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
-Ncase = '5k'
-Ncc = '10k'  #Number of common controls: 'cc5k' or 'cc10k'
-Nref = '10k'
-pcase = 160
-int_prune = 100
-ext_prune = 100
 folder = '160v100v80'
+int_prune = 100
+ext_prune = 80
+Ncase = Nic = 5000
+Ncc = 10000 #Number of common controls: 5000 or 10000 
+Nref = 500
+maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
+sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_Nref', Nref)
+pcase = 160
+
+
 pruning_plot = 'Separately and Sequentially-RAREsim v2.1.1' #Separately-RAREsim v2.1.1, Separately-R, Separately and Sequentially-RAREsim v2.1.1
 # pruning = "pruneSepRaresim" #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 # data = 'by_gene'
@@ -29,7 +34,9 @@ pruning_plot = 'Separately and Sequentially-RAREsim v2.1.1' #Separately-RAREsim 
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', Nsim, '_', Pop, '/', data, '/', folder, '/')
-dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', Pop1, '_', Pop2, '_pops/Sim_', Nsim, '/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
+# dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', Pop1, '_', Pop2, '_pops/Sim_', Nsim, '/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
+# dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', Pop1, '_', Pop2, '_pops/Sim_', Nsim, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
+dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', sim_params, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', Pop1, '_', Pop2, '_pops/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/checks/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/', int_prune, 'v', ext_prune, '/')
@@ -40,8 +47,10 @@ dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', Po
 dir_out_t1e = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/admixed/')
 # dir_out_power = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/power_plots/', data, '/')
 
-file_path = paste0(int_prune, "v", ext_prune, "_", Pop1, "_", Pop2, "_", admx, "_", scen, "_Nsim", Nsim, "_Ncase", Ncase, "_Ncc", Ncc, "_Nref", Nref, "_maf", maf, ".csv")
-file_out = paste0('t1e_gene_', folder, '_', int_prune, "v", ext_prune, "_", Pop1, "_", Pop2, "_", admx, "_", scen, "_Nsim", Nsim, "_Ncase", Ncase, "_Ncc", Ncc, "_Nref", Nref, "_maf", maf, '.jpg')
+# file_path = paste0(int_prune, "v", ext_prune, "_", Pop1, "_", Pop2, "_", admx, "_", scen, "_Nsim", Nsim, "_Ncase", Ncase, "_Ncc", Ncc, "_Nref", Nref, "_maf", maf, ".csv")
+file_in = paste0(admx_pop1, Pop1, "_", admx_pop2, Pop2, "_Nsim", Nsim, "_", folder, "_", int_prune, "v", ext_prune, "_Ncase", Ncase, "_Ncc", Ncc, "_Nref", Nref, "_maf", maf, "_", scen, ".csv")
+# file_out = paste0('t1e_gene_', folder, '_', int_prune, "v", ext_prune, "_", Pop1, "_", Pop2, "_", admx, "_", scen, "_Nsim", Nsim, "_Ncase", Ncase, "_Ncc", Ncc, "_Nref", Nref, "_maf", maf, '.jpg')
+file_out = paste0('t1e_prox_gene_adj_', admx_pop1, Pop1, "_", admx_pop2, Pop2, "_Nsim", Nsim, "_", folder, "_", int_prune, "v", ext_prune, "_Ncase", Ncase, "_Ncc", Ncc, "_Nref", Nref, "_maf", maf, "_", scen, '.jpg')
 
 # read in the results
 # Proportion Estimates 
@@ -60,7 +69,8 @@ file_out = paste0('t1e_gene_', folder, '_', int_prune, "v", ext_prune, "_", Pop1
 # t1e_gene = read.csv(paste0(dir, "T1e_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_gene = read.csv(paste0(dir, "T1e_power_all_gene_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_", Ncc, "_maf", maf, ".csv"), header=T)
 # t1e_gene = read.csv(paste0(dir, "T1e_power_all_gene_", int_prune, "_v_", ext_prune, "_", Pop, "_", Ncc, "_maf", maf, ".csv"), header=T)
-t1e_gene = read.csv(paste0(dir, "T1e_all_gene_", file_path), header=T)
+t1e_gene = read.csv(paste0(dir, "T1e_all_gene_", file_in), header=T)
+t1e_gene = read.csv(paste0(dir, "T1e_all_prox_gene_adj_", file_in), header=T)
 
 
 # puts in a format for ggplot
@@ -88,6 +98,8 @@ t1e_gene = read.csv(paste0(dir, "T1e_all_gene_", file_path), header=T)
 #   mutate(MAF = maf, Pop = paste0("100% ", Pop))
 t1e_gene = pivot_longer(t1e_gene, prox_int:burden_all, names_to="Method", values_to="Value") %>%
   mutate(MAF = maf)
+t1e_gene = pivot_longer(t1e_gene, prox_int:proxW_ext_gene_adj_Neff, names_to="Method", values_to="Value") %>%
+  mutate(MAF = maf)
 
 results2 = t1e_gene %>% mutate(MACs = rep(c("Unadjusted", "Unadjusted", "Adjusted",
                                             "Unadjusted", "Unadjusted", "Adjusted",
@@ -96,6 +108,9 @@ results2 = t1e_gene %>% mutate(MACs = rep(c("Unadjusted", "Unadjusted", "Adjuste
                                             "Unadjusted", "Unadjusted", "Unadjusted",
                                             "Unadjusted", "Unadjusted", "Unadjusted",
                                             "Unadjusted", "Unadjusted", "Unadjusted"), 12))
+
+results2 = t1e_gene %>% mutate(MACs = rep(c("Unadjusted", "Unadjusted", "Variant Adjusted Ncc", "Variant Adjusted Neff", 
+                                            "Gene Adjusted Ncc", "Gene Adjusted Neff"), 24))
 
 results2$Method = factor(results2$Method, levels=c("prox_int", "prox_ext", "prox_ext_adj", 
                                                    "proxW_int", "proxW_ext", "proxW_ext_adj",
@@ -106,6 +121,10 @@ results2$Method = factor(results2$Method, levels=c("prox_int", "prox_ext", "prox
                                                    "burden_int", "burden_ext", "burden_all"),
                          labels=rep(c("ProxECAT", "ProxECAT-weighted", "LogProx", "iECAT-O", "SKAT-O", "SKAT", "Burden"), times=c(3, 3, 5, 2, 3, 3, 3)))
 
+results2$Method = factor(results2$Method, levels=c("prox_int", "prox_ext", "prox_ext_var_adj_Ncc", "prox_ext_var_adj_Neff", "prox_ext_gene_adj_Ncc", "prox_ext_gene_adj_Neff", 
+                                                   "proxW_int", "proxW_ext", "proxW_ext_var_adj_Ncc", "proxW_ext_var_adj_Neff", "proxW_ext_gene_adj_Ncc", "proxW_ext_gene_adj_Neff"),
+                         labels=rep(c("ProxECAT", "ProxECAT-weighted"), times=c(6, 6)))
+
 results2 = results2 %>% mutate(Data = rep(c("Internal", "External", "External",
                                             "Internal", "External", "External",
                                             "Internal", "External", "Internal + External", "External", "Internal + External",
@@ -114,12 +133,20 @@ results2 = results2 %>% mutate(Data = rep(c("Internal", "External", "External",
                                             "Internal", "External", "Internal + External",
                                             "Internal", "External", "Internal + External"), 12))
 
+results2 = results2 %>% mutate(Data = rep(c("Internal", "External", "External", "External", "External", "External"), 24))
+
 # results2$MAF = factor(results2$MAF, levels = c(0.01, 0.001))
 # results2$Calculation = factor(results2$Calculation, levels = c("Type I Error", "Power"))
 # results2$Scenario = factor(results2$Scenario)
 results2$MAF = factor(results2$MAF)
 results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal + External"))
 results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Adjusted"))
+results2$Gene = factor(results2$Gene, levels=c("ADGRE2", "ADGRE3", "ADGRE5", "CLEC17A", "DDX39A", "DNAJB1", 
+                                               "GIPC1", "NDUFB7", "PKN1", "PTGER1", "TECR", "ZNF333"))
+
+results2$MAF = factor(results2$MAF)
+results2$Data = factor(results2$Data, levels=c("Internal", "External"))
+results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Variant Adjusted Ncc", "Variant Adjusted Neff", "Gene Adjusted Ncc", "Gene Adjusted Neff"))
 results2$Gene = factor(results2$Gene, levels=c("ADGRE2", "ADGRE3", "ADGRE5", "CLEC17A", "DDX39A", "DNAJB1", 
                                                "GIPC1", "NDUFB7", "PKN1", "PTGER1", "TECR", "ZNF333"))
 
@@ -145,6 +172,7 @@ results2$Upper = as.numeric(results2$Upper)
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 cbPalette2 = c("#999999", "#BC9F4C", "#56B4E9", "#009E73", "#0072B2")
 colors3 = c("#009E73", "#0072B2", "#D55E00")
+colors_adj = c("#009E73", "#0072B2", "#56B4E9", "#D55E00", "#E69F00")
 colors_nfe = c("#009E73", "#0072B2", "#D55E00", "#CC79A7", "#999999",
                "lightgreen", "#56B4E9", "#E69F00", "pink")
 colors_all_nfe = "#009E73"
@@ -338,14 +366,15 @@ p10 <- ggplot(results2, aes(x=Gene, y=Value, color=Method, shape=MACs)) +
           # facet_wrap(~Data, ncol = 1) +
           labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, 
                                                         ' Data \nScenario: ', scen, ', Pruning: ', pruning_plot, 
-                                                        '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
+                                                        '\nInternal Data: 80% AFR 20% NFE, External Data: 100% AFR \nNsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: ', maf)) +
+                                                        # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
           # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
           theme_bw(base_size = 15)
 p10
 ggsave(file = paste0(dir_out_t1e, file_out), plot = p10, height = 8, width = 16, units = 'in')
 
-# t1e for admixed by gene results from pcasev100vpconf pipeline-proxECAT ext only
-p11 <- ggplot(results2, aes(x=Gene, y=Value, color=Method, shape=MACs)) +
+# t1e for different adjustments from pcasev100vpconf pipeline-proxECAT only
+p11 <- ggplot(results2, aes(x=Gene, y=Value, color=MACs, shape=Method)) +
           geom_point(size=3, position=position_dodge(width=0.5)) +
           geom_hline(yintercept=0.05, linetype=2, linewidth=1) +
           # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
@@ -353,17 +382,17 @@ p11 <- ggplot(results2, aes(x=Gene, y=Value, color=Method, shape=MACs)) +
           # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
           # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
           geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1, width=.3, position=position_dodge(width=0.5)) +
-          scale_color_manual(values=colors_prox) +
+          scale_color_manual(values=colors_adj) +
           scale_shape_manual(values = c(1, 16)) +
           facet_wrap(~Data, ncol = 1, scales = 'free_y') +
           # facet_wrap(~Data, ncol = 1) +
           labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, 
-                                                        ' Data (10k cc) \nPruning: ', pruning_plot, 
-                                                        '\nPop=Admixed 80% ', Pop1, ' 20% ', Pop2, ', Scenario 2, MAF=0.001 \nNsim: 42K, Ncase: 5K, Ncc: 10K, Nref: 10K')) +
+                                                        ' Data \nScenario: ', scen, ', Pruning: ', pruning_plot, 
+                                                        '\nCases and Internal Controls: 100% AFR, External Controls: 80% AFR 20% NFE \nNsim: ', Nsim, ', Ncase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: ', maf)) +
           # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
           theme_bw(base_size = 15)
 p11
-ggsave(file = paste0(dir, "prox_ext_", file_out), plot = p11, height = 8, width = 16, units = 'in')
+ggsave(file = paste0(dir_out_t1e, file_out), plot = p11, height = 8, width = 16, units = 'in')
 
 
 
