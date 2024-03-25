@@ -19,13 +19,13 @@ Pop2 = 'NFE'
 admx_pop1 = 80
 admx_pop2 = 20
 Nsim = '42k'
-scen = 's1'
+scen = 's2'
 folder = '160v100v80'
 int_prune = 100
 ext_prune = 80
 Ncase = Nic = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
-Nref = 10000
+Nref = 500
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_Nref', Nref)
 # data = 'by_gene'
@@ -35,13 +35,13 @@ sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_Nref', Nref)
 
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', Nsim, '_', Pop, '/', data, '/', folder, '/')
-dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', Pop1, '_', Pop2, '_pops/Sim_', Nsim, '/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
+# dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', Pop1, '_', Pop2, '_pops/Sim_', Nsim, '/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', sim_params, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/', pruning, '/', data, '/', folder, '/', int_prune, 'v', ext_prune, '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/checks/')
 
-file_path = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, "_maf", maf, ".txt")
-file_out = paste0(int_prune, "v", ext_prune, "_", admx_pop1, Pop1, "_", admx_pop2, Pop2, "_", scen, "_Nsim", Nsim, "_Ncase", Ncase, "_Ncc", Ncc, "_Nref", Nref, "_maf", maf, ".csv")
+file_in = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, "_maf", maf, ".txt")
+file_out = paste0(admx_pop1, Pop1, "_", admx_pop2, Pop2, "_Nsim", Nsim, "_", folder, "_", int_prune, "v", ext_prune, "_Ncase", Ncase, "_Ncc", Ncc, "_Nref", Nref, "_maf", maf, "_", scen, ".csv")
 
 ### Type 1 error
 
@@ -55,42 +55,42 @@ file_out = paste0(int_prune, "v", ext_prune, "_", admx_pop1, Pop1, "_", admx_pop
 # t1e_pruning = read.table(paste0(dir, "T1e_gene_", method, "_", type, "_", pruning, "_", int_prune, "_v_", ext_prune, "_", Pop2, "_maf", maf, ".txt"), header = T)
 
 # By gene
-prox_int = read.table(paste0(dir, "T1e_gene_prox_int_", file_path), header = T)
-prox_ext = read.table(paste0(dir, "T1e_gene_prox_ext_", file_path), header = T)
-# prox_ext_adj = read.table(paste0(dir, "T1e_gene_prox_ext_adj_", file_path), header = T)
-prox_ext_var_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_ext_var_adj_Ncc_", file_path), header = T)
-prox_ext_var_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_ext_var_adj_Neff_", file_path), header = T)
-prox_ext_gene_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_ext_gene_adj_Ncc_", file_path), header = T)
-prox_ext_gene_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_ext_gene_adj_Neff_", file_path), header = T)
+prox_int = read.table(paste0(dir, "T1e_gene_prox_int_", file_in), header = T)
+prox_ext = read.table(paste0(dir, "T1e_gene_prox_ext_", file_in), header = T)
+# prox_ext_adj = read.table(paste0(dir, "T1e_gene_prox_ext_adj_", file_in), header = T)
+prox_ext_var_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_ext_var_adj_Ncc_", file_in), header = T)
+prox_ext_var_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_ext_var_adj_Neff_", file_in), header = T)
+prox_ext_gene_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_ext_gene_adj_Ncc_", file_in), header = T)
+prox_ext_gene_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_ext_gene_adj_Neff_", file_in), header = T)
 
-proxW_int = read.table(paste0(dir, "T1e_gene_prox_weighted_int_", file_path), header = T)
-proxW_ext = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_", file_path), header = T)
-# proxW_ext_adj = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_adj_", file_path), header = T)
-proxW_ext_var_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_var_adj_Ncc_", file_path), header = T)
-proxW_ext_var_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_var_adj_Neff_", file_path), header = T)
-proxW_ext_gene_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_gene_adj_Ncc_", file_path), header = T)
-proxW_ext_gene_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_gene_adj_Neff_", file_path), header = T)
+proxW_int = read.table(paste0(dir, "T1e_gene_prox_weighted_int_", file_in), header = T)
+proxW_ext = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_", file_in), header = T)
+# proxW_ext_adj = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_adj_", file_in), header = T)
+proxW_ext_var_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_var_adj_Ncc_", file_in), header = T)
+proxW_ext_var_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_var_adj_Neff_", file_in), header = T)
+proxW_ext_gene_adj_Ncc = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_gene_adj_Ncc_", file_in), header = T)
+proxW_ext_gene_adj_Neff = read.table(paste0(dir, "T1e_gene_prox_weighted_ext_gene_adj_Neff_", file_in), header = T)
 
-prox2_int = read.table(paste0(dir, "T1e_gene_prox2_int_", file_path), header = T)
-prox2_ext = read.table(paste0(dir, "T1e_gene_prox2_ext_", file_path), header = T)
-prox2_all = read.table(paste0(dir, "T1e_gene_prox2_all_", file_path), header = T)
-prox2_ext_adj = read.table(paste0(dir, "T1e_gene_prox2_ext_adj_", file_path), header = T)
-prox2_all_adj = read.table(paste0(dir, "T1e_gene_prox2_all_adj_", file_path), header = T)
+prox2_int = read.table(paste0(dir, "T1e_gene_prox2_int_", file_in), header = T)
+prox2_ext = read.table(paste0(dir, "T1e_gene_prox2_ext_", file_in), header = T)
+prox2_all = read.table(paste0(dir, "T1e_gene_prox2_all_", file_in), header = T)
+prox2_ext_adj = read.table(paste0(dir, "T1e_gene_prox2_ext_adj_", file_in), header = T)
+prox2_all_adj = read.table(paste0(dir, "T1e_gene_prox2_all_adj_", file_in), header = T)
 
-iecat_all = read.table(paste0(dir, "T1e_gene_iecat_all_", file_path), header = T)
-iecat_all_adj = read.table(paste0(dir, "T1e_gene_iecat_all_adj_", file_path), header = T)
+iecat_all = read.table(paste0(dir, "T1e_gene_iecat_all_", file_in), header = T)
+iecat_all_adj = read.table(paste0(dir, "T1e_gene_iecat_all_adj_", file_in), header = T)
 
-skato_int = read.table(paste0(dir, "T1e_gene_skato_int_", file_path), header = T)
-skato_ext = read.table(paste0(dir, "T1e_gene_skato_ext_", file_path), header = T)
-skato_all = read.table(paste0(dir, "T1e_gene_skato_all_", file_path), header = T)
+skato_int = read.table(paste0(dir, "T1e_gene_skato_int_", file_in), header = T)
+skato_ext = read.table(paste0(dir, "T1e_gene_skato_ext_", file_in), header = T)
+skato_all = read.table(paste0(dir, "T1e_gene_skato_all_", file_in), header = T)
 
-skat_int = read.table(paste0(dir, "T1e_gene_skat_int_", file_path), header = T)
-skat_ext = read.table(paste0(dir, "T1e_gene_skat_ext_", file_path), header = T)
-skat_all = read.table(paste0(dir, "T1e_gene_skat_all_", file_path), header = T)
+skat_int = read.table(paste0(dir, "T1e_gene_skat_int_", file_in), header = T)
+skat_ext = read.table(paste0(dir, "T1e_gene_skat_ext_", file_in), header = T)
+skat_all = read.table(paste0(dir, "T1e_gene_skat_all_", file_in), header = T)
 
-burden_int = read.table(paste0(dir, "T1e_gene_burden_int_", file_path), header = T)
-burden_ext = read.table(paste0(dir, "T1e_gene_burden_ext_", file_path), header = T)
-burden_all = read.table(paste0(dir, "T1e_gene_burden_all_", file_path), header = T)
+burden_int = read.table(paste0(dir, "T1e_gene_burden_int_", file_in), header = T)
+burden_ext = read.table(paste0(dir, "T1e_gene_burden_ext_", file_in), header = T)
+burden_all = read.table(paste0(dir, "T1e_gene_burden_all_", file_in), header = T)
 
 
 # t1e_out = apply(t1e, 2, my.power)
