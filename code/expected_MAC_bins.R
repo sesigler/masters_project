@@ -7,6 +7,8 @@ library(RAREsim)
 library(dplyr)
 
 Pop = 'AFR'
+Nsim_hapgen = 100000
+haps_fold = 100
 p_case = 160
 p_conf = 80
 Nsim = 42000
@@ -14,15 +16,15 @@ reg_size = 19.029
 
 
 # dir_leg = paste0("/storage/math/projects/RAREsim/Cases/Sim_20k/", Pop, "/data/")
-dir_leg = paste0("/home/math/siglersa/Sim_100k/", Pop, "/data/")
-dir = "/storage/math/projects/compinfo/simulations/input/"
-dir_out = "/home/math/siglersa/mastersProject/Input/"
+dir_leg = paste0('/home/math/siglersa/Sim_', haps_fold, 'k/', Pop, '/data/')
+dir = '/storage/math/projects/compinfo/simulations/input/'
+dir_out = paste0('/home/math/siglersa/mac_bin_estimates/', Pop, '/')
 
 # dir_leg = "C:/Users/sagee/Documents/HendricksLab/mastersProject/input/"
 # dir = "C:/Users/sagee/Documents/HendricksLab/mastersProject/input/"
 
 ### prep the legend file
-leg = read.table(paste0(dir_leg, "chr19.block37.", Pop, ".sim1.100000.copy.legend"), sep='\t', header=T)
+leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim1.', Nsim_hapgen, '.copy.legend'), sep='\t', header=T)
 #leg$fun = ifelse(leg$fun=="synonymous SNV", "syn", "fun")
 #leg$exonic[grepl("exonic", leg$exonic)] = "exonic"
 #leg$gene[grepl("ZNF333", leg$gene)] = "ZNF333"
