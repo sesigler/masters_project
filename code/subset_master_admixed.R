@@ -1,3 +1,11 @@
+################################################################################
+# This code subsets legend files from the master legend file
+# It only needs to be run when the admixture proportion changes
+################################################################################
+Pop1 = 'AFR'
+Pop2 = 'NFE'
+admx_pop1 = 80
+admx_pop2 = 20
 
 end = 100 # change back to mysim
 start = end-99
@@ -9,7 +17,7 @@ prop_ad = 0.80
 library(dplyr)
 
 dir_in = '/storage/math/projects/compinfo/simulations/input/'
-dir_out = '/home/math/siglersa/admixed/AFR_NFE_pops/'
+dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/subset_master/')
 
 # read in the master legend files
 master.AFR = read.table(paste0(dir_in, 'chr19.block37.AFR.master.legend'), sep='\t')
