@@ -7,6 +7,7 @@ start=$(($end-99))
 pop=AFR #population: AFR(African), EAS(Eastern Asian), NFE(Non-Finnish European), SAS(South Asian)
 NE=17469 #effective sample size: AFR(17469), EAS(14269), NFE(11418), SAS(14269)
 Nsim=100000 #number of individuals
+Nind=120 #short version of Nsim for folder
 num=19 #chromosome number
 b=37 #block number
 
@@ -24,7 +25,7 @@ do
 
 ### output variables
 Leg=/storage/math/projects/RAREsim/Cases/Sim_20k/${pop}/data/chr${num}.block${b}.${pop}.sim${i}.copy.legend
-Output=${MD}/Sim_100k/${pop}/data/chr${num}.block${b}.${pop}.sim${i}.${Nsim}
+Output=${MD}/Sim_${Nind}k/${pop}/data/chr${num}.block${b}.${pop}.sim${i}.${Nsim}
 #Output=${WD}/output/multiple_cohorts/chr${num}.block${b}.${pop}.sim${i}.${Nsim}
 
 ### save a copy of the legend file
