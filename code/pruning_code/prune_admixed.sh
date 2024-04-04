@@ -10,12 +10,12 @@ pop1=AFR
 pop2=NFE
 admx_pop1=80
 admx_pop2=20
-Npop1=56000
-Npop2=28000
-Nsim_admx=42000
-admx_fold=42
-Nsim_hapgen=100000
-haps_fold=100
+Npop1=120000
+Npop2=44000
+Nsim_admx=82000
+admx_fold=82
+Nsim_hapgen=120000
+haps_fold=120
 pcase=160
 pconf=80
 
@@ -79,7 +79,7 @@ python3 ${WD}/raresim/convert.py \
 python3 ${WD}/raresim/sim.py \
     -m chr19.block37.${pop1}_${pop2}.sim${rep}.controls.haps.sm \
     --functional_bins ${WD}/mac_bin_estimates/${pop1}/MAC_bin_estimates_${Nsim_admx}_${pop1}_fun_${pcase}.txt \
-    --synonymous_bins ${WD}/mac_bin_estimates/${pop1}MAC_bin_estimates_${Nsim_admx}_${pop1}_syn_100.txt \
+    --synonymous_bins ${WD}/mac_bin_estimates/${pop1}/MAC_bin_estimates_${Nsim_admx}_${pop1}_syn_100.txt \
     -l ${WD}/admixed/${admx_pop1}${pop1}_${admx_pop2}${pop2}/subset_master/chr19.block37.${pop1}_${pop2}.sim${rep}.copy.legend \
     -L chr19.block37.${pop1}_${pop2}.sim${rep}.${pcase}fun.100syn.legend \
     -H chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pcase}fun.100syn.haps.gz
@@ -99,7 +99,7 @@ python3 ${WD}/raresim/convert.py \
 ### prune the haplotypes down to 100% functional
 python3 ${WD}/raresim/sim.py \
     -m chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pcase}fun.100syn.haps.sm \
-    --f_only ${WD}/mac_bin_estimates/${pop1}MAC_bin_estimates_${Nsim_admx}_${pop1}_fun_100.txt \
+    --f_only ${WD}/mac_bin_estimates/${pop1}/MAC_bin_estimates_${Nsim_admx}_${pop1}_fun_100.txt \
     -l chr19.block37.${pop1}_${pop2}.sim${rep}.${pcase}fun.100syn.legend \
     -L chr19.block37.${pop1}_${pop2}.sim${rep}.100fun.100syn.legend \
     -H chr19.block37.${pop1}_${pop2}.sim${rep}.all.100fun.100syn.haps.gz
@@ -122,8 +122,8 @@ python3 ${WD}/raresim/convert.py \
 ### prune the haplotypes down to pconf % functional and pconf % synonymous variants
 python3 ${WD}/raresim/sim.py \
     -m chr19.block37.${pop1}_${pop2}.sim${rep}.all.100fun.100syn.haps.sm \
-    --functional_bins ${WD}/mac_bin_estimates/${pop1}MAC_bin_estimates_${Nsim_admx}_${pop1}_fun_${pconf}.txt \
-    --synonymous_bins ${WD}/mac_bin_estimates/${pop1}MAC_bin_estimates_${Nsim_admx}_${pop1}_syn_${pconf}.txt \
+    --functional_bins ${WD}/mac_bin_estimates/${pop1}/MAC_bin_estimates_${Nsim_admx}_${pop1}_fun_${pconf}.txt \
+    --synonymous_bins ${WD}/mac_bin_estimates/${pop1}/MAC_bin_estimates_${Nsim_admx}_${pop1}_syn_${pconf}.txt \
     -l chr19.block37.${pop1}_${pop2}.sim${rep}.100fun.100syn.legend \
     -L chr19.block37.${pop1}_${pop2}.sim${rep}.${pconf}fun.${pconf}syn.legend \
     -H chr19.block37.${pop1}_${pop2}.sim${rep}.all.${pconf}fun.${pconf}syn.haps.gz
