@@ -214,14 +214,14 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc
     
     # Use effective sample size
     counts_adj$ac <- round(counts_adj$af*(2*adj_AF$effective.sample.size))
+    return(list(counts_adj, adj_AF$effective.sample.size))
     
   } else {
     
     # Use number of common controls
     counts_adj$ac <- round(counts_adj$af*(2*Ncc))
+    return(counts_adj)
   }
-  
-  return(counts_adj)
 
 }
 
