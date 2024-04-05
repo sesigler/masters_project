@@ -33,7 +33,7 @@ p_case_fun = p_case_syn = p_int_fun = p_int_syn = p_exp = int_prune = 100
 p_cc_fun = p_cc_syn = ext_prune = 80
 Ncase = Nic = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
-Nref = 10000
+Nref = 500
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
 sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_Nref', Nref)
 # genes_power = c("ADGRE5", "ADGRE3", "TECR") # genes used for cases (power)
@@ -59,7 +59,7 @@ proxW_int_p = proxW_ext_p = proxW_ext_p_var_adj_Ncc = proxW_ext_p_var_adj_Neff =
 # loop through the simulation replicates
 set.seed(1) 
 # i=100
-for (i in 1:5){
+for (i in 1:100){
   
   # read in the legend file
   # leg = read_leg_homo(dir_leg, Pop, i)
@@ -111,7 +111,11 @@ for (i in 1:5){
   
   # Calculate adjusted AFs
   count_cc_adj_Ncc = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref, Ncc, Neff = FALSE)
-  count_cc_adj_Neff = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref, Ncc, Neff = TRUE)
+  adj_Neff = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref, Ncc, Neff = TRUE)
+  
+  # return counts and effective sample size from Neff adjusted data
+  count_cc_adj_Neff = adj_Neff[[1]]
+  Neff = adj_Neff[[2]]
   
   # Identify variants where AF >= 1-maf
   flip_int = which(count_case$af >= 1-maf | count_ic$af >= 1-maf)
@@ -306,18 +310,18 @@ colnames(proxW_int_p) = colnames(proxW_ext_p) = colnames(proxW_ext_p_var_adj_Ncc
 file_path = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, "_maf", maf, ".txt")
 
 # ProxECAT
-write.table(prox_int_p, paste0(dir_out, "T1e_gene_prox_int_", file_path), quote=F, row.names=F, col.names=T)
-write.table(prox_ext_p, paste0(dir_out, "T1e_gene_prox_ext_", file_path), quote=F, row.names=F, col.names=T)
-write.table(prox_ext_p_var_adj_Ncc, paste0(dir_out, "T1e_gene_prox_ext_var_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox_int_p, paste0(dir_out, "T1e_gene_prox_int_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox_ext_p, paste0(dir_out, "T1e_gene_prox_ext_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox_ext_p_var_adj_Ncc, paste0(dir_out, "T1e_gene_prox_ext_var_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
 write.table(prox_ext_p_var_adj_Neff, paste0(dir_out, "T1e_gene_prox_ext_var_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
-write.table(prox_ext_p_gene_adj_Ncc, paste0(dir_out, "T1e_gene_prox_ext_gene_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox_ext_p_gene_adj_Ncc, paste0(dir_out, "T1e_gene_prox_ext_gene_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
 write.table(prox_ext_p_gene_adj_Neff, paste0(dir_out, "T1e_gene_prox_ext_gene_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
 # ProxECAT-weighted
-write.table(proxW_int_p, paste0(dir_out, "T1e_gene_prox_weighted_int_", file_path), quote=F, row.names=F, col.names=T)
-write.table(proxW_ext_p, paste0(dir_out, "T1e_gene_prox_weighted_ext_", file_path), quote=F, row.names=F, col.names=T)
-write.table(proxW_ext_p_var_adj_Ncc, paste0(dir_out, "T1e_gene_prox_weighted_ext_var_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(proxW_int_p, paste0(dir_out, "T1e_gene_prox_weighted_int_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(proxW_ext_p, paste0(dir_out, "T1e_gene_prox_weighted_ext_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(proxW_ext_p_var_adj_Ncc, paste0(dir_out, "T1e_gene_prox_weighted_ext_var_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
 write.table(proxW_ext_p_var_adj_Neff, paste0(dir_out, "T1e_gene_prox_weighted_ext_var_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
-write.table(proxW_ext_p_gene_adj_Ncc, paste0(dir_out, "T1e_gene_prox_weighted_ext_gene_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(proxW_ext_p_gene_adj_Ncc, paste0(dir_out, "T1e_gene_prox_weighted_ext_gene_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
 write.table(proxW_ext_p_gene_adj_Neff, paste0(dir_out, "T1e_gene_prox_weighted_ext_gene_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
 
 # library(ggplot2)
