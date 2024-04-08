@@ -15,11 +15,11 @@ source("/home/math/siglersa/code/functions/methods_funcs.R")
 source("/home/math/siglersa/code/functions/summix2_adjAF.R")
 source("/home/math/siglersa/code/functions/summix2_summix.R")
 
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
-source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
+# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
 
 # pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 # data = 'by_gene'
@@ -28,31 +28,28 @@ Pop2 = 'NFE'
 admx_pop1 = 80
 admx_pop2 = 20
 Nsim = '42k'
-scen = 's2'
+scen = 's1'
 folder = '160v100v80'
 p_case = 160
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = p_exp = int_prune = 100
 p_cc_fun = p_cc_syn = ext_prune = 80
 Ncase = Nic = 5000
 Ncc = 10000 #Number of common controls: 5000 or 10000 
-Nref = 2000
+Nref_pop1 = 2000
+Nref_pop2 = 2000
 maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
-sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_Nref', Nref)
+sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_', Pop1, 'ref', Nref_pop1, '_', Pop2, 'ref', Nref_pop2)
 # genes_power = c("ADGRE5", "ADGRE3", "TECR") # genes used for cases (power)
 
-dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/')
+dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/pruned_haps/')
 dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/', sim_params, '/', scen, '/')
-dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
+dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
+# dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/')
 
-dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
-dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
+# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
+# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
-
-# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
-# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/')
-# dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/'
-# dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/mastersProject/input/', pruning, '/', folder, '/')
 
 # Vectors to store unadjusted p-values
 prox_int_genes_p = prox_ext_genes_p = c() #proxECAT
@@ -77,7 +74,7 @@ iecat_genes_p_adj_Ncc = iecat_genes_p_adj_Neff = c() #iECAT-O
 
 # loop through the simulation replicates
 set.seed(1) 
-# i=100
+# i=1
 for (i in 1:5){
   
   # read in the legend file
@@ -116,8 +113,8 @@ for (i in 1:5){
   count_ic = calc_allele_freqs(geno_ic, Nic, Pop=NULL)
   count_cc = calc_allele_freqs(geno_cc, Ncc, Pop=NULL)
   
-  count_ref_pop1 = calc_allele_freqs(hap_ref_pop1, Nref, Pop=Pop1)
-  count_ref_pop2 = calc_allele_freqs(hap_ref_pop2, Nref, Pop=Pop2)
+  count_ref_pop1 = calc_allele_freqs(hap_ref_pop1, Nref_pop1, Pop=Pop1)
+  count_ref_pop2 = calc_allele_freqs(hap_ref_pop2, Nref_pop2, Pop=Pop2)
   
   # Commbine data with references for Summix
   cc_refs = cbind(count_cc, count_ref_pop1, count_ref_pop2)
@@ -136,8 +133,8 @@ for (i in 1:5){
   cc_refs$row <- 1:nrow(cc_refs)
   
   # Calculate adjusted AFs
-  count_cc_adj_Ncc = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref, Ncc, Neff=FALSE)
-  adj_Neff = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref, Ncc, Neff=TRUE)
+  count_cc_adj_Ncc = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref=c(Nref_pop1, Nref_pop2), Ncc, Neff=FALSE)
+  adj_Neff = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref=c(Nref_pop1, Nref_pop2), Ncc, Neff=TRUE)
   
   # return counts and effective sample size from Neff adjusted data
   count_cc_adj_Neff = adj_Neff[[1]]
@@ -298,8 +295,8 @@ for (i in 1:5){
 
   # some colnames are same from cbinding the geno matrices, need to make them unique
   colnames(geno_iecat_int) <- make.unique(colnames(geno_iecat_int))
-  colnames(geno_iecat_ext_adj_Ncc) <- make.unique(colnames(geno_iecat_ext_adj_Ncc))
-  colnames(geno_iecat_ext_adj_Neff) <- make.unique(colnames(geno_iecat_ext_adj_Neff))
+  colnames(geno_iecat_int_adj_Ncc) <- make.unique(colnames(geno_iecat_int_adj_Ncc))
+  colnames(geno_iecat_int_adj_Neff) <- make.unique(colnames(geno_iecat_int_adj_Neff))
   
   colnames(geno_skat_int) <- make.unique(colnames(geno_skat_int))
   colnames(geno_skat_ext) <- make.unique(colnames(geno_skat_ext))
