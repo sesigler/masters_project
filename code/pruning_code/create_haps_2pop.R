@@ -21,29 +21,31 @@ admx_pop2 = 20
 p_case = 160
 p_conf = 80
 Nsim = '42k'
-scen = 's1'
+scen = 's2'
 folder = '160v100v80'
-Ncase = Nic = 1000
+Ncase = Nic = 5000
 Ncc = 10000
-Nref = 10000
-sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_Nref', Nref)
+Nref1 = 894
+Nref2 = 684
+sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_', Pop1, 'ref', Nref1, '_', Pop2, 'ref', Nref2)
 
 # Number of haplotypes in each dataset
-Ncase_pop1 = Nic_pop1 = 1600 
-Ncase_pop2 = Nic_pop2 = 400 
+Ncase_pop1 = Nic_pop1 = 5000 
+Ncase_pop2 = Nic_pop2 = 0 
 
 Ncc_pop1 = 16000 
 Ncc_pop2 = 4000 
 
-Nref_pop1 = Nref_pop2 = 20000
+Nref_pop1 = Nref1*2
+Nref_pop2 = Nref2*2
 
 # Haplotype column indices
 pop1_cols = 1:56000
 pop2_cols = 56001:84000
 
 
-dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/')
-dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/')
+dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/pruned_haps/')
+dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/pruned_haps/')
 dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/', sim_params, '/', scen, '/')
 
 # dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
