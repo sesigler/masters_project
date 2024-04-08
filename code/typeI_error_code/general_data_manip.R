@@ -176,7 +176,7 @@ est_props = function(counts, Pop1, Pop2, maf) {
 #' @param Pop2 a three letter string denoting the second population in the sample
 #' @param case_est the proportion estimates from Summix for the cases
 #' @param control_est the proportion estimates from Summix for the controls
-#' @param Nref the number of individuals in the reference populations (assumes the number is the same for all reference pops)
+#' @param Nref a vector of the number of individuals in each reference population (order of reference populations must match throughout adjAF function)
 #' @param Ncc the number of individuals in the (common) controls
 #' @param Neff a boolean value, if True the effective sample size is used to calculate the adjusted ACs instead of Ncc, default value is False
 #' 
@@ -197,7 +197,7 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc
                   pi.target = c(case_est[, paste0("af_", Pop1)], case_est[, paste0("af_", Pop2)]), 
                   pi.observed = c(control_est[, paste0("af_", Pop1)], control_est[, paste0("af_", Pop2)]),
                   adj_method = "average",
-                  N_reference = c(Nref, Nref),
+                  N_reference = Nref,
                   N_observed = Ncc,
                   filter = TRUE) 
     
