@@ -78,13 +78,13 @@ merge_cases = function(cases_power, cases_t1e, leg, genes_power) {
   t1e_gene = subset(hap_t1e, !(gene %in% genes_power))
   
   # Merge the two case haps
-  hap_out = rbind(power_gene, t1e_gene)
+  hap_merge = rbind(power_gene, t1e_gene)
   
   # Order the merged hap file by row number
-  hap_out = hap_out[order(hap_out$row),]
+  hap_ord = hap_merge[order(hap_merge$row),]
   
   # Remove the row number and gene columns
-  hap_out = subset(hap_out, select = -c(row, gene))
+  hap_out = subset(hap_ord, select = -c(row, gene))
   
   return(hap_out)
 }
