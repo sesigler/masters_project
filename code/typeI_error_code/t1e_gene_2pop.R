@@ -31,15 +31,14 @@ Nsim = '42k'
 scen = 's1'
 folder = '160v100v80'
 p_case = 160
-p_case_fun = p_case_syn = p_int_fun = p_int_syn = p_exp = int_prune = 100
+p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
 p_cc_fun = p_cc_syn = ext_prune = 80
 Ncase = Nic = 5000
-Ncc = 10000 #Number of common controls: 5000 or 10000 
-Nref_pop1 = 2000
-Nref_pop2 = 2000
-maf = 0.001 #MAF: 0.001 (0.1%) or 0.01 (1%)
+Ncc = 10000  
+Nref_pop1 = 704
+Nref_pop2 = 642
+maf = 0.001 
 sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_', Pop1, 'ref', Nref_pop1, '_', Pop2, 'ref', Nref_pop2)
-# genes_power = c("ADGRE5", "ADGRE3", "TECR") # genes used for cases (power)
 
 dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/pruned_haps/')
 dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/', sim_params, '/', scen, '/')
@@ -79,7 +78,7 @@ for (i in 1:5){
   
   # read in the legend file
   # leg = read_leg_homo(dir_leg, Pop, i)
-  leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop1, '_', Pop2, '.sim', i, '.', p_case, 'fun.', p_exp, 'syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
+  leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop1, '_', Pop2, '.sim', i, '.', p_case, 'fun.100syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
   leg$row = 1:nrow(leg)
   
   # Need to mutate so counts get added up correctly for ZNF333
@@ -91,17 +90,10 @@ for (i in 1:5){
   
   # read in the haplotype files
   hap_case = read_hap(dir_in, Pop1, Pop2, i, scen, "cases", p_case_fun, p_case_syn)
-  # hap_cases_power = read_hap_homo(dir_in, Pop1, Pop2, i, scen, "cases", p_case_fun, p_case_syn) # pcase % fun 100% syn
-  # hap_cases_t1e = read_hap_homo(dir_in, Pop1, Pop2, i, scen, "cases", p_int_fun, p_int_syn) # 100% fun 100% syn
   hap_ic = read_hap(dir_in, Pop1, Pop2, i, scen, "internal.controls", p_int_fun, p_int_syn)
   hap_cc = read_hap(dir_in, Pop1, Pop2, i, scen, "common.controls", p_cc_fun, p_cc_syn)
-  hap_ref_pop1 = read_ref(dir_in, Pop1, i, scen, p_exp, p_exp)
-  hap_ref_pop2 = read_ref(dir_in, Pop2, i, scen, p_exp, p_exp)
-  
-  # FOR POWER ONLY
-  # Create a new hap cases dataframe that merges the cases used for power and t1e but only contains
-  # the genes associated with each calculation
-  # hap_cases = merge_cases(hap_cases_power, hap_cases_t1e, leg, genes_power)
+  hap_ref_pop1 = read_ref(dir_in, Pop1, i, scen, p_fun = 100, p_syn = 100)
+  hap_ref_pop2 = read_ref(dir_in, Pop2, i, scen, p_fun = 100, p_syn = 100)
   
   # convert the haplotypes into genotypes
   geno_case = make_geno(hap_case)
@@ -128,9 +120,6 @@ for (i in 1:5){
   # prop_ests_cc <- rbind(prop_ests_cc, cc_est_prop)
   # prop_ests_cases <- rbind(prop_ests_cases, cases_est_prop)
   # prop_ests_int <- rbind(prop_ests_int, int_est_prop)
-  
-  # Add row index column to cc_refs in case summix removes variants during adjustment 
-  cc_refs$row <- 1:nrow(cc_refs)
   
   # Calculate adjusted AFs
   count_cc_adj_Ncc = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref=c(Nref_pop1, Nref_pop2), Ncc, Neff=FALSE)
