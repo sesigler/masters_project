@@ -12,12 +12,16 @@ library(iECAT)
 source("/home/math/siglersa/code/functions/read_in_funcs.R")
 source("/home/math/siglersa/code/functions/general_data_manip.R")
 source("/home/math/siglersa/code/functions/methods_funcs.R")
-source("/home/math/siglersa/code/functions/summix2_adjAF.R")
-source("/home/math/siglersa/code/functions/summix2_summix.R")
+source("https://raw.githubusercontent.com/hendriau/Summix/main/R/adjAF.R")
+source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
+# source("/home/math/siglersa/code/functions/summix2_adjAF.R")
+# source("/home/math/siglersa/code/functions/summix2_summix.R")
 
 # source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
 # source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
 # source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
+# source("https://raw.githubusercontent.com/hendriau/Summix/main/R/adjAF.R")
+# source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
 # source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
 # source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
 
@@ -35,14 +39,14 @@ p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
 p_cc_fun = p_cc_syn = ext_prune = 80
 Ncase = Nic = 5000
 Ncc = 10000  
-Nref_pop1 = 704
-Nref_pop2 = 642
+Nref_pop1 = 10000
+Nref_pop2 = 10000
 maf = 0.001 
 sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_', Pop1, 'ref', Nref_pop1, '_', Pop2, 'ref', Nref_pop2)
 
 dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/pruned_haps/')
 dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/', sim_params, '/', scen, '/')
-dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
+dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/t1e/')
 # dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/')
 
@@ -64,6 +68,9 @@ prox_ext_genes_p_adj_Ncc = prox_ext_genes_p_adj_Neff = c() #proxECAT
 prox_weighted_ext_genes_p_adj_Ncc = prox_weighted_ext_genes_p_adj_Neff = c() #proxECAT-weighted
 prox2_ext_genes_p_adj_Ncc = prox2_all_genes_p_adj_Ncc = prox2_ext_genes_p_adj_Neff = prox2_all_genes_p_adj_Neff = c() #LogProx
 iecat_genes_p_adj_Ncc = iecat_genes_p_adj_Neff = c() #iECAT-O
+
+# Vectors to store effective sample sizes p-values
+neff_vec = c()
 
 # Vector to save proportion estimates and macs/mafs
 # prop_ests_cc = c()
@@ -128,6 +135,9 @@ for (i in 1:5){
   # return counts and effective sample size from Neff adjusted data
   count_cc_adj_Neff = adj_Neff[[1]]
   Neff = adj_Neff[[2]]
+  
+  # Save effective sample size
+  neff_vec = c(neff_vec, Neff)
 
   # Identify variants where AF >= 1-maf
   flip_int = which(count_case$af >= 1-maf | count_ic$af >= 1-maf)
@@ -274,7 +284,7 @@ for (i in 1:5){
   geno_iecat_int_adj_Ncc = cbind(geno_case_all_adj_Ncc, geno_ic_all_adj_Ncc, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Ncc$row),] #iECAT-O
   geno_iecat_int_adj_Neff = cbind(geno_case_all_adj_Neff, geno_ic_all_adj_Neff, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Neff$row),] #iECAT-O
 
-  geno_iecat_ext = cbind(count_cc_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
+  # geno_iecat_ext = cbind(count_cc_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
   geno_iecat_ext_adj_Ncc = cbind(count_cc_all_adj_Ncc, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Ncc$row),] #iECAT-O
   geno_iecat_ext_adj_Neff = cbind(count_cc_all_adj_Neff, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Neff$row),] #iECAT-O
 
@@ -443,6 +453,9 @@ file_path = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen,
 
 # Save the proportion estimates
 # write.table(data.frame(prop_ests_cc), paste0(dir_out, "T1e_cc_prop_ests_", int_prune, "_v_", ext_prune, "_", Pop1, '_', Pop2, "_", scen, "_maf", maf, ".txt"), quote=F, row.names=F)
+
+# Save the effective sample sizes
+write.csv(neff_vec, paste0(dir_out, "neff.csv"), quote=F, row.names=F)
 
 # ProxECAT
 write.table(prox_int_genes_p, paste0(dir_out, "T1e_gene_prox_int_", file_path), quote=F, row.names=F, col.names=T)
