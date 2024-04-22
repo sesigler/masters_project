@@ -50,7 +50,7 @@ dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2
 # dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
 
-# Vectors to store unadjusted p-values
+# Vectors to store effective sample sizes p-values
 neff_vec = c()
 
 
