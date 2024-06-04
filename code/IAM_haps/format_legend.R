@@ -22,22 +22,22 @@ library(tidyr)
 library(data.table)
 
 # main directory
-dir = '/home/math/siglersa/IAM_haps/master_legend/' 
+dir = '/home/math/siglersa/IAM_haps/master_legend/'
 
 # source of input IAM hap and leg files
-dir_fin = '/home/math/siglersa/IAM_haps/final/' 
+dir_fin = '/home/math/siglersa/IAM_haps/final/'
 
 # reference coding positions for chr19 block 37
-dir_ref = '/storage/math/projects/compinfo/simulations/input/NFE_blocks/' 
+dir_ref = '/storage/math/projects/compinfo/simulations/input/NFE_blocks/'
 
 # AMR gnomAD data
-dir_gnom = '/home/math/siglersa/IAM_haps/gnomad/' 
+dir_gnom = '/home/math/siglersa/IAM_haps/gnomad/'
 
 # annovar data
 dir_anno_ref = '/storage/math/projects/compinfo/simulations/annovar/output/'
 
 # annovar functional annotations
-dir_anno = '/home/math/siglersa/IAM_haps/annovar/' 
+dir_anno = '/home/math/siglersa/IAM_haps/annovar/'
 
 # dir = 'C:/Users/sagee/Documents/HendricksLab/IAM_hap_data/'
 
