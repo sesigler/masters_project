@@ -11,7 +11,9 @@
 #           in original legend file (add in filler data at the positions not seen in
 #           the IAM data).
 # Part 2:   Create IAM master legend file
-# Step 2.1: 
+# Step 2.1: Update unknown IAM variant positions with gnomAD AMR data
+# Step 2.2: Update remaining unknown positions with annovar data
+# Step 2.3: Add the functional annotation for each variant
 
 
 # load libraries
@@ -19,7 +21,25 @@ library(dplyr)
 library(tidyr)
 library(data.table)
 
-dir = 'C:/Users/sagee/Documents/HendricksLab/IAM_hap_data/'
+# main directory
+dir = '/home/math/siglersa/IAM_haps/master_legend/' 
+
+# source of input IAM hap and leg files
+dir_fin = '/home/math/siglersa/IAM_haps/final/' 
+
+# reference coding positions for chr19 block 37
+dir_ref = '/storage/math/projects/compinfo/simulations/input/NFE_blocks/' 
+
+# AMR gnomAD data
+dir_gnom = '/home/math/siglersa/IAM_haps/gnomad/' 
+
+# annovar data
+dir_anno_ref = '/storage/math/projects/compinfo/simulations/annovar/output/'
+
+# annovar functional annotations
+dir_anno = '/home/math/siglersa/IAM_haps/annovar/' 
+
+# dir = 'C:/Users/sagee/Documents/HendricksLab/IAM_hap_data/'
 
 
 ### Part 1: Subset IAM legend and hap files to all coding regions within block 37 (using code Megan Null gave me)
@@ -28,7 +48,7 @@ dir = 'C:/Users/sagee/Documents/HendricksLab/IAM_hap_data/'
 ### Step 1.1: Write out positions of IAM legend file in LiftOver format for conversion to hg19 coordinates
 
 # Read in IAM legend file
-IAM_leg = read.table(paste0(dir, 'hgdp_1kg_phased_haps_v2_block37_IAM.legend'), header=T, sep='')
+IAM_leg = read.table(paste0(dir_fin, 'hgdp_1kg_phased_haps_v2_block37_IAM.legend'), header=T, sep='')
 
 # Create column of base pair (bp) positions in correct format for LiftOver
 IAM_leg = IAM_leg %>% mutate(pos2 = paste0("chr19:", position, "-", position))
@@ -57,22 +77,23 @@ iam_leg_hg19 = iam_leg_hg19 %>% mutate(id = paste0("19:", position, "_", a0, "_"
   select(id, everything())
 
 # Save iam leg with hg19 coordinates
-write.table(iam_leg_hg19, paste0(dir, 'IAM_chr19_block37_hg19.legend'), 
-            row.names = FALSE, quote = FALSE, sep = '\t')
+# write.table(iam_leg_hg19, paste0(dir, 'IAM_chr19_block37_hg19.legend'), 
+#             row.names = FALSE, quote = FALSE, sep = '\t')
 
 
 ### Step 1.3: Add in missing coding bp and remove any bp not seen in original legend file 
 ###           to both IAM legend and hap files (Megan's code)
 
 # Read in RAREsim legend file (chr19 block 37 positions are same across ancestry)
-leg = read.table(paste0(dir, 'NFE_Block37_CDS_ref_added.legend'), header=T, sep='\t')
+leg = read.table(paste0(dir_ref, 'NFE_Block37_CDS_ref_added.legend'), header=T, sep='\t')
 leg$row <- 1:nrow(leg)
 
 # Read in IAM leg file
-iam_leg = read.table(paste0(dir, 'IAM_chr19_block37_hg19.legend'), header=T, sep='\t')
+# iam_leg = read.table(paste0(dir, 'IAM_chr19_block37_hg19.legend'), header=T, sep='\t')
+iam_leg = iam_leg_hg19
 
 # Read in IAM hap file
-iam_hap = fread(paste0(dir, 'hgdp_1kg_phased_haps_v2_block37_IAM.hap'))
+iam_hap = fread(paste0(dir_fin, 'hgdp_1kg_phased_haps_v2_block37_IAM.hap'))
 iam_hap = as.data.frame(iam_hap)
 
 # Check for duplicate positions in IAM legend file, then remove them
@@ -143,7 +164,7 @@ pos.hgdp = leg.ref %>% filter(!grepl("Un_Known", id)) %>% select(position) # 470
 #sep="\t", quote=F, row.names=F, col.names=F)
 
 # read in gnomad data (9,394 variants)
-gnomad = read.table(paste0(dir, "gnomad.exomes.r2.1.1.sites.19.block37_AMR.vcf.INFO"), sep='\t', header=T) %>% rename(position = POS)
+gnomad = read.table(paste0(dir_gnom, "gnomad.exomes.r2.1.1.sites.19.block37_AMR.vcf.INFO"), sep='\t', header=T) %>% rename(position = POS)
 names(gnomad)[5:8] = sapply(strsplit(names(gnomad)[5:8], "_", fixed=T), head, 1)
 pos.gnomad = gnomad %>% filter(position %in% leg.ref$position) %>% distinct(position) # 4,447 positions
 
@@ -195,7 +216,7 @@ combined2 = union(singles, union(dups.known, out)) %>% arrange(position)
 # Read in ANNOVAR file
 # Note this file is not ancestry specific, Jess just labeled it as NFE since that's
 # the ancestry she started with
-annovar = read.table(paste0(dir, "annovar.chr19.block37.NFE.filtered.txt"), sep="\t")
+annovar = read.table(paste0(dir_anno_ref, "annovar.chr19.block37.NFE.filtered.txt"), sep="\t")
 
 # unknown variants not in gnomad or HGDP
 unknown = combined2 %>% filter(grepl("Un_Known", id), is.na(REF)) %>% distinct(position)
@@ -245,13 +266,16 @@ write.table(master2, paste0(dir, 'master.chr19.block37.IAM.txt'),
 row.names=F, col.names=F, quote=F, sep='\t')
 
 
+### Need to run functional_annotation.sh in /home/math/siglersa/IAM_haps/annovar at this point
+
+
 ### Step 2.3: Functional Annotation
 
 # read in functional annotation files
-anno = read.table(paste0(dir, "master.chr19.block37.IAM.txt.variant_function"), sep='\t') %>% 
+anno = read.table(paste0(dir_anno, "master.chr19.block37.IAM.txt.variant_function"), sep='\t') %>% 
   select(position2 = V4, InEx = V1, gene = V2) # all positions
 
-anno.exo = read.table(paste0(dir, "master.chr19.block37.IAM.txt.exonic_variant_function"), sep='\t') %>% 
+anno.exo = read.table(paste0(dir_anno, "master.chr19.block37.IAM.txt.exonic_variant_function"), sep='\t') %>% 
   select(position2 = V5, fun = V2) # only exonic positions
 
 # determine which positions are intronic
@@ -270,69 +294,3 @@ row.names=F, col.names=F, quote=F, sep='\t')
 summary(as.factor(leg.master$prob))
 
 
-
-
-
-
-
-
-### Centimorgan block and gnomAD code
-
-# read in reference legend file (19,029 bp)
-leg.ref = read.table(paste0(dir, 'IAM_chr19_block37_coding_region.legend'), header = TRUE) 
-pos.1000G = leg.ref %>% filter(!grepl("Un_Known", id)) %>% select(position) # 470 SNPs
-
-# code unknown positions with 0 for a0/a1 
-leg.ref$a0 = ifelse(grepl("Un_Known", leg.ref$id), 0, leg.ref$a0)
-leg.ref$a1 = ifelse(grepl("Un_Known", leg.ref$id), 0, leg.ref$a1)
-
-# write list of positions in legend file
-#write.table(leg.ref$position, paste0("./data/", pop, ".1000G.chr19.block37.positions.txt"), 
-#sep="\t", quote=F, row.names=F, col.names=F)
-
-# read in gnomad data (9,394 variants)
-gnomad = read.table(paste0(dir, "gnomad.exomes.r2.1.1.sites.19.block37_NFE.vcf.INFO"), sep='\t', header=T) %>% rename(position = POS)
-names(gnomad)[5:8] = sapply(strsplit(names(gnomad)[5:8], "_", fixed=T), head, 1)
-pos.gnomad = gnomad %>% filter(position %in% leg.ref$position) %>% distinct(position) # 4,447 positions
-
-# merge reference legend with gnomad data (19,525 lines)
-combined = merge(leg.ref, gnomad, by="position", all.x=T) %>% arrange(position)
-
-# subset the multiallelic SNVs
-dups = combined %>% group_by(position) %>% filter(n()>1) # 473 alleles (496 duplicates)
-
-# remove duplicates/triplicates from known multiallelic SNVs
-dups.known = dups %>% filter(!grepl("Un_Known", id), a1==ALT) %>% mutate(prob = "1")
-
-# extract the positions of unknown multiallelic SNVs
-dups.unknown = dups %>% filter(grepl("Un_Known", id))
-dup.pos = levels(as.factor(dups.unknown$position))
-
-out = c()
-
-# loop through the unknown multiallelic SNVs to choose one if possible
-for (i in dup.pos){
-  
-  temp = dups.unknown %>% filter(position==i)
-  
-  # choose the allele with the maximum allele count in the population
-  result = temp %>% filter(AC==max(AC))
-  
-  # if only one max, prob=1; if two maxes, prob=0.5
-  result$prob = ifelse(nrow(result)==1, "1", "0.5")
-  
-  # if three maxes, prob=. (will use transition/transversion probabilities)
-  result$prob = ifelse(nrow(result)==3, ".", result$prob)
-  
-  out = rbind(out, result)
-}
-
-# subset the biallelic SNVs
-singles = combined %>% group_by(position) %>% filter(n()==1) 
-
-# set the probability of gnomad and known 1000G SNVs to 1, otherwise .
-singles$prob = ifelse(is.na(singles$REF), ".", "1")
-singles$prob = ifelse(!grepl("Un_Known", singles$id), "1", singles$prob)
-
-# combine biallelic SNVS back with the known/unknown multiallelic SNVs
-combined2 = union(singles, union(dups.known, out)) %>% arrange(position)
