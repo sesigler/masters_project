@@ -85,7 +85,7 @@ iam_leg_hg19 = iam_leg_hg19 %>% mutate(id = paste0("19:", position, "_", a0, "_"
 ###           to both IAM legend and hap files (Megan's code)
 
 # Read in RAREsim legend file (chr19 block 37 positions are same across ancestry)
-leg = read.table(paste0(dir_ref, 'NFE_Block37_CDS_ref_added.legend'), header=T, sep='\t')
+leg = read.table(paste0(dir_ref, 'NFE_Block37_CDS_ref_added.legend'), header=T, sep='\t') # 647 positions not unknown
 leg$row <- 1:nrow(leg)
 
 # Read in IAM leg file
@@ -97,12 +97,12 @@ iam_hap = fread(paste0(dir_fin, 'hgdp_1kg_phased_haps_v2_block37_IAM.hap'))
 iam_hap = as.data.frame(iam_hap)
 
 # Check for duplicate positions in IAM legend file, then remove them
-summary(duplicated(iam_leg$position)) # 131
+summary(duplicated(iam_leg$position)) # 131 - do the duplicated position have different alternate/reference alleles?
 iam_leg2 <- iam_leg[-c(which(duplicated(iam_leg$position))), ]
 iam_leg2$position <- as.integer(iam_leg2$position)
 
 # See which positions in IAM leg are also in og leg
-summary(iam_leg2$position %in% leg$position) # 470
+summary(iam_leg2$position %in% leg$position) # 470 - out of how many in IAM leg? could save the positions to use in line 160 below
 
 # Remove rows where IAM position does not appear in leg
 # Presumably these are non-coding positions
@@ -156,12 +156,14 @@ write.table(iam_leg_out, paste0(dir, 'IAM_chr19_block37_coding_region.legend'),
 # Step 2.1: gnomAD 
 
 # read in reference legend file (19,029 bp)
-leg.ref = read.table(paste0(dir, "IAM_chr19_block37_coding_region.legend"), header = TRUE) 
+leg.ref = read.table(paste0(dir, "IAM_chr19_block37_coding_region.legend"), header = TRUE) # or iam_leg_out2
 pos.hgdp = leg.ref %>% filter(!grepl("Un_Known", id)) %>% select(position) # 470 SNPs
 
-# write list of positions in legend file
+# write list of positions in legend file - do you need this?
 #write.table(leg.ref$position, paste0("./data/", pop, ".1000G.chr19.block37.positions.txt"), 
 #sep="\t", quote=F, row.names=F, col.names=F)
+
+# are the numbers in the comments below correct? 
 
 # read in gnomad data (9,394 variants)
 gnomad = read.table(paste0(dir_gnom, "gnomad.exomes.r2.1.1.sites.19.block37_AMR.vcf.INFO"), sep='\t', header=T) %>% rename(position = POS)
@@ -174,16 +176,16 @@ combined = merge(leg.ref, gnomad, by="position", all.x=T) %>% arrange(position)
 # subset the multiallelic SNVs
 dups = combined %>% group_by(position) %>% filter(n()>1) # 473 alleles (496 duplicates)
 
-# remove duplicates/triplicates from known multiallelic SNVs
+# remove duplicates/triplicates from known HGDP multiallelic SNVs
 dups.known = dups %>% filter(!grepl("Un_Known", id), a1==ALT) %>% mutate(prob = "1")
 
-# extract the positions of unknown multiallelic SNVs
+# extract the positions of unknown HGDP multiallelic SNVs
 dups.unknown = dups %>% filter(grepl("Un_Known", id))
 dup.pos = levels(as.factor(dups.unknown$position))
 
 out = c()
 
-# loop through the unknown multiallelic SNVs to choose one if possible
+# loop through the unknown HGDP multiallelic SNVs to choose one if possible from the gnomAD data
 for (i in dup.pos){
   
   temp = dups.unknown %>% filter(position==i)
@@ -271,7 +273,7 @@ row.names=F, col.names=F, quote=F, sep='\t')
 
 ### Step 2.3: Functional Annotation
 
-# read in functional annotation files
+# read in functional annotation files - it would probably be helpful to have them saved in the annovar/output shared folder and that way you wouldn't need a separate directory folder
 anno = read.table(paste0(dir_anno, "master.chr19.block37.IAM.txt.variant_function"), sep='\t') %>% 
   select(position2 = V4, InEx = V1, gene = V2) # all positions
 
@@ -286,7 +288,7 @@ anno$fun = "."
 anno[-introns, "fun"] = anno.exo$fun
 
 # merge the functional annotations with the master legend file
-leg.master = cbind(master, anno) %>% select(position, id, a0, a1, AC, prob, InEx, gene, fun)
+leg.master = cbind(master, anno) %>% select(position, id, a0, a1, AC, prob, InEx, gene, fun) # I would double check that the column names match the names of the other master legend files
 
 write.table(leg.master, paste0(dir, 'chr19.block37.IAM.master.legend'),
 row.names=F, col.names=F, quote=F, sep='\t')
