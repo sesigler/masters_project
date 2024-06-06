@@ -33,13 +33,11 @@ dir_ref = '/storage/math/projects/compinfo/simulations/input/NFE_blocks/'
 # AMR gnomAD data
 dir_gnom = '/home/math/siglersa/IAM_haps/gnomad/'
 
-# annovar data
-dir_anno_ref = '/storage/math/projects/compinfo/simulations/annovar/output/'
-
 # annovar functional annotations
 dir_anno = '/home/math/siglersa/IAM_haps/annovar/'
 
-# dir = 'C:/Users/sagee/Documents/HendricksLab/IAM_hap_data/'
+
+# dir = dir_fin = dir_ref = dir_gnom = dir_anno = 'C:/Users/sagee/Documents/HendricksLab/IAM_hap_data/'
 
 
 ### Part 1: Subset IAM legend and hap files to all coding regions within block 37 (using code Megan Null gave me)
@@ -97,7 +95,7 @@ iam_hap = fread(paste0(dir_fin, 'hgdp_1kg_phased_haps_v2_block37_IAM.hap'))
 iam_hap = as.data.frame(iam_hap)
 
 # Check for duplicate positions in IAM legend file, then remove them
-summary(duplicated(iam_leg$position)) # 131
+summary(duplicated(iam_leg$position)) # 131 (127 duplicates and 2 triplicates)
 iam_leg2 <- iam_leg[-c(which(duplicated(iam_leg$position))), ]
 iam_leg2$position <- as.integer(iam_leg2$position)
 
@@ -159,10 +157,6 @@ write.table(iam_leg_out, paste0(dir, 'IAM_chr19_block37_coding_region.legend'),
 leg.ref = read.table(paste0(dir, "IAM_chr19_block37_coding_region.legend"), header = TRUE) 
 pos.hgdp = leg.ref %>% filter(!grepl("Un_Known", id)) %>% select(position) # 470 SNPs
 
-# write list of positions in legend file
-#write.table(leg.ref$position, paste0("./data/", pop, ".1000G.chr19.block37.positions.txt"), 
-#sep="\t", quote=F, row.names=F, col.names=F)
-
 # read in gnomad data (9,394 variants)
 gnomad = read.table(paste0(dir_gnom, "gnomad.exomes.r2.1.1.sites.19.block37_AMR.vcf.INFO"), sep='\t', header=T) %>% rename(position = POS)
 names(gnomad)[5:8] = sapply(strsplit(names(gnomad)[5:8], "_", fixed=T), head, 1)
@@ -174,16 +168,16 @@ combined = merge(leg.ref, gnomad, by="position", all.x=T) %>% arrange(position)
 # subset the multiallelic SNVs
 dups = combined %>% group_by(position) %>% filter(n()>1) # 473 alleles (496 duplicates)
 
-# remove duplicates/triplicates from known multiallelic SNVs
+# remove duplicates/triplicates from known HGDP multiallelic SNVs
 dups.known = dups %>% filter(!grepl("Un_Known", id), a1==ALT) %>% mutate(prob = "1")
 
-# extract the positions of unknown multiallelic SNVs
+# extract the positions of unknown HGDP multiallelic SNVs
 dups.unknown = dups %>% filter(grepl("Un_Known", id))
 dup.pos = levels(as.factor(dups.unknown$position))
 
 out = c()
 
-# loop through the unknown multiallelic SNVs to choose one if possible
+# loop through the unknown HGDP multiallelic SNVs to choose one if possible from the gnomAD data
 for (i in dup.pos){
   
   temp = dups.unknown %>% filter(position==i)
@@ -216,7 +210,7 @@ combined2 = union(singles, union(dups.known, out)) %>% arrange(position)
 # Read in ANNOVAR file
 # Note this file is not ancestry specific, Jess just labeled it as NFE since that's
 # the ancestry she started with
-annovar = read.table(paste0(dir_anno_ref, "annovar.chr19.block37.NFE.filtered.txt"), sep="\t")
+annovar = read.table(paste0(dir_anno, "annovar.chr19.block37.NFE.filtered.txt"), sep="\t")
 
 # unknown variants not in gnomad or HGDP
 unknown = combined2 %>% filter(grepl("Un_Known", id), is.na(REF)) %>% distinct(position)
