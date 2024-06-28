@@ -2,15 +2,15 @@
 
 end = 100 
 start = end-99
-pop = "IAM"
+pop = "EAS"
 
 library(dplyr) 
 
-dir_in = '/home/math/siglersa/IAM_haps/master_legend/'
-dir_out = '/home/math/siglersa/Sim_100k/IAM/subset_master/'
+dir_in = '/storage/math/projects/compinfo/simulations/input/'
+dir_out = paste0('/home/math/siglersa/Sim_100k/', pop, '/subset_master/')
 
 # read in master legend file
-master = read.table(paste0(dir_in, 'chr19.block37.IAM.master.legend'), sep='\t')
+master = read.table(paste0(dir_in, 'chr19.block37.', pop, '.master.legend'), sep='\t')
 
 colnames(master) = c("position", "id", "a0", "a1", "AC", "prob", "exonic", "gene", "fun")
 master$alleles = paste0(master$a0, '/', master$a1)
