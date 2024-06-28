@@ -1,7 +1,7 @@
 ############################################################################## 
 # This file is used to generate the haplotype files necessary for running
 # the type I error and power calculations for proxECAT, LogProx, and iECAT-O
-# on an ADMIXED population
+# on an ADMIXED population consisting of 2 populations
 ##############################################################################
 # Current set-up: Add rows of zero back in to 100% fun 100% syn and 80% fun 80% 
 # syn pruned haps for power scenario
@@ -10,46 +10,50 @@
 library(data.table)
 library(dplyr)
 
-source("/home/math/siglersa/code/functions/create_haps_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/pruning_code/create_haps_funcs.R")
+source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/create_haps_funcs.R")
 
-# pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
 Pop1 = 'AFR'
 Pop2 = 'NFE'
 admx_pop1 = 80
 admx_pop2 = 20
 p_case = 160
 p_conf = 80
-Nsim = '42k'
 scen = 's2'
-folder = '160v100v80'
-Ncase = Nic = 5000
+sub_scen = 'default'
+Ncase = 2000
+Nic = 2000
 Ncc = 10000
-Nref1 = 894
-Nref2 = 684
-sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_', Pop1, 'ref', Nref1, '_', Pop2, 'ref', Nref2)
+Nref1 = 2000
+Nref2 = 2000
+Nhaps_pop1 = 28000
+Nhaps_pop2 = 8000
 
 # Number of haplotypes in each dataset
-Ncase_pop1 = Nic_pop1 = 5000 
-Ncase_pop2 = Nic_pop2 = 0 
+# Ncase_pop1 = Ncase*2*(admx_pop1/100)
+# Ncase_pop2 = Ncase*2*(admx_pop2/100)
+Ncase_pop1 = Ncase*2
+Ncase_pop2 = 0
 
-Ncc_pop1 = 16000 
-Ncc_pop2 = 4000 
+# Nic_pop1 = Nic*2*(admx_pop1/100)
+# Nic_pop2 = Nic*2*(admx_pop2/100)
+Nic_pop1 = Nic*2
+Nic_pop2 = 0
+
+Ncc_pop1 = Ncc*2*(admx_pop1/100) 
+Ncc_pop2 = Ncc*2*(admx_pop2/100)
 
 Nref_pop1 = Nref1*2
 Nref_pop2 = Nref2*2
 
 # Haplotype column indices
-pop1_cols = 1:56000
-pop2_cols = 56001:84000
+pop1_cols = 1:Nhaps_pop1
+pop2_cols = (Nhaps_pop1+1):(Nhaps_pop1+Nhaps_pop2)
 
+dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/', scen, '/', sub_scen, '/pruned_haps/')
+dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/', scen, '/', sub_scen, '/datasets/')
 
-dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/pruned_haps/')
-dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/pruned_haps/')
-dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/', sim_params, '/', scen, '/')
-
-# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
-# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/')
+# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/', scen, '/', sub_scen, '/')
+# dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_', Nsim, '/pruned_haps/')
 
 
 set.seed(1) # Will be different for each replicate but same for each run
@@ -57,12 +61,12 @@ set.seed(1) # Will be different for each replicate but same for each run
 for(j in 1:100){
   
   # For RAREsim v2.1.1 only pruning pipeline
-  leg_pcase = read.table(paste0(dir_leg, 'chr19.block37.', Pop1, '_', Pop2, '.sim', j, '.', p_case, 'fun.100syn.legend'), header=T, sep='\t')
+  leg_pcase = read.table(paste0(dir_in, 'chr19.block37.', Pop1, '_', Pop2, '.sim', j, '.', p_case, 'fun.100syn.legend'), header=T, sep='\t')
   leg_pcase$row = 1:nrow(leg_pcase)
   
-  leg_pexp = read.table(paste0(dir_leg, 'chr19.block37.', Pop1, '_', Pop2, '.sim', j, '.100fun.100syn.legend'), header=T, sep='\t')
+  leg_pexp = read.table(paste0(dir_in, 'chr19.block37.', Pop1, '_', Pop2, '.sim', j, '.100fun.100syn.legend'), header=T, sep='\t')
   
-  leg_pconf = read.table(paste0(dir_leg, 'chr19.block37.', Pop1, '_', Pop2, '.sim', j, '.', p_conf, 'fun.', p_conf, 'syn.legend'), header=T, sep='\t')
+  leg_pconf = read.table(paste0(dir_in, 'chr19.block37.', Pop1, '_', Pop2, '.sim', j, '.', p_conf, 'fun.', p_conf, 'syn.legend'), header=T, sep='\t')
   
   ### For adding pruned variants back in
   hap_pcase = fread(paste0(dir_in, 'chr19.block37.', Pop1, '_', Pop2, '.sim', j, '.all.', p_case, 'fun.100syn.haps.gz'))
