@@ -28,39 +28,39 @@ combine_bins = function(bins) {
 library(RAREsim)
 library(dplyr)
 
-Pop = 'AFR'
-Nsim_hapgen = "100000"
-haps_fold = 100
+Pop = 'LTX' # main pop being simulated
+Pop_leg = 'IAM' # pop in legend file
+Pop_in = 'AMR' # pop in downsampling file
+Nsim = 20000 # number of individuals
+reg_size = 19.029 
 p_case = 160
 p_conf = 80
-Nsim = 16000
-reg_size = 19.029 
 # p_case1 = 160
 # p_case2 = 140
 # p_case3 = 120
 # p_conf1 = 80
-# p_conf2 = 90
-# p_conf3 = 95
-# p_conf4 = 99
+# p_conf2 = 85
+# p_conf3 = 90
+# p_conf4 = 95
 
 
 # dir_leg = paste0("/storage/math/projects/RAREsim/Cases/Sim_20k/", Pop, "/data/")
-dir_leg = paste0('/home/math/siglersa/Sim_', haps_fold, 'k/', Pop, '/data/')
-dir = '/storage/math/projects/compinfo/simulations/input/'
+# dir = '/storage/math/projects/compinfo/simulations/input/'
+dir_leg = paste0('/home/math/siglersa/Sim_100k/', Pop_leg, '/data/') # using the gnomAD AC data
+dir = '/home/math/siglersa/IAM_haps/gnomad/'
 dir_out = paste0('/home/math/siglersa/mac_bin_estimates/', Pop, '/')
 
-# dir_leg = "C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/mac_bin_data/"
-# dir = "C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/mac_bin_data/"
+# dir_leg = dir = 'C:/Users/sagee/Documents/HendricksLab/IAM_hap_data/'
 
 ### prep the legend file
-leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop, '.sim1.', Nsim_hapgen, '.copy.legend'), sep='\t', header=T)
+leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop_leg, '.sim1.copy.legend'), sep='\t', header=T)
 #leg$fun = ifelse(leg$fun=="synonymous SNV", "syn", "fun")
 #leg$exonic[grepl("exonic", leg$exonic)] = "exonic"
 #leg$gene[grepl("ZNF333", leg$gene)] = "ZNF333"
 
 ### number of variants target data
 nvar = read.table(paste0(dir, "Block37_fun_syn_num_var.txt"), header=T) %>% 
-  filter(pop==tolower(Pop)) %>% rename(n=downsample)
+  filter(pop==tolower(Pop_in)) %>% rename(n=downsample)
 
 ### divide by the region size for per_kb
 nvar2 = nvar %>% mutate(fun_per_kb=obs_fun/reg_size, syn_per_kb=obs_syn/reg_size)
@@ -136,13 +136,16 @@ mac_syn_sim$Prop = afs_syn$Fitted_results$Prop
 
 ### expected number of variants per bin
 bins_fun_cases = expected_variants(Total_num_var = (p_case/100)*exp_var_fun, mac_bin_prop = mac_fun_sim)
-# bins_fun_cases1 = expected_variants(Total_num_var = (p_case1/100)*exp_var_fun, mac_bin_prop = mac_fun_sim)
-# bins_fun_cases2 = expected_variants(Total_num_var = (p_case2/100)*exp_var_fun, mac_bin_prop = mac_fun_sim)
-# bins_fun_cases3 = expected_variants(Total_num_var = (p_case3/100)*exp_var_fun, mac_bin_prop = mac_fun_sim)
 bins_fun_exp = expected_variants(Total_num_var = exp_var_fun, mac_bin_prop = mac_fun_sim)
 bins_syn_exp = expected_variants(Total_num_var = exp_var_syn, mac_bin_prop = mac_syn_sim)
 bins_fun_conf = expected_variants(Total_num_var = (p_conf/100)*exp_var_fun, mac_bin_prop = mac_fun_sim)
 bins_syn_conf = expected_variants(Total_num_var = (p_conf/100)*exp_var_syn, mac_bin_prop = mac_syn_sim)
+
+# bins_fun_cases1 = expected_variants(Total_num_var = (p_case1/100)*exp_var_fun, mac_bin_prop = mac_fun_sim)
+# bins_fun_cases2 = expected_variants(Total_num_var = (p_case2/100)*exp_var_fun, mac_bin_prop = mac_fun_sim)
+# bins_fun_cases3 = expected_variants(Total_num_var = (p_case3/100)*exp_var_fun, mac_bin_prop = mac_fun_sim)
+# bins_fun_exp = expected_variants(Total_num_var = exp_var_fun, mac_bin_prop = mac_fun_sim)
+# bins_syn_exp = expected_variants(Total_num_var = exp_var_syn, mac_bin_prop = mac_syn_sim)
 # bins_fun_conf1 = expected_variants(Total_num_var = (p_conf1/100)*exp_var_fun, mac_bin_prop = mac_fun_sim)
 # bins_syn_conf1 = expected_variants(Total_num_var = (p_conf1/100)*exp_var_syn, mac_bin_prop = mac_syn_sim)
 # bins_fun_conf2 = expected_variants(Total_num_var = (p_conf2/100)*exp_var_fun, mac_bin_prop = mac_fun_sim)
@@ -154,13 +157,16 @@ bins_syn_conf = expected_variants(Total_num_var = (p_conf/100)*exp_var_syn, mac_
 
 # Calculate combined mac bin estimates
 bins_fun_cases2 <- combine_bins(bins_fun_cases)
-# bins6_fun_cases1 <- combine_bins(bins_fun_cases1)
-# bins6_fun_cases2 <- combine_bins(bins_fun_cases2)
-# bins6_fun_cases3 <- combine_bins(bins_fun_cases3)
 bins_fun_exp2 <- combine_bins(bins_fun_exp)
 bins_syn_exp2 <- combine_bins(bins_syn_exp)
 bins_fun_conf2 <- combine_bins(bins_fun_conf)
 bins_syn_conf2 <- combine_bins(bins_syn_conf)
+
+# bins6_fun_cases1 <- combine_bins(bins_fun_cases1)
+# bins6_fun_cases2 <- combine_bins(bins_fun_cases2)
+# bins6_fun_cases3 <- combine_bins(bins_fun_cases3)
+# bins6_fun_exp <- combine_bins(bins_fun_exp)
+# bins6_syn_exp <- combine_bins(bins_syn_exp)
 # bins6_fun_conf1 <- combine_bins(bins_fun_conf1)
 # bins6_syn_conf1 <- combine_bins(bins_syn_conf1)
 # bins6_fun_conf2 <- combine_bins(bins_fun_conf2)
@@ -172,13 +178,16 @@ bins_syn_conf2 <- combine_bins(bins_syn_conf)
 
 ### write file with bin estimates
 write.table(bins_fun_cases, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case, ".txt"), row.names=F, quote=F, sep='\t')
-# write.table(bins_fun_cases1, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case1, ".txt"), row.names=F, quote=F, sep='\t')
-# write.table(bins_fun_cases2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case2, ".txt"), row.names=F, quote=F, sep='\t')
-# write.table(bins_fun_cases3, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case3, ".txt"), row.names=F, quote=F, sep='\t')
 write.table(bins_fun_exp, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_100.txt"), row.names=F, quote=F, sep='\t')
 write.table(bins_syn_exp, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_syn_100.txt"), row.names=F, quote=F, sep='\t')
 write.table(bins_fun_conf, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_conf, ".txt"), row.names=F, quote=F, sep='\t')
 write.table(bins_syn_conf, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_syn_", p_conf, ".txt"), row.names=F, quote=F, sep='\t')
+
+# write.table(bins_fun_cases1, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case1, ".txt"), row.names=F, quote=F, sep='\t')
+# write.table(bins_fun_cases2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case2, ".txt"), row.names=F, quote=F, sep='\t')
+# write.table(bins_fun_cases3, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case3, ".txt"), row.names=F, quote=F, sep='\t')
+# write.table(bins_fun_exp, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_100.txt"), row.names=F, quote=F, sep='\t')
+# write.table(bins_syn_exp, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_syn_100.txt"), row.names=F, quote=F, sep='\t')
 # write.table(bins_fun_conf1, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_conf1, ".txt"), row.names=F, quote=F, sep='\t')
 # write.table(bins_syn_conf1, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_syn_", p_conf1, ".txt"), row.names=F, quote=F, sep='\t')
 # write.table(bins_fun_conf2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_conf2, ".txt"), row.names=F, quote=F, sep='\t')
@@ -190,13 +199,16 @@ write.table(bins_syn_conf, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, sc
 
 ### write file with 6 bin estimates
 write.table(bins_fun_cases2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case, "_6bins.txt"), row.names=F, quote=F, sep='\t')
-# write.table(bins6_fun_cases1, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case1, "_6bins.txt"), row.names=F, quote=F, sep='\t')
-# write.table(bins6_fun_cases2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case2, "_6bins.txt"), row.names=F, quote=F, sep='\t')
-# write.table(bins6_fun_cases3, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case3, "_6bins.txt"), row.names=F, quote=F, sep='\t')
 write.table(bins_fun_exp2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_100_6bins.txt"), row.names=F, quote=F, sep='\t')
 write.table(bins_syn_exp2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_syn_100_6bins.txt"), row.names=F, quote=F, sep='\t')
 write.table(bins_fun_conf2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_conf, "_6bins.txt"), row.names=F, quote=F, sep='\t')
 write.table(bins_syn_conf2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_syn_", p_conf, "_6bins.txt"), row.names=F, quote=F, sep='\t')
+
+# write.table(bins6_fun_cases1, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case1, "_6bins.txt"), row.names=F, quote=F, sep='\t')
+# write.table(bins6_fun_cases2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case2, "_6bins.txt"), row.names=F, quote=F, sep='\t')
+# write.table(bins6_fun_cases3, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_case3, "_6bins.txt"), row.names=F, quote=F, sep='\t')
+# write.table(bins6_fun_exp, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_100_6bins.txt"), row.names=F, quote=F, sep='\t')
+# write.table(bins6_syn_exp, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_syn_100_6bins.txt"), row.names=F, quote=F, sep='\t')
 # write.table(bins6_fun_conf1, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_conf1, "_6bins.txt"), row.names=F, quote=F, sep='\t')
 # write.table(bins6_syn_conf1, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_syn_", p_conf1, "_6bins.txt"), row.names=F, quote=F, sep='\t')
 # write.table(bins6_fun_conf2, paste0(dir_out, "MAC_bin_estimates_", format(Nsim, scientific=F), "_", Pop, "_fun_", p_conf2, "_6bins.txt"), row.names=F, quote=F, sep='\t')
