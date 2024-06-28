@@ -17,6 +17,10 @@ Pop_admx = 'LTX'
 Pops = c('IAM', 'NFE', 'EAS', 'AFR')
 admx_props_int= c(47, 44, 5, 4) # internal sample admixture proportions
 admx_props_ext= c(47, 44, 5, 4) # common control admixture proportions
+
+# is there a reason your AFR is so low? I typically see closer to 10% but it's not important either way
+
+# what are p_case and p_conf?
 p_case = 160
 p_conf = 80
 scen = 's1'
@@ -46,6 +50,7 @@ for (i in 1:length(Pops)) {
   Ncc_pops[i] <- Ncc*2*(admx_props_ext[i]/100)
   Nref_pops[i] <- Nrefs[i]*2
 }
+# will this code generate any non-whole numbers? 
 
 # Create empty list to store column numbers corresponding to each pop
 pop_cols <- setNames(vector("list", length(Pops)), paste0("pop", 1:length(Pops), "_cols"))
