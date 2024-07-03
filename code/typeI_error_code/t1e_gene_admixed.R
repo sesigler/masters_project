@@ -9,48 +9,41 @@ library(iECAT)
 # library(DescTools) # For Lin's CCC-problem installing package
 # library(Summix) #need to run install_github("hendriau/Summix2")
 
-source("/home/math/siglersa/code/functions/read_in_funcs.R")
-source("/home/math/siglersa/code/functions/general_data_manip.R")
-source("/home/math/siglersa/code/functions/methods_funcs.R")
+source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/read_in_funcs.R")
+source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/general_data_manip.R")
+source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/methods_funcs.R")
 source("https://raw.githubusercontent.com/hendriau/Summix/main/R/adjAF.R")
 source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
-# source("/home/math/siglersa/code/functions/summix2_adjAF.R")
-# source("/home/math/siglersa/code/functions/summix2_summix.R")
 
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/read_in_funcs.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/general_data_manip.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/typeI_error_code/methods_funcs.R")
-# source("https://raw.githubusercontent.com/hendriau/Summix/main/R/adjAF.R")
-# source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_adjAF.R")
-# source("C:/Users/sagee/Documents/GitHub/masters_project/code/summix2_summix.R")
-
-# pruning = 'pruneSepRaresim' #Options: pruneSeparately, pruneSequentially, pruneTogether, pruneSepRaresim, pruneSepR
-# data = 'by_gene'
-Pop1 = 'AFR'
-Pop2 = 'NFE'
-admx_pop1 = 80
-admx_pop2 = 20
-Nsim = '42k'
+Pop_admx = 'AFR_NFE'  
+Pops = c('AFR', 'NFE')
+admx_props = c(80, 20)
+# Pop1 = 'AFR'
+# Pop2 = 'NFE'
+# admx_pop1 = 80
+# admx_pop2 = 20
 scen = 's1'
-folder = '160v100v80'
+sub_scen = 'default'
 p_case = 160
-p_case_fun = p_case_syn = p_int_fun = p_int_syn = int_prune = 100
-p_cc_fun = p_cc_syn = ext_prune = 80
-Ncase = Nic = 5000
+p_case_fun = p_case_syn = p_int_fun = p_int_syn = 100
+p_cc_fun = p_cc_syn = 80
+Ncase = Nic = 2000
 Ncc = 10000  
-Nref_pop1 = 10000
-Nref_pop2 = 10000
+Nrefs = c(2000, 2000)
+# Nref_pop1 = 2000
+# Nref_pop2 = 2000
 maf = 0.001 
-sim_params = paste0('Ncase', Ncase, '_Nic', Nic, '_Ncc', Ncc, '_', Pop1, 'ref', Nref_pop1, '_', Pop2, 'ref', Nref_pop2)
 
-dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/pruned_haps/')
-dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/', sim_params, '/', scen, '/')
-dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/t1e/')
+# dir_leg = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/pruned_haps/')
+# dir_in = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Sim_', Nsim, '/', folder, '/', sim_params, '/', scen, '/')
+# dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/t1e/')
 # dir_out = paste0('/home/math/siglersa/admixed/', admx_pop1, Pop1, '_', admx_pop2, Pop2, '/Results/Sim_', Nsim, '/', sim_params, '/prox_gene_adj_', scen, '_', folder, '_', int_prune, 'v', ext_prune, '/')
 # dir_out = paste0('/home/math/siglersa/admixed/', Pop1, '_', Pop2, '_pops/Results/')
+dir_leg = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/pruned_haps/')
+dir_in = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/datasets/')
+dir_out = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/t1e/')
 
-# dir_leg = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
+# dir_leg = dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/')
 # dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
 
@@ -69,7 +62,7 @@ prox_weighted_ext_genes_p_adj_Ncc = prox_weighted_ext_genes_p_adj_Neff = c() #pr
 prox2_ext_genes_p_adj_Ncc = prox2_all_genes_p_adj_Ncc = prox2_ext_genes_p_adj_Neff = prox2_all_genes_p_adj_Neff = c() #LogProx
 iecat_genes_p_adj_Ncc = iecat_genes_p_adj_Neff = c() #iECAT-O
 
-# Vectors to store effective sample sizes p-values
+# Vectors to store effective sample sizes
 neff_vec = c()
 
 # Vector to save proportion estimates and macs/mafs
@@ -85,7 +78,7 @@ for (i in 1:5){
   
   # read in the legend file
   # leg = read_leg_homo(dir_leg, Pop, i)
-  leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop1, '_', Pop2, '.sim', i, '.', p_case, 'fun.100syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
+  leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop_admx, '.sim', i, '.', p_case, 'fun.100syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
   leg$row = 1:nrow(leg)
   
   # Need to mutate so counts get added up correctly for ZNF333
@@ -96,11 +89,17 @@ for (i in 1:5){
   leg_fun = leg %>% filter(fun=="fun")
   
   # read in the haplotype files
-  hap_case = read_hap(dir_in, Pop1, Pop2, i, scen, "cases", p_case_fun, p_case_syn)
-  hap_ic = read_hap(dir_in, Pop1, Pop2, i, scen, "internal.controls", p_int_fun, p_int_syn)
-  hap_cc = read_hap(dir_in, Pop1, Pop2, i, scen, "common.controls", p_cc_fun, p_cc_syn)
-  hap_ref_pop1 = read_ref(dir_in, Pop1, i, scen, p_fun = 100, p_syn = 100)
-  hap_ref_pop2 = read_ref(dir_in, Pop2, i, scen, p_fun = 100, p_syn = 100)
+  hap_case = read_hap(dir_in, Pop_admx, i, scen, "cases", p_case_fun, p_case_syn)
+  hap_ic = read_hap(dir_in, Pop_admx, i, scen, "internal.controls", p_int_fun, p_int_syn)
+  hap_cc = read_hap(dir_in, Pop_admx, i, scen, "common.controls", p_cc_fun, p_cc_syn)
+  
+  # Create empty list to store reference haplotytpes
+  hap_refs = setNames(vector("list", length(Pops)), paste0("hap_ref_pop", 1:length(Pops)))
+  
+  # Read in the reference haplotypes
+  for (j in 1:length(Pops)) {
+    hap_refs[[j]] <- read_hap(dir_in, Pops[j], i, scen, "refs", p_fun = 100, p_syn = 100)
+  }
   
   # convert the haplotypes into genotypes
   geno_case = make_geno(hap_case)
@@ -112,16 +111,21 @@ for (i in 1:5){
   count_ic = calc_allele_freqs(geno_ic, Nic, Pop=NULL)
   count_cc = calc_allele_freqs(geno_cc, Ncc, Pop=NULL)
   
-  count_ref_pop1 = calc_allele_freqs(hap_ref_pop1, Nref_pop1, Pop=Pop1)
-  count_ref_pop2 = calc_allele_freqs(hap_ref_pop2, Nref_pop2, Pop=Pop2)
+  # Create empty list to store reference allele counts/frequencies
+  count_refs = list()
+  
+  # calculate the reference allele counts/frequencies
+  for (j in 1:length(Pops)) {
+    count_refs[[j]] = calc_allele_freqs(hap_refs[[j]], Nrefs[j], Pop=Pops[j])
+  }
   
   # Commbine data with references for Summix
-  cc_refs = cbind(count_cc, count_ref_pop1, count_ref_pop2)
-  case_refs = cbind(count_case, count_ref_pop1, count_ref_pop2)
+  cc_refs = cbind(count_cc, do.call(cbind, count_refs))
+  case_refs = cbind(count_case, do.call(cbind, count_refs))
 
   # Estimate ancestry proportions using only COMMON variants
-  cc_est_prop = est_props(cc_refs, Pop1, Pop2, maf)
-  case_est_prop = est_props(case_refs, Pop1, Pop2, maf)
+  cc_est_prop = est_props(cc_refs, Pops, maf)
+  case_est_prop = est_props(case_refs, Pops, maf)
   # int_est_prop = est_props(int_refs, Pop1, Pop2, maf)
 
   # prop_ests_cc <- rbind(prop_ests_cc, cc_est_prop)
@@ -129,8 +133,8 @@ for (i in 1:5){
   # prop_ests_int <- rbind(prop_ests_int, int_est_prop)
   
   # Calculate adjusted AFs
-  count_cc_adj_Ncc = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref=c(Nref_pop1, Nref_pop2), Ncc, Neff=FALSE)
-  adj_Neff = calc_adjusted_AF(cc_refs, Pop1, Pop2, case_est_prop, cc_est_prop, Nref=c(Nref_pop1, Nref_pop2), Ncc, Neff=TRUE)
+  count_cc_adj_Ncc = calc_adjusted_AF(cc_refs, Pops, case_est_prop, cc_est_prop, Nref=Nrefs, Ncc, Neff=FALSE)
+  adj_Neff = calc_adjusted_AF(cc_refs, Pops, case_est_prop, cc_est_prop, Nref=Nrefs, Ncc, Neff=TRUE)
   
   # return counts and effective sample size from Neff adjusted data
   count_cc_adj_Neff = adj_Neff[[1]]
@@ -449,13 +453,13 @@ colnames(prox2_ext_genes_p_adj_Neff) = colnames(prox2_all_genes_p_adj_Neff) = ge
 colnames(iecat_genes_p_adj_Ncc) = colnames(iecat_genes_p_adj_Neff) = genes
 
 # Set file path name
-file_path = paste0(int_prune, "_v_", ext_prune, "_", Pop1, "_", Pop2, "_", scen, "_maf", maf, ".txt")
+file_path = paste0(scen, "_", sub_scen, "_maf", maf, ".txt")
 
 # Save the proportion estimates
 # write.table(data.frame(prop_ests_cc), paste0(dir_out, "T1e_cc_prop_ests_", int_prune, "_v_", ext_prune, "_", Pop1, '_', Pop2, "_", scen, "_maf", maf, ".txt"), quote=F, row.names=F)
 
 # Save the effective sample sizes
-write.csv(neff_vec, paste0(dir_out, "neff.csv"), quote=F, row.names=F)
+write.csv(neff_vec, paste0(dir_out, "neff_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
 
 # ProxECAT
 write.table(prox_int_genes_p, paste0(dir_out, "T1e_gene_prox_int_", file_path), quote=F, row.names=F, col.names=T)
