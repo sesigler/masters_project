@@ -11,9 +11,11 @@
 #' @param count.cases the dataframe of ACs and AFs for each variant in the cases
 #' @param count.controls the dataframe of ACs and AFs for each variant in the controls
 #' @param leg the legend file
-#' @param common the legend file filtered down to variants that are common in either the cases or controls
+#' @param common the legend file filtered down to variants that are common in 
+#'               either the cases or controls
 #' 
-#' @return a dataframe containing the ACs by gene, functional, and case status as well as the p-values for proxECAT and proxECAT-weighted
+#' @return a dataframe containing the ACs by gene, functional, and case status 
+#'         as well as the p-values for proxECAT and proxECAT-weighted
 
 prox_gene_data_prep = function(count.cases, count.controls, leg, common) {
   
@@ -61,12 +63,18 @@ prox_gene_data_prep = function(count.cases, count.controls, leg, common) {
 #' @param leg the legend file
 #' @param count.case the dataframe of ACs and AFs for each variant in the cases
 #' @param count.control the dataframe of ACs and AFs for each variant in the controls
-#' @param control_type a string denoting whether count.control is int (internal) or ext (external)
-#' @param count.control2 the dataframe of ACs and AFs for each variant in the common controls if internal and external data are used, default value is NULL
-#' @param common the legend file filtered down to variants that are common in either the cases or controls
-#' @param data.all boolean value denoting if both internal and external controls are being used
+#' @param control_type a string denoting whether count.control is int (internal) 
+#'                     or ext (external)
+#' @param count.control2 the dataframe of ACs and AFs for each variant in the 
+#'                       common controls if internal and external data are used, 
+#'                       default value is NULL
+#' @param common the legend file filtered down to variants that are common in 
+#'               either the cases or controls
+#' @param data.all boolean value denoting if both internal and external controls 
+#'                 are being used
 #' 
-#' @return a dataframe with id, gene, fun, case, and group as columns and a row repeated AC times for each variant in the cases and controls
+#' @return a dataframe with id, gene, fun, case, and group as columns and a row 
+#'         repeated AC times for each variant in the cases and controls
 
 format_logprox_data = function(leg, count.case, count.control, control_type, count.control2=NULL, common, data.all=FALSE) {
   

@@ -1,17 +1,19 @@
-############################################################################## 
+################################################################################ 
 # This file contains the functions necessary to do general data manipulation
 # on the files necessary for performing type I error and power calculations for 
 # several different rare variant association tests
-##############################################################################
+################################################################################
 
 #' make_geno
 #' 
 #' @description
 #' function to convert the haplotypes into a genotype matrix
 #' 
-#' @param hap A matrix of 0s and 1s where the rows represent a variant and the columns represent a single haplotype. Every 2 columns correspond to one individual
+#' @param hap A matrix of 0s and 1s where the rows represent a variant and the columns 
+#'            represent a single haplotype. Every 2 columns correspond to one individual
 #' 
-#' @return A genotype matrix where each row corresponds to an individual with values being 0, 1, or 2 reference alleles
+#' @return A genotype matrix where each row corresponds to an individual with 
+#'         values being 0, 1, or 2 reference alleles
 
 make_geno = function(hap) {
   
@@ -30,14 +32,17 @@ make_geno = function(hap) {
 #' make_long
 #' 
 #' @description
-#' function to create a dataframe with a line for each variant instead of just counts (necessary for LogProx)
+#' function to create a dataframe with a line for each variant instead of just 
+#' counts (necessary for LogProx)
 #' 
 #' @param counts dataframe containing the ACs and AFs of a genotype file
 #' @param leg the legend file
 #' @param case a string indicating if the counts are "cases" or "controls"
-#' @param group a string indicating if the counts are from an "int" (internal) or "ext" (external) sample
+#' @param group a string indicating if the counts are from an "int" (internal) 
+#'              or "ext" (external) sample
 #' 
-#' @return a dataframe that repeats each variant mac times and retains the gene, functional, case, and group status for each variant
+#' @return a dataframe that repeats each variant mac times and retains the gene, 
+#'         functional, case, and group status for each variant
 
 make_long = function(counts, leg, case, group) {
   
@@ -58,14 +63,16 @@ make_long = function(counts, leg, case, group) {
 #' merge_cases
 #' 
 #' @description
-#' Function to merge the case datasets for power and t1e calculations for by gene association
+#' Function to merge the case datasets for power and t1e calculations for by 
+#' gene association
 #' 
 #' @param cases_power case haplotype file used for power calculation
 #' @param cases_t1e case haplotype file used for type I error calculation
 #' @param leg legend file
-#' @param genes_power a vector of gene names used for which power will be calculated
+#' @param genes_power a character vector of genes used to calculate power
 #' 
-#' @return the merged case haplotype file containing only the genes being used to calculate t1e and power
+#' @return the merged case haplotype file containing only the genes being used 
+#'         to calculate t1e and power
 
 merge_cases = function(cases_power, cases_t1e, leg, genes_power) {
   
@@ -94,7 +101,8 @@ merge_cases = function(cases_power, cases_t1e, leg, genes_power) {
 #' @description
 #' Function to calculate the ACs/AFs and MACs/MAFs for a given dataset
 #' 
-#' @param geno a genotype or haplotype matrix denoting the number of reference alleles observed at each individual/haplotype for all variants in the region
+#' @param geno a genotype or haplotype matrix denoting the number of reference 
+#'             alleles observed at each individual/haplotype for all variants in the region
 #' @param n the number of individuals in geno
 #' @param Pop a three letter string denoting the population of geno if applicable (mainly used for reference data)
 #' 
@@ -121,44 +129,37 @@ calc_allele_freqs = function(geno, n, Pop=NULL) {
 #' est_props
 #' 
 #' @description
-#' Function to estimate the ancestry proportions of a sample using only the common variants
+#' Function to estimate the ancestry proportions of a sample using only the 
+#' common variants
 #' 
-#' @param counts dataframe containing the ACs and AFs of a sample for each variant in the region
-#' @param Pop1 a three letter string denoting the first population in the sample
-#' @param Pop2 a three letter string denoting the second population in the sample
-#' @param maf a numeric value denoting the minor allele frequency threshold that distinguishes rare variants from common variants
+#' @param counts dataframe containing the ACs and AFs of a sample for each 
+#'               variant in the region
+#' @param Pops a charcter vector of the continental populations that compose the 
+#'             admixed population
+#' @param maf a numeric value denoting the minor allele frequency threshold that 
+#'            distinguishes rare variants from common variants
 #' 
 #' @return returns the proportion estimates outputted by Summix
 
-est_props = function(counts, Pop1, Pop2, maf) {
+est_props = function(counts, Pops, maf) {
   
-  Pop1 <- tolower(Pop1)
-  Pop2 <- tolower(Pop2)
+  pops <- tolower(Pops)
   
-  # variants that are common in at least one dataset
-  # common <- which(counts$maf > maf | counts[, paste0("maf_", Pop1)] > maf | counts[, paste0("maf_", Pop2)] > maf)
+  # Identify common variants for each population in pops
+  pop_vars <- lapply(pops, function(pop) {counts[, paste0("af_", pop)] > maf & counts[, paste0("af_", pop)] < 1-maf})
   
+  # Generate a single logical vector stating whether each variant is common in at least one of the ref pops 
+  common_vars <- Reduce(`|`, pop_vars)
   
-  # Adelle's way
-  # need to filter for both sides of the maf
-  common <- which((counts$af > maf & counts$af < 1-maf) | 
-                    (counts[, paste0("af_", Pop1)] > maf & counts[, paste0("af_", Pop1)] < 1-maf) |
-                    (counts[, paste0("af_", Pop2)] > maf & counts[, paste0("af_", Pop2)] < 1-maf))
-  
+  # Find the common variant that are common in either the observed or the ref data
+  common <- (counts$af > maf & counts$af < 1-maf) | common_vars
   
   # Subset counts dataframe to only common variants
-  common_df <- counts[common,]
+  common_df <- counts[which(common),]
   
-  # Use summix to calculate ancestry proportion estimates
-  # prop_est <- summix(data = common_df,
-  #                    reference=c(paste0("maf_", Pop1), #AFR
-  #                                paste0("maf_", Pop2)), #NFE
-  #                    observed="maf") #leave out pi.start argument
-  
-  # Adelle's way
+  # Calculate proportion estimates using Summix
   prop_est <- summix(data = common_df,
-                     reference=c(paste0("af_", Pop1), #AFR
-                                 paste0("af_", Pop2)), #NFE
+                     reference=c(sapply(pops, function(pop) paste0("af_", pop))),
                      observed="af", 
                      goodness.of.fit = TRUE, 
                      override_removeSmallRef = TRUE) #show estimates for anc w/ <1% AFs
@@ -169,33 +170,38 @@ est_props = function(counts, Pop1, Pop2, maf) {
 #' calc_adjusted_AF
 #' 
 #' @description
-#' Function that uses Summix to update the AFs and ACs of a dataset (primarily the common controls)
+#' Function that uses Summix to update the AFs and ACs of a dataset 
+#' (primarily the common controls)
 #' 
-#' @param counts dataframe containing the ACs and AFs for the data to be adjusted as well as the reference data for both populations
-#' @param Pop1 a three letter string denoting the first population in the sample
-#' @param Pop2 a three letter string denoting the second population in the sample
+#' @param counts dataframe containing the ACs and AFs for the data to be adjusted 
+#'               as well as the reference data for all continental populations
+#' @param Pops a character vector denoting the continental ancestries that 
+#'             compose the admixed population 
+#'             (Note: order of Pops must match order of Nref)
 #' @param case_est the proportion estimates from Summix for the cases
 #' @param control_est the proportion estimates from Summix for the controls
-#' @param Nref a vector of the number of individuals in each reference population (order of reference populations must match throughout adjAF function)
+#' @param Nref a vector of the number of individuals in each reference population 
+#'             (order of reference populations must match throughout adjAF function)
 #' @param Ncc the number of individuals in the (common) controls
-#' @param Neff a boolean value, if True the effective sample size is used to calculate the adjusted ACs instead of Ncc, default value is False
+#' @param Neff a boolean value, if True the effective sample size is used to 
+#'             calculate the adjusted ACs instead of Ncc, default value is False
 #' 
-#' @return a dataframe with the adjusted ACs and AFs for the controls as well as the row number in case summix removed any variants in the adjustment
+#' @return a dataframe with the adjusted ACs and AFs for the controls as well as 
+#'         the row number in case summix removed any variants in the adjustment
 
-calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc, Neff=FALSE) {
+calc_adjusted_AF = function(counts, Pops, case_est, control_est, Nref, Ncc, Neff=FALSE) {
   
-  Pop1 <- tolower(Pop1)
-  Pop2 <- tolower(Pop2)
+  pops <- tolower(Pops)
   
   # Add row index column to counts in case summix removes variants during adjustment 
   counts$row <- 1:nrow(counts)
   
-  # Adelle's way
+  # Calculate adjusted AFs using Summix
   adj_AF <- adjAF(data = counts,
-                  reference = c(paste0("af_", Pop1), paste0("af_", Pop2)),
+                  reference = c(sapply(pops, function(pop) paste0("af_", pop))),
                   observed = "af",
-                  pi.target = c(case_est[, paste0("af_", Pop1)], case_est[, paste0("af_", Pop2)]), 
-                  pi.observed = c(control_est[, paste0("af_", Pop1)], control_est[, paste0("af_", Pop2)]),
+                  pi.target = unlist(lapply(paste0("af_", pops), function(col) case_est[, col])), 
+                  pi.observed = unlist(lapply(paste0("af_", pops), function(col) control_est[, col])),
                   adj_method = "average",
                   N_reference = Nref,
                   N_observed = Ncc,
@@ -229,11 +235,14 @@ calc_adjusted_AF = function(counts, Pop1, Pop2, case_est, control_est, Nref, Ncc
 #' flip_file
 #' 
 #' @description
-#' Function the flip values for a specified file at variants with an AF >= 1-maf. Used in flip_data function
+#' Function the flip values for a specified file at variants with an AF >= 1-maf. 
+#' Used in flip_data function
 #' 
 #' @param file_to_flip the file to be updated
 #' @param flip the row indices corresponding to the variants that need to be flipped
-#' @param file_type string specifying what file is to be flipped, options are "leg", "geno", and "count". Note count is really referring to the adjusted common controls
+#' @param file_type string specifying what file is to be flipped 
+#'                  Options: "leg", "geno", and "count" 
+#'                  Note count is really referring to the adjusted common controls
 #' @param N number of individuals, only needed if flipping counts data, default value is NULL
 #' 
 #' @return the specified file with the relevant values flipped at the variants in flip
@@ -286,7 +295,8 @@ flip_file = function(file_to_flip, flip, file_type, N=NULL) {
 #' @param geno.case genotype matrix for the cases
 #' @param count.case the dataframe of ACs and AFs for the cases
 #' @param Ncase number of individuals in the cases
-#' @param cntrl string specifying the type(s) of controls used, options are int, ext, and all
+#' @param cntrl string specifying the type(s) of controls used, 
+#'              Options: int, ext, all
 #' @param geno.ic genotype matric for the internal controls, default value is NULL
 #' @param count.ic the dataframe of ACs and AFs for the internal controls, default value is NULL
 #' @param Nic number of individuals in the internal controls, default value is NULL
