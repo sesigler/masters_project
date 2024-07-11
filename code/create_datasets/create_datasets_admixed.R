@@ -15,10 +15,10 @@ source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/fun
 # Set simulation parameters
 Pop_admx = 'LTX'
 Pops = c('IAM', 'NFE', 'EAS', 'AFR')
-admx_props_int= c(47, 44, 5, 4) # internal sample admixture proportions
-admx_props_ext= c(47, 44, 5, 4) # common control admixture proportions
-p_case = 160
-p_conf = 80
+admx_props_int = c(47, 44, 5, 4) # internal sample admixture proportions
+admx_props_ext = c(47, 44, 5, 4) # common control admixture proportions
+p_case = 160 # % confounding cases (power)
+p_conf = 80 # % confounding common controls
 scen = 's1'
 sub_scen = 'default'
 Ncase = 2000
