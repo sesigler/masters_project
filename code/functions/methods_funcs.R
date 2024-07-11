@@ -112,7 +112,7 @@ format_logprox_data = function(leg, count.case, count.control, control_type, cou
 #' @return the p-value returned by LogProx
 
 # Function for formatting data and running statistical test for LogProx
-logprox_gene_data_prep = function(data.prox2, current.gene, data.all) {
+logprox_gene_data_prep = function(data.prox2, current.gene, data.all=FALSE) {
   
   # LogProx
   # Filter data by gene
@@ -122,21 +122,25 @@ logprox_gene_data_prep = function(data.prox2, current.gene, data.all) {
   # need .drop param so it still creates a group even if AC is 0
   counts.data.gene = data.gene %>% count(case, fun, .drop = FALSE)
   
-  # If sum of fun alleles or sum of syn alleles is < 5, mark as NA, else run LogProx
+  # If sum of fun alleles or sum of syn alleles is < 5 OR
+  # If there are no cases or no controls, mark as NA, else run LogProx
   if (data.all) {
-    prox2 = ifelse(counts.data.gene$n[1] + counts.data.gene$n[3] < 5 | 
-                     counts.data.gene$n[2] + counts.data.gene$n[4] < 5, NA, 
+    prox2 = ifelse((counts.data.gene$n[1] + counts.data.gene$n[3] < 5) | 
+                     (counts.data.gene$n[2] + counts.data.gene$n[4] < 5) | 
+                     (counts.data.gene$n[1] == 0 & counts.data.gene$n[2] == 0) |
+                     (counts.data.gene$n[3] == 0 & counts.data.gene$n[4] == 0), NA, 
                    summary(glm(fun ~ case + group, data=data.gene, family="binomial"))$coefficients[2,4])
     return(prox2)
   } 
   
-  prox2 = ifelse(counts.data.gene$n[1] + counts.data.gene$n[3] < 5 |
-                   counts.data.gene$n[2] + counts.data.gene$n[4] < 5, NA,
+  prox2 = ifelse((counts.data.gene$n[1] + counts.data.gene$n[3] < 5) |
+                   (counts.data.gene$n[2] + counts.data.gene$n[4] < 5) |
+                   (counts.data.gene$n[1] == 0 & counts.data.gene$n[2] == 0) |
+                   (counts.data.gene$n[3] == 0 & counts.data.gene$n[4] == 0), NA,
                  summary(glm(fun ~ case, data=data.gene, family="binomial"))$coefficients[2,4])
-
+  
   
   return(prox2) 
-  
 }
 
 
