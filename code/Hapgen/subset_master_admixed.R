@@ -3,12 +3,6 @@
 # It only needs to be run when the admixture proportions of the admixed pop change
 ################################################################################
 
-# Function to add Pop suffixes to prob column of dfs in pop_probs 
-add_suffix <- function(df, suffix) {
-  colnames(df)[-1] <- paste0(colnames(df)[-1], ".", suffix)
-  return(df)
-}
-
 # Pop1 = 'AFR'
 # Pop2 = 'NFE'
 # admx_pop1 = 80
@@ -41,8 +35,14 @@ dir_in = 'C:/Users/sagee/Documents/HendricksLab/admixed/master_legs/'
 # master.IAM = read.table(paste0(dir_in, 'chr19.block37.IAM.master.legend'), sep='\t')
 # master.EAS = read.table(paste0(dir_in, 'chr19.block37.EAS.master.legend'), sep='\t')
 
-# Create empty list to store master legend files
+# Create empty lists to store master legend files and probabilities
 master_leg <- setNames(vector("list", length(Pops)), paste0("master.", Pops))
+pop_probs = setNames(vector("list", length(Pops)), paste0(Pops, ".prob"))
+
+# Create empty lists to store singles, dups, and trips for each pop
+singles = setNames(vector("list", length(Pops)), paste0("singles.", Pops))
+dups = setNames(vector("list", length(Pops)), paste0("dups.", Pops))
+trips = setNames(vector("list", length(Pops)), paste0("trips.", Pops))
 
 # read in the master legend files
 for (i in 1:length(Pops)) {
@@ -53,6 +53,15 @@ for (i in 1:length(Pops)) {
   
   # create an alleles column in the format of a0/a1
   master_leg[[i]]$alleles = paste0(master_leg[[i]]$a0, '/', master_leg[[i]]$a1)
+
+  # extract the probabilities at each position for each ancestry
+  new_name = paste0("prob.", Pops[i])
+  pop_probs[[i]] = master_leg[[i]] %>% select(position, prob) %>% rename(!!new_name := prob) %>% unique()
+  
+  # subset master legend files according to number of alleles at each position
+  singles[[i]] = master_leg[[i]] %>% filter(prob==1)
+  dups[[i]] = master_leg[[i]] %>% filter(prob==0.5)
+  trips[[i]] = master_leg[[i]] %>% filter(prob==".")
 }
 
 # # rename the column names
@@ -67,15 +76,6 @@ for (i in 1:length(Pops)) {
 # master.IAM$alleles = paste0(master.IAM$a0, '/', master.IAM$a1)
 # master.EAS$alleles = paste0(master.EAS$a0, '/', master.EAS$a1)
 
-# Create empty list to store probabilities
-pop_probs = setNames(vector("list", length(Pops)), paste0(Pops, ".prob"))
-
-for (i in 1:length(Pops)) {
-  
-  # extract the probabilities at each position for each ancestry
-  pop_probs[[i]] = master_leg[[i]] %>% select(position, prob) %>% unique()
-}
-
 # # extract the probabilities at each position for each ancestry
 # AFR.prob = master.AFR %>% select(position, prob) %>% unique()
 # NFE.prob = master.NFE %>% select(position, prob) %>% unique()
@@ -84,23 +84,8 @@ for (i in 1:length(Pops)) {
 
 # probs = merge(AFR.prob, NFE.prob, by="position", suffixes=c(".AFR", ".NFE"))
 
-# Apply the suffix function to each dataframe in the list
-pop_probs2 <- mapply(add_suffix, pop_probs, Pops, SIMPLIFY = FALSE)
-
 # Merge the dataframes in pop_probs2 by the position column
-probs <- Reduce(function(x, y) merge(x, y, by = "position", all = TRUE), pop_probs2)
-
-# Create empty list to store singles, dups, and trips for each pop
-singles = setNames(vector("list", length(Pops)), paste0("singles.", Pops))
-dups = setNames(vector("list", length(Pops)), paste0("dups.", Pops))
-trips = setNames(vector("list", length(Pops)), paste0("trips.", Pops))
-
-# subset master legend files according to number of alleles at each position
-for (i in seq_along(Pops)) {
-  singles[[i]] = master_leg[[i]] %>% filter(prob==1)
-  dups[[i]] = master_leg[[i]] %>% filter(prob==0.5)
-  trips[[i]] = master_leg[[i]] %>% filter(prob==".")
-}
+probs <- Reduce(function(x, y) merge(x, y, by = "position", all = TRUE), pop_probs)
   
 # # subset the AFR file according to the number of alleles at each position
 # singles.AFR = master.AFR %>% filter(prob==1)
@@ -121,6 +106,12 @@ for (i in seq_along(Pops)) {
 # singles.EAS = master.EAS %>% filter(prob==1)
 # dups.EAS = master.EAS %>% filter(prob==0.5)
 # trips.EAS = master.EAS %>% filter(prob==".")
+
+# I would filter the probs dataframe to the positions with a '1' for every population
+# and then filter that subset to the positions with the same alleles in each population
+
+# Then you would have to look at the scenarios where at least one of the populations
+# has a '1' but some of the other populations have a '0.5' or '.'
 
 # Create empty list to store single positions seen in all populations
 singles2 = setNames(vector("list", length(Pops)), paste0("singles.", Pops, "2"))
