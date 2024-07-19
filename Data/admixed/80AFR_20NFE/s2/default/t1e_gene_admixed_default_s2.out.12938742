@@ -1,0 +1,2645 @@
+
+
+[1] "Note: In this AF adjustment, 274 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.796553  0.975852
+nfe    af_nfe    0.203447  0.024148
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1946
+
+
+[1] $effective.sample.size
+[1] 10207
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 274 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.796553  0.975852
+nfe    af_nfe    0.203447  0.024148
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1946
+
+
+[1] $effective.sample.size
+[1] 10207
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 1
+
+
+[1] "Note: In this AF adjustment, 317 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.795714  0.986169
+nfe    af_nfe    0.204286  0.013831
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1926
+
+
+[1] $effective.sample.size
+[1] 10095
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 317 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.795714  0.986169
+nfe    af_nfe    0.204286  0.013831
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1926
+
+
+[1] $effective.sample.size
+[1] 10095
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 2
+
+
+[1] "Note: In this AF adjustment, 319 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.805849  0.992469
+nfe    af_nfe    0.194151  0.007531
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1992
+
+
+[1] $effective.sample.size
+[1] 10133
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 319 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.805849  0.992469
+nfe    af_nfe    0.194151  0.007531
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1992
+
+
+[1] $effective.sample.size
+[1] 10133
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 3
+
+
+[1] "Note: In this AF adjustment, 277 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.796446   0.99074
+nfe    af_nfe    0.203554   0.00926
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1918
+
+
+[1] $effective.sample.size
+[1] 10057
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 277 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.796446   0.99074
+nfe    af_nfe    0.203554   0.00926
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1918
+
+
+[1] $effective.sample.size
+[1] 10057
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 4
+
+
+[1] "Note: In this AF adjustment, 336 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.795996         1
+nfe    af_nfe    0.204004         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1937
+
+
+[1] $effective.sample.size
+[1] 9959
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 336 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.795996         1
+nfe    af_nfe    0.204004         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1937
+
+
+[1] $effective.sample.size
+[1] 9959
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 5
+
+
+[1] "Note: In this AF adjustment, 309 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.795996  0.991246
+nfe    af_nfe    0.204004  0.008754
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1932
+
+
+[1] $effective.sample.size
+[1] 10047
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 309 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.795996  0.991246
+nfe    af_nfe    0.204004  0.008754
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1932
+
+
+[1] $effective.sample.size
+[1] 10047
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 6
+
+
+[1] "Note: In this AF adjustment, 283 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.806321         1
+nfe    af_nfe    0.193679         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1953
+
+
+[1] $effective.sample.size
+[1] 10063
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 283 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.806321         1
+nfe    af_nfe    0.193679         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1953
+
+
+[1] $effective.sample.size
+[1] 10063
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 7
+
+
+[1] "Note: In this AF adjustment, 316 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr     0.80299  0.996923
+nfe    af_nfe     0.19701  0.003077
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1963
+
+
+[1] $effective.sample.size
+[1] 10060
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 316 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr     0.80299  0.996923
+nfe    af_nfe     0.19701  0.003077
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1963
+
+
+[1] $effective.sample.size
+[1] 10060
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 8
+
+
+[1] "Note: In this AF adjustment, 293 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.813417         1
+nfe    af_nfe    0.186583         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1971
+
+
+[1] $effective.sample.size
+[1] 10134
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 293 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.813417         1
+nfe    af_nfe    0.186583         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1971
+
+
+[1] $effective.sample.size
+[1] 10134
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 9
+
+
+[1] "Note: In this AF adjustment, 259 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798675  0.998075
+nfe    af_nfe    0.201325  0.001925
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1958
+
+
+[1] $effective.sample.size
+[1] 10006
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 259 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798675  0.998075
+nfe    af_nfe    0.201325  0.001925
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1958
+
+
+[1] $effective.sample.size
+[1] 10006
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 10
+
+
+[1] "Note: In this AF adjustment, 346 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.794208  0.997246
+nfe    af_nfe    0.205792  0.002754
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1912
+
+
+[1] $effective.sample.size
+[1] 9969
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 346 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.794208  0.997246
+nfe    af_nfe    0.205792  0.002754
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1912
+
+
+[1] $effective.sample.size
+[1] 9969
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 11
+
+
+[1] "Note: In this AF adjustment, 287 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.794061  0.992364
+nfe    af_nfe    0.205939  0.007636
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1891
+
+
+[1] $effective.sample.size
+[1] 10016
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 287 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.794061  0.992364
+nfe    af_nfe    0.205939  0.007636
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1891
+
+
+[1] $effective.sample.size
+[1] 10016
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 12
+
+
+[1] "Note: In this AF adjustment, 336 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.794325         1
+nfe    af_nfe    0.205675         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1923
+
+
+[1] $effective.sample.size
+[1] 9943
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 336 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.794325         1
+nfe    af_nfe    0.205675         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1923
+
+
+[1] $effective.sample.size
+[1] 9943
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 13
+
+
+[1] "Note: In this AF adjustment, 312 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.799005  0.994003
+nfe    af_nfe    0.200995  0.005997
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1955
+
+
+[1] $effective.sample.size
+[1] 10050
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 312 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.799005  0.994003
+nfe    af_nfe    0.200995  0.005997
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1955
+
+
+[1] $effective.sample.size
+[1] 10050
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 14
+
+
+[1] "Note: In this AF adjustment, 285 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.797475  0.981941
+nfe    af_nfe    0.202525  0.018059
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1963
+
+
+[1] $effective.sample.size
+[1] 10155
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 285 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.797475  0.981941
+nfe    af_nfe    0.202525  0.018059
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1963
+
+
+[1] $effective.sample.size
+[1] 10155
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 15
+
+
+[1] "Note: In this AF adjustment, 274 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.792593  0.994658
+nfe    af_nfe    0.207407  0.005342
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1899
+
+
+[1] $effective.sample.size
+[1] 9979
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 274 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.792593  0.994658
+nfe    af_nfe    0.207407  0.005342
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1899
+
+
+[1] $effective.sample.size
+[1] 9979
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 16
+
+
+[1] "Note: In this AF adjustment, 319 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798576         1
+nfe    af_nfe    0.201424         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1929
+
+
+[1] $effective.sample.size
+[1] 9985
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 319 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798576         1
+nfe    af_nfe    0.201424         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1929
+
+
+[1] $effective.sample.size
+[1] 9985
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 17
+
+
+[1] "Note: In this AF adjustment, 322 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798408  0.996344
+nfe    af_nfe    0.201592  0.003656
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1918
+
+
+[1] $effective.sample.size
+[1] 10020
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 322 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798408  0.996344
+nfe    af_nfe    0.201592  0.003656
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1918
+
+
+[1] $effective.sample.size
+[1] 10020
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 18
+
+
+[1] "Note: In this AF adjustment, 257 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798197  0.998125
+nfe    af_nfe    0.201803  0.001875
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1936
+
+
+[1] $effective.sample.size
+[1] 10000
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 257 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798197  0.998125
+nfe    af_nfe    0.201803  0.001875
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1936
+
+
+[1] $effective.sample.size
+[1] 10000
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 19
+
+
+[1] "Note: In this AF adjustment, 300 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798744  0.998538
+nfe    af_nfe    0.201256  0.001462
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1919
+
+
+[1] $effective.sample.size
+[1] 10002
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 300 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798744  0.998538
+nfe    af_nfe    0.201256  0.001462
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1919
+
+
+[1] $effective.sample.size
+[1] 10002
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 20
+
+
+[1] "Note: In this AF adjustment, 288 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.801098  0.989829
+nfe    af_nfe    0.198902  0.010171
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1928
+
+
+[1] $effective.sample.size
+[1] 10112
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 288 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.801098  0.989829
+nfe    af_nfe    0.198902  0.010171
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1928
+
+
+[1] $effective.sample.size
+[1] 10112
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 21
+
+
+[1] "Note: In this AF adjustment, 278 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.806013  0.989613
+nfe    af_nfe    0.193987  0.010387
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1941
+
+
+[1] $effective.sample.size
+[1] 10164
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 278 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.806013  0.989613
+nfe    af_nfe    0.193987  0.010387
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1941
+
+
+[1] $effective.sample.size
+[1] 10164
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 22
+
+
+[1] "Note: In this AF adjustment, 313 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.812106         1
+nfe    af_nfe    0.187894         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1949
+
+
+[1] $effective.sample.size
+[1] 10121
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 313 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.812106         1
+nfe    af_nfe    0.187894         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1949
+
+
+[1] $effective.sample.size
+[1] 10121
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 23
+
+
+[1] "Note: In this AF adjustment, 346 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.799795         1
+nfe    af_nfe    0.200205         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1928
+
+
+[1] $effective.sample.size
+[1] 9997
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 346 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.799795         1
+nfe    af_nfe    0.200205         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1928
+
+
+[1] $effective.sample.size
+[1] 9997
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 24
+
+
+[1] "Note: In this AF adjustment, 325 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.792209         1
+nfe    af_nfe    0.207791         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1948
+
+
+[1] $effective.sample.size
+[1] 9922
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 325 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.792209         1
+nfe    af_nfe    0.207791         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1948
+
+
+[1] $effective.sample.size
+[1] 9922
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 25
+
+
+[1] "Note: In this AF adjustment, 298 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.803769         1
+nfe    af_nfe    0.196231         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1944
+
+
+[1] $effective.sample.size
+[1] 10037
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 298 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.803769         1
+nfe    af_nfe    0.196231         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1944
+
+
+[1] $effective.sample.size
+[1] 10037
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 26
+
+
+[1] "Note: In this AF adjustment, 341 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.792079         1
+nfe    af_nfe    0.207921         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1922
+
+
+[1] $effective.sample.size
+[1] 9920
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 341 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.792079         1
+nfe    af_nfe    0.207921         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1922
+
+
+[1] $effective.sample.size
+[1] 9920
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 27
+
+
+[1] "Note: In this AF adjustment, 305 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.813276         1
+nfe    af_nfe    0.186724         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 2017
+
+
+[1] $effective.sample.size
+[1] 10132
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 305 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.813276         1
+nfe    af_nfe    0.186724         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 2017
+
+
+[1] $effective.sample.size
+[1] 10132
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 28
+
+
+[1] "Note: In this AF adjustment, 274 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.803517         1
+nfe    af_nfe    0.196483         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1947
+
+
+[1] $effective.sample.size
+[1] 10035
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 274 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.803517         1
+nfe    af_nfe    0.196483         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1947
+
+
+[1] $effective.sample.size
+[1] 10035
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 29
+
+
+[1] "Note: In this AF adjustment, 284 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.805863         1
+nfe    af_nfe    0.194137         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1911
+
+
+[1] $effective.sample.size
+[1] 10058
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 284 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.805863         1
+nfe    af_nfe    0.194137         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1911
+
+
+[1] $effective.sample.size
+[1] 10058
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 30
+
+
+[1] "Note: In this AF adjustment, 284 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.783252  0.979791
+nfe    af_nfe    0.216748  0.020209
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1924
+
+
+[1] $effective.sample.size
+[1] 10034
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 284 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.783252  0.979791
+nfe    af_nfe    0.216748  0.020209
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1924
+
+
+[1] $effective.sample.size
+[1] 10034
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 31
+
+
+[1] "Note: In this AF adjustment, 295 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.785416   0.97391
+nfe    af_nfe    0.214584   0.02609
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1893
+
+
+[1] $effective.sample.size
+[1] 10115
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 295 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.785416   0.97391
+nfe    af_nfe    0.214584   0.02609
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1893
+
+
+[1] $effective.sample.size
+[1] 10115
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 32
+
+
+[1] "Note: In this AF adjustment, 281 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.805229         1
+nfe    af_nfe    0.194771         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1967
+
+
+[1] $effective.sample.size
+[1] 10052
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 281 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.805229         1
+nfe    af_nfe    0.194771         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1967
+
+
+[1] $effective.sample.size
+[1] 10052
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 33
+
+
+[1] "Note: In this AF adjustment, 268 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.785308  0.988425
+nfe    af_nfe    0.214692  0.011575
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1952
+
+
+[1] $effective.sample.size
+[1] 9968
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 268 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.785308  0.988425
+nfe    af_nfe    0.214692  0.011575
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1952
+
+
+[1] $effective.sample.size
+[1] 9968
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 34
+
+
+[1] "Note: In this AF adjustment, 301 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.804485         1
+nfe    af_nfe    0.195515         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1860
+
+
+[1] $effective.sample.size
+[1] 10044
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 301 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.804485         1
+nfe    af_nfe    0.195515         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1860
+
+
+[1] $effective.sample.size
+[1] 10044
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 35
+
+
+[1] "Note: In this AF adjustment, 265 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.813072         1
+nfe    af_nfe    0.186928         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1963
+
+
+[1] $effective.sample.size
+[1] 10130
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 265 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.813072         1
+nfe    af_nfe    0.186928         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1963
+
+
+[1] $effective.sample.size
+[1] 10130
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 36
+
+
+[1] "Note: In this AF adjustment, 326 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.781936  0.977674
+nfe    af_nfe    0.218064  0.022326
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1949
+
+
+[1] $effective.sample.size
+[1] 10042
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 326 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.781936  0.977674
+nfe    af_nfe    0.218064  0.022326
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1949
+
+
+[1] $effective.sample.size
+[1] 10042
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 37
+
+
+[1] "Note: In this AF adjustment, 325 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798579         1
+nfe    af_nfe    0.201421         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1918
+
+
+[1] $effective.sample.size
+[1] 9985
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 325 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.798579         1
+nfe    af_nfe    0.201421         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1918
+
+
+[1] $effective.sample.size
+[1] 9985
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 38
+
+
+[1] "Note: In this AF adjustment, 374 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.785923  0.995712
+nfe    af_nfe    0.214077  0.004288
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1949
+
+
+[1] $effective.sample.size
+[1] 9902
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 374 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.785923  0.995712
+nfe    af_nfe    0.214077  0.004288
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1949
+
+
+[1] $effective.sample.size
+[1] 9902
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 39
+
+
+[1] "Note: In this AF adjustment, 309 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.786765  0.993854
+nfe    af_nfe    0.213235  0.006146
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1953
+
+
+[1] $effective.sample.size
+[1] 9929
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 309 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.786765  0.993854
+nfe    af_nfe    0.213235  0.006146
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1953
+
+
+[1] $effective.sample.size
+[1] 9929
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 40
+
+
+[1] "Note: In this AF adjustment, 285 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.808875         1
+nfe    af_nfe    0.191125         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1946
+
+
+[1] $effective.sample.size
+[1] 10088
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 285 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.808875         1
+nfe    af_nfe    0.191125         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1946
+
+
+[1] $effective.sample.size
+[1] 10088
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 41
+
+
+[1] "Note: In this AF adjustment, 253 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.796465  0.980431
+nfe    af_nfe    0.203535  0.019569
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1895
+
+
+[1] $effective.sample.size
+[1] 10160
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 253 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.796465  0.980431
+nfe    af_nfe    0.203535  0.019569
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1895
+
+
+[1] $effective.sample.size
+[1] 10160
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 42
+
+
+[1] "Note: In this AF adjustment, 292 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.799035  0.991584
+nfe    af_nfe    0.200965  0.008416
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1964
+
+
+[1] $effective.sample.size
+[1] 10074
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 292 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.799035  0.991584
+nfe    af_nfe    0.200965  0.008416
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1964
+
+
+[1] $effective.sample.size
+[1] 10074
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 43
+
+
+[1] "Note: In this AF adjustment, 279 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.797702  0.975809
+nfe    af_nfe    0.202298  0.024191
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1911
+
+
+[1] $effective.sample.size
+[1] 10218
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 279 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.797702  0.975809
+nfe    af_nfe    0.202298  0.024191
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1911
+
+
+[1] $effective.sample.size
+[1] 10218
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 44
+
+
+[1] "Note: In this AF adjustment, 305 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.802333  0.998032
+nfe    af_nfe    0.197667  0.001968
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1936
+
+
+[1] $effective.sample.size
+[1] 10043
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 305 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.802333  0.998032
+nfe    af_nfe    0.197667  0.001968
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1936
+
+
+[1] $effective.sample.size
+[1] 10043
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 45
+
+
+[1] "Note: In this AF adjustment, 270 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.794871  0.995325
+nfe    af_nfe    0.205129  0.004675
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1966
+
+
+[1] $effective.sample.size
+[1] 9995
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 270 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.794871  0.995325
+nfe    af_nfe    0.205129  0.004675
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1966
+
+
+[1] $effective.sample.size
+[1] 9995
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 46
+
+
+[1] "Note: In this AF adjustment, 348 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.779115  0.997635
+nfe    af_nfe    0.220885  0.002365
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1946
+
+
+[1] $effective.sample.size
+[1] 9814
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 348 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.779115  0.997635
+nfe    af_nfe    0.220885  0.002365
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1946
+
+
+[1] $effective.sample.size
+[1] 9814
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 47
+
+
+[1] "Note: In this AF adjustment, 277 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr     0.79256  0.986127
+nfe    af_nfe     0.20744  0.013873
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1934
+
+
+[1] $effective.sample.size
+[1] 10064
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 277 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr     0.79256  0.986127
+nfe    af_nfe     0.20744  0.013873
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1934
+
+
+[1] $effective.sample.size
+[1] 10064
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 48
+
+
+[1] "Note: In this AF adjustment, 270 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.807645         1
+nfe    af_nfe    0.192355         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1907
+
+
+[1] $effective.sample.size
+[1] 10076
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 270 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.807645         1
+nfe    af_nfe    0.192355         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1907
+
+
+[1] $effective.sample.size
+[1] 10076
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 49
+
+
+[1] "Note: In this AF adjustment, 273 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr     0.78905  0.980155
+nfe    af_nfe     0.21095  0.019845
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1907
+
+
+[1] $effective.sample.size
+[1] 10088
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 273 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr     0.78905  0.980155
+nfe    af_nfe     0.21095  0.019845
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1907
+
+
+[1] $effective.sample.size
+[1] 10088
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 50
+
+
+[1] "Note: In this AF adjustment, 313 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.807163         1
+nfe    af_nfe    0.192837         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1904
+
+
+[1] $effective.sample.size
+[1] 10071
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 313 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.807163         1
+nfe    af_nfe    0.192837         0
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1904
+
+
+[1] $effective.sample.size
+[1] 10071
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 51
+
+
+[1] "Note: In this AF adjustment, 297 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.808236  0.989031
+nfe    af_nfe    0.191764  0.010969
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1916
+
+
+[1] $effective.sample.size
+[1] 10192
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 297 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.808236  0.989031
+nfe    af_nfe    0.191764  0.010969
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1916
+
+
+[1] $effective.sample.size
+[1] 10192
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 52
+
+
+[1] "Note: In this AF adjustment, 290 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.791876  0.986443
+nfe    af_nfe    0.208124  0.013557
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1961
+
+
+[1] $effective.sample.size
+[1] 10054
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 290 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.791876  0.986443
+nfe    af_nfe    0.208124  0.013557
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1961
+
+
+[1] $effective.sample.size
+[1] 10054
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+[1] 53
+
+
+[1] "Note: In this AF adjustment, 273 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.803953  0.999922
+nfe    af_nfe    0.196047  0.000078
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1959
+
+
+[1] $effective.sample.size
+[1] 10040
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."
+
+
+[1] "Note: In this AF adjustment, 273 SNPs (with adjusted AF > -.005 & < 0) were rounded to 0. 0 SNPs (with adjusted AF > 1) were rounded to 1, and 0 SNPs (with adjusted AF <= -.005) were removed from the final results."
+
+[1] $pi
+    ref.group pi.observed pi.target
+afr    af_afr    0.803953  0.999922
+nfe    af_nfe    0.196047  0.000078
+
+[1] $observed.data
+[1] "observed AF data to update: 'af'"
+
+[1] $Nsnps
+[1] 1959
+
+
+[1] $effective.sample.size
+[1] 10040
+
+
+[1] "use $adjusted.AF$adjustedAF to see adjusted AF data"
+
+
+[1] "Note: The accuracy of the AF adjustment is likely lower for rare variants (< .5%)."

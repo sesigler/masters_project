@@ -1,0 +1,474 @@
+During startup - Warning messages:
+1: Setting LC_CTYPE failed, using "C" 
+2: Setting LC_COLLATE failed, using "C" 
+3: Setting LC_TIME failed, using "C" 
+4: Setting LC_MESSAGES failed, using "C" 
+5: Setting LC_MONETARY failed, using "C" 
+6: Setting LC_PAPER failed, using "C" 
+7: Setting LC_MEASUREMENT failed, using "C" 
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'data.table'
+
+The following objects are masked from 'package:dplyr':
+
+    between, first, last
+
+Loading required package: usethis
+Loading required package: Matrix
+
+Attaching package: 'Matrix'
+
+The following objects are masked from 'package:tidyr':
+
+    expand, pack, unpack
+
+Loading required package: SPAtest
+Loading required package: RSpectra
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'gene', 'case'. You can override using the
+`.groups` argument.
+Error in h(simpleError(msg, call)) : 
+  error in evaluating the argument 'object' in selecting a method for function 'summary': contrasts can be applied only to factors with 2 or more levels
+Calls: logprox_gene_data_prep ... model.matrix -> model.matrix.default -> contrasts<-
+In addition: There were 50 or more warnings (use warnings() to see the first 50)
+Execution halted
