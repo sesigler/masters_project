@@ -109,7 +109,7 @@ format_logprox_data = function(leg, count.case, count.control, control_type, cou
 #' @param current.gene a string of the gene to run LogProx on
 #' @param data.all boolean value denoting if both internal and external controls are being used
 #' 
-#' @return the p-value returned by LogProx
+#' @return the p-value returned by LogProx and the AC info
 
 # Function for formatting data and running statistical test for LogProx
 logprox_gene_data_prep = function(data.prox2, current.gene, data.all=FALSE) {
