@@ -114,7 +114,6 @@ format_logprox_data = function(leg, count.case, count.control, control_type, cou
 # Function for formatting data and running statistical test for LogProx
 logprox_gene_data_prep = function(data.prox2, current.gene, data.all=FALSE) {
   
-  # LogProx
   # Filter data by gene
   data.gene = data.prox2 %>% filter(gene==current.gene)
   
@@ -122,25 +121,42 @@ logprox_gene_data_prep = function(data.prox2, current.gene, data.all=FALSE) {
   # need .drop param so it still creates a group even if AC is 0
   counts.data.gene = data.gene %>% count(case, fun, .drop = FALSE)
   
-  # If sum of fun alleles or sum of syn alleles is < 5 OR
-  # If there are no cases or no controls, mark as NA, else run LogProx
+  # Convert counts to format for saving
+  counts_out <- counts.data.gene %>% pivot_wider(names_from = c(case, fun), names_sep = "_", values_from = n)
+  
+  # If sum of fun alleles or sum of syn alleles is < 5, mark as NA, else run LogProx
+  # If glm pops an error (e.g. if case fun and case syn AC are both 0), use tryCatch
+  # to mark p-value as NA
+  
+  # For cases vs internal + external controls
   if (data.all) {
-    prox2 = ifelse((counts.data.gene$n[1] + counts.data.gene$n[3] < 5) | 
-                     (counts.data.gene$n[2] + counts.data.gene$n[4] < 5) | 
-                     (counts.data.gene$n[1] == 0 & counts.data.gene$n[2] == 0) |
-                     (counts.data.gene$n[3] == 0 & counts.data.gene$n[4] == 0), NA, 
-                   summary(glm(fun ~ case + group, data=data.gene, family="binomial"))$coefficients[2,4])
-    return(prox2)
+    prox2 <- tryCatch(
+      {
+        ifelse((counts.data.gene$n[1] + counts.data.gene$n[3] < 5) | 
+                 (counts.data.gene$n[2] + counts.data.gene$n[4] < 5), NA, 
+               summary(glm(fun ~ case + group, data=data.gene, family="binomial"))$coefficients[2,4])
+      },
+      error = function(e) {
+        NA # return NA if any error occurs
+      }
+    )
+
+    return(list(prox2, counts_out))
   } 
   
-  prox2 = ifelse((counts.data.gene$n[1] + counts.data.gene$n[3] < 5) |
-                   (counts.data.gene$n[2] + counts.data.gene$n[4] < 5) |
-                   (counts.data.gene$n[1] == 0 & counts.data.gene$n[2] == 0) |
-                   (counts.data.gene$n[3] == 0 & counts.data.gene$n[4] == 0), NA,
-                 summary(glm(fun ~ case, data=data.gene, family="binomial"))$coefficients[2,4])
+  # For cases vs external controls
+  prox2 <- tryCatch(
+    {
+      ifelse((counts.data.gene$n[1] + counts.data.gene$n[3] < 5) |
+               (counts.data.gene$n[2] + counts.data.gene$n[4] < 5), NA,
+             summary(glm(fun ~ case, data=data.gene, family="binomial"))$coefficients[2,4])
+    },
+    error = function(e) {
+      NA # Return NA if error occurs
+    }
+  )
   
-  
-  return(prox2) 
+  return(list(prox2, counts_out)) 
 }
 
 
