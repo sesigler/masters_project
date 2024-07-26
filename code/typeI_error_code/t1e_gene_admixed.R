@@ -19,13 +19,13 @@ Pop_admx = 'AFR_NFE'
 Pops = c('AFR', 'NFE')
 admx_props = c(80, 20)
 scen = 's2'
-sub_scen = 'default'
+sub_scen = 'NrefAFR10000_NrefNFE10000'
 p_case = 160
 p_case_fun = p_case_syn = p_int_fun = p_int_syn = 100
 p_cc_fun = p_cc_syn = 80
 Ncase = Nic = 2000
 Ncc = 10000  
-Nrefs = c(2000, 2000)
+Nrefs = c(10000, 10000)
 maf = 0.001 
 
 end = 100 # change back to mysim
@@ -40,19 +40,15 @@ dir_out = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, s
 # dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
 # dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
 
-# Vectors to store unadjusted p-values
-prox_ext_genes_p = prox_weighted_ext_genes_p = c() #proxECAT
-prox2_ext_genes_p = prox2_all_genes_p = c() #LogProx
-iecat_genes_p = c() #iECAT-O
-skato_ext_genes_p = skato_int_genes_p = skato_all_genes_p = c() #SKAT-O
-skat_ext_genes_p = skat_int_genes_p = skat_all_genes_p = c() #SKAT
-burden_ext_genes_p = burden_int_genes_p = burden_all_genes_p = c() #Burden
-
-# Vectors to store adjusted p-values
-prox_ext_genes_p_adj_Ncc = prox_ext_genes_p_adj_Neff = c() #proxECAT
-prox_weighted_ext_genes_p_adj_Ncc = prox_weighted_ext_genes_p_adj_Neff = c() #proxECAT-weighted
-prox2_ext_genes_p_adj_Ncc = prox2_all_genes_p_adj_Ncc = prox2_ext_genes_p_adj_Neff = prox2_all_genes_p_adj_Neff = c() #LogProx
-iecat_genes_p_adj_Ncc = iecat_genes_p_adj_Neff = c() #iECAT-O
+# Vectors to store p-values
+prox_ext_genes_p = prox_ext_genes_p_adj_Ncc = prox_ext_genes_p_adj_Neff = c()
+proxW_ext_genes_p = proxW_ext_genes_p_adj_Ncc = proxW_ext_genes_p_adj_Neff = c() 
+prox2_ext_genes_p = prox2_ext_genes_p_adj_Ncc = prox2_ext_genes_p_adj_Neff = c()
+prox2_all_genes_p = prox2_all_genes_p_adj_Ncc = prox2_all_genes_p_adj_Neff = c()
+iecat_genes_p = iecat_genes_p_adj_Ncc = iecat_genes_p_adj_Neff = c() 
+skato_int_genes_p = skato_ext_genes_p = skato_all_genes_p = c() 
+skat_int_genes_p = skat_ext_genes_p = skat_all_genes_p = c() 
+burden_int_genes_p = burden_ext_genes_p = burden_all_genes_p = c() 
 
 # Vectors to store proxECAT and LogProx AC info
 prox_ext_ACs = prox_ext_adj_Ncc_ACs = prox_ext_adj_Neff_ACs = c()
@@ -239,9 +235,9 @@ for (i in start:end){
   prox_ext_genes_p_adj_Ncc = rbind(prox_ext_genes_p_adj_Ncc, counts_ext_wide_adj_Ncc$prox)
   prox_ext_genes_p_adj_Neff = rbind(prox_ext_genes_p_adj_Neff, counts_ext_wide_adj_Neff$prox)
 
-  prox_weighted_ext_genes_p = rbind(prox_weighted_ext_genes_p, counts_ext_wide$prox_w)
-  prox_weighted_ext_genes_p_adj_Ncc = rbind(prox_weighted_ext_genes_p_adj_Ncc, counts_ext_wide_adj_Ncc$prox_w)
-  prox_weighted_ext_genes_p_adj_Neff = rbind(prox_weighted_ext_genes_p_adj_Neff, counts_ext_wide_adj_Neff$prox_w)
+  proxW_ext_genes_p = rbind(proxW_ext_genes_p, counts_ext_wide$prox_w)
+  proxW_ext_genes_p_adj_Ncc = rbind(proxW_ext_genes_p_adj_Ncc, counts_ext_wide_adj_Ncc$prox_w)
+  proxW_ext_genes_p_adj_Neff = rbind(proxW_ext_genes_p_adj_Neff, counts_ext_wide_adj_Neff$prox_w)
   
   # Save the proxECAT AC info, add rep column, and move it to front of df
   prox_ext_ACs = rbind(prox_ext_ACs, counts_ext_wide %>% mutate(rep = i) %>% relocate(rep))
@@ -302,17 +298,16 @@ for (i in start:end){
   tbl_adj_Neff = data.frame(a0=geno_iecat_ext_adj_Neff$ac) %>% mutate(a1=2*Neff-a0, gene = geno_iecat_ext_adj_Neff$gene)
 
   # call ProxECATv2/iECAT/SKAT once per gene
-  prox2_int_genes = prox2_ext_genes = prox2_all_genes = c()
-  iecat_genes = c()
+  prox2_ext_genes = prox2_ext_genes_adj_Ncc = prox2_ext_genes_adj_Neff = c()
+  prox2_all_genes = prox2_all_genes_adj_Ncc = prox2_all_genes_adj_Neff = c()
+  iecat_genes = iecat_genes_adj_Ncc = iecat_genes_adj_Neff = c()
   skato_int_genes = skato_ext_genes = skato_all_genes = c()
   skat_int_genes = skat_ext_genes = skat_all_genes = c()
   burden_int_genes = burden_ext_genes = burden_all_genes = c()
-
-  prox2_ext_genes_adj_Ncc = prox2_all_genes_adj_Ncc = prox2_ext_genes_adj_Neff = prox2_all_genes_adj_Neff = c()
-  iecat_genes_adj_Ncc = iecat_genes_adj_Neff = c()
   
   # Create vectors to store ACs for LogProx
-  prox2_ext_genes_ACs = prox2_ext_adj_Ncc_genes_ACs = prox2_ext_adj_Neff_genes_ACs = prox2_all_genes_ACs = prox2_all_adj_Ncc_genes_ACs = prox2_all_adj_Neff_genes_ACs = c()
+  prox2_ext_genes_ACs = prox2_ext_adj_Ncc_genes_ACs = prox2_ext_adj_Neff_genes_ACs = c()
+  prox2_all_genes_ACs = prox2_all_adj_Ncc_genes_ACs = prox2_all_adj_Neff_genes_ACs = c()
 
   genes = levels(droplevels(as.factor(leg$gene)))
   # g = 1
@@ -450,7 +445,7 @@ for (i in start:end){
 
 # Set col names to the genes
 colnames(prox_ext_genes_p) = colnames(prox_ext_genes_p_adj_Ncc) = colnames(prox_ext_genes_p_adj_Neff) = genes
-colnames(prox_weighted_ext_genes_p) = colnames(prox_weighted_ext_genes_p_adj_Ncc) = colnames(prox_weighted_ext_genes_p_adj_Neff) = genes
+colnames(proxW_ext_genes_p) = colnames(proxW_ext_genes_p_adj_Ncc) = colnames(proxW_ext_genes_p_adj_Neff) = genes
 colnames(prox2_ext_genes_p) = colnames(prox2_ext_genes_p_adj_Ncc) = colnames(prox2_ext_genes_p_adj_Neff) = genes
 colnames(prox2_all_genes_p) = colnames(prox2_all_genes_p_adj_Ncc) = colnames(prox2_all_genes_p_adj_Neff) = genes
 colnames(iecat_genes_p) = colnames(iecat_genes_p_adj_Ncc) = colnames(iecat_genes_p_adj_Neff) = genes
@@ -486,9 +481,9 @@ write.table(prox_ext_genes_p, paste0(dir_out, "T1e_gene_prox_ext_", file_path), 
 write.table(prox_ext_genes_p_adj_Ncc, paste0(dir_out, "T1e_gene_prox_ext_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
 write.table(prox_ext_genes_p_adj_Neff, paste0(dir_out, "T1e_gene_prox_ext_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
 # ProxECAT-weighted
-write.table(prox_weighted_ext_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_ext_", file_path), quote=F, row.names=F, col.names=T)
-write.table(prox_weighted_ext_genes_p_adj_Ncc, paste0(dir_out, "T1e_gene_prox_weighted_ext_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
-write.table(prox_weighted_ext_genes_p_adj_Neff, paste0(dir_out, "T1e_gene_prox_weighted_ext_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
+write.table(proxW_ext_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_ext_", file_path), quote=F, row.names=F, col.names=T)
+write.table(proxW_ext_genes_p_adj_Ncc, paste0(dir_out, "T1e_gene_prox_weighted_ext_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
+write.table(proxW_ext_genes_p_adj_Neff, paste0(dir_out, "T1e_gene_prox_weighted_ext_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
 # LogProx
 write.table(prox2_ext_genes_p, paste0(dir_out, "T1e_gene_prox2_ext_", file_path), quote=F, row.names=F, col.names=T)
 write.table(prox2_ext_genes_p_adj_Ncc, paste0(dir_out, "T1e_gene_prox2_ext_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
