@@ -56,7 +56,7 @@ neff_vec = c()
 # loop through the simulation replicates
 set.seed(1) 
 # i=1
-for (i in 1:100){
+for (i in start:end){
   
   # read in the legend file
   # leg = read_leg_homo(dir_leg, Pop, i)
@@ -71,10 +71,10 @@ for (i in 1:100){
   leg_fun = leg %>% filter(fun=="fun")
   
   # read in the haplotype files
-  hap_cases_power = read_hap(dir_in, Pop1, Pop2, i, scen, "cases", p_case, p_syn = 100) # pcase % fun 100% syn
-  hap_cases_t1e = read_hap(dir_in, Pop1, Pop2, i, scen, "cases", p_fun = 100, p_syn = 100) # 100% fun 100% syn
-  hap_ic = read_hap(dir_in, Pop1, Pop2, i, scen, "internal.controls", p_fun = 100, p_syn = 100)
-  hap_cc = read_hap(dir_in, Pop1, Pop2, i, scen, "common.controls", p_cc_fun, p_cc_syn)
+  hap_cases_power = read_hap(dir_in, Pop_admx, i, scen, "cases", p_fun = p_case, p_syn = 100) # pcase % fun 100% syn
+  hap_cases_t1e = read_hap(dir_in, Pop_admx, i, scen, "cases", p_fun = 100, p_syn = 100) # 100% fun 100% syn
+  hap_ic = read_hap(dir_in, Pop_admx, i, scen, "internal.controls", p_fun = 100, p_syn = 100)
+  hap_cc = read_hap(dir_in, Pop_admx, i, scen, "common.controls", p_fun = p_cc_fun, p_syn = p_cc_syn)
 
   # Create empty list to store reference haplotytpes
   hap_refs = setNames(vector("list", length(Pops)), paste0("hap_ref_pop", 1:length(Pops)))
