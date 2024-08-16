@@ -4,37 +4,24 @@
 # It only needs to be run when the admixture proportions of the admixed pop change
 ################################################################################
 
-# Pop1 = 'AFR'
-# Pop2 = 'NFE'
-# admx_pop1 = 80
-# admx_pop2 = 20
+library(dplyr)
+library(purrr)
+
+# Define parameters
 admx_pop <- 'LTX'
 Pops <- c('IAM', 'NFE', 'EAS', 'AFR') 
 admx_props <-  c(IAM = 47, NFE = 44, EAS = 5, AFR = 4)
-# admx_pop = 'AFR_NFE'
-# Pops = c('AFR', 'NFE')
-# admx_props = c(80, 20)
 
 end <- 100 # change back to mysim
 start <- end-99
 set.seed(12345)
 
-# define the admixture proportion
-prop_ad = 0.80
-
-library(dplyr)
-library(purrr)
-
+# Directory paths
 dir_in = '/home/math/siglersa/master_legend_files/'
 dir_out = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/subset_master/')
 
-dir_in = 'C:/Users/sagee/Documents/HendricksLab/admixed/master_legs/'
+# dir_in = 'C:/Users/sagee/Documents/HendricksLab/admixed/master_legs/'
 
-# read in the master legend files
-# master.AFR = read.table(paste0(dir_in, 'chr19.block37.AFR.master.legend'), sep='\t')
-# master.NFE = read.table(paste0(dir_in, 'chr19.block37.NFE.master.legend'), sep='\t')
-# master.IAM = read.table(paste0(dir_in, 'chr19.block37.IAM.master.legend'), sep='\t')
-# master.EAS = read.table(paste0(dir_in, 'chr19.block37.EAS.master.legend'), sep='\t')
 
 # Create empty lists to store master legend files, probabilities, singles, dups, and trips for each pop
 master_leg <- setNames(vector("list", length(Pops)), paste0("master.", Pops))
@@ -100,75 +87,69 @@ for (pos in probs_all1$position) {
   }
 }
 
+# Subset first pop leg file to positions in singles_same_alt
+# Note: ref and alt allele same, so doesn't matter which pop's leg file you subset the rows from
+singles.same <- singles[[1]] %>% filter(position %in% singles_same_alt)
+
+# Note: rows for singles scenario 2 are subset below in main for loop
 
 ### Singles scenario 3
 
 # Filter probs df to rows where only one pop has prob = 1
 probs_one1 = probs %>% rowwise() %>% filter(sum(c_across(-position) == 1) == 1) %>% ungroup
 
-# Create a list to store positions where only one pop has prob = 1 for each pop
-singles_one1_pop <- setNames(vector("list", length(Pops)), paste0(Pops))
+# Create a vector to store row from leg file where only one pop has prob = 1
+singles.one1 <- c()
 
-# Loop through each prob.pop col to get position where only that pop has prob = 1
-for (pop in Pops) {
-  singles_one1_pop[[pop]] <- probs_one1 %>% filter(!!sym(paste0('prob.', pop)) == 1) %>% pull(position)
+# Loop through each position in probs_one1 to get position where only that pop has prob = 1
+for (pos in probs_one1$position) {
+
+  # Obtain the col name which has prob = 1 at current position and remove "prob." from the name
+  current_pop <- gsub("prob\\.", "", names(probs_one1[probs_one1$position == pos, ])[which(probs_one1[probs_one1$position == pos, ] == 1)])
+  
+  # Subset the row from the current pop leg file to the current position
+  leg_row <- singles[[paste0('singles.', current_pop)]][singles[[paste0('singles.', current_pop)]]$position == pos, ]
+  
+  # Add the row from the current pop's legend file to the singles.one1 vector
+  singles.one1 <- rbind(singles.one1, leg_row)
 }
 
-### Singles scenario 4
+### Singles scenario 4 (rows subset below in main for loop)
 # Note: there are other ways you can do this, but this was the easiest
 
 # Calculate the number of 1s in each row, excluding the position column
-num_ones <- rowSums(probs[, pop_cols] == 1)
+num_ones <- rowSums(probs[, -1] == 1)
 
 # Filter probs df to positions where more than one pop has prob = 1 but not every pop has prob = 1
-probs_not_all1 <- probs[num_ones > 1 & num_ones < length(pop_cols), ]
+probs_not_all1 <- probs[num_ones > 1 & num_ones < length(Pops), ]
 
-# Create a list to store positions for each population
-singles_not_all1 <- setNames(vector("list", length(Pops)), paste0(Pops))
 
-# Loop through each row and choose a population for each position based on the admixture proportions
-for (i in 1:nrow(probs_not_all1)) {
-  
-  # Subset dataframe to current row
-  row <- probs_not_all1[i, ]
-  available_pops <- Pops[which(row[-1] == 1)] # select only the pops with prob = 1 at current row
-  
-  # Use admixture props to choose which population's allele info to use for current position
-  # Note: sample will first normalize the probabilities if they don't sum to 1
-  selected_pop <- sample(available_pops, 1, prob = admx_props[available_pops]/100) 
+### DUPLICATE SCENARIO (rows subset below in main for loop)
+# Similar to scenario 4 from singles
 
-  # store position in the pop's vector
-  singles_not_all1[[selected_pop]] <- c(singles_not_all1[[selected_pop]], row$position) 
+# Filter probs df to positions where at least one pop has prob = 0.5 but no pop has prob = 1
+probs_dups_no1 <- probs %>% rowwise() %>% filter(any(c_across(-position) == 0.5) & all(c_across(-position) != 1)) %>% ungroup()
+
+
+### TRIPLICATES 
+
+# Filter probs df to triplicate positions across all populations
+trips.po <- probs %>% rowwise() %>% filter(all(c_across(-position) == '.')) %>% ungroup()
+
+# Create vector to store same triplicate positions across all pops
+trips.pop <- setNames(vector("list", length(Pops)), paste0("trips.", Pops))
+
+# Subset trips list so each pop contains same positions
+for (i in 1:length(Pops)) {
+  trips.pop[[i]] <- trips[[i]] %>% filter(position %in% trips.po$position)
 }
 
-
-
-# subset the single positions seen in both populations
-# singles.AFR2 = singles.AFR %>% filter(position %in% singles.NFE$position)
-# singles.NFE2 = singles.NFE %>% filter(position %in% singles.AFR$position)
-  
-# keep the single positions with the same alternate allele in both populations
-# singles.keep = singles.AFR2 %>% filter(alleles==singles.NFE2$alleles)
-  
-# subset the single positions in just one of the populations
-singles.NA.NFE = singles.NFE %>% filter(!(position %in% singles.AFR$position))
-singles.NA.AFR = singles.AFR %>% filter(!(position %in% singles.NFE$position))
-  
-# combine the single positions together
-singles.keep2 = rbind(singles.keep, singles.NA.NFE, singles.NA.AFR)
-  
-# subset the duplicate positions in both populations
-dups.po = probs %>% filter((prob.AFR==0.5 & prob.NFE==0.5) | (prob.AFR==0.5 & prob.NFE==".") | (prob.AFR=="." & prob.NFE==0.5)) %>% select(position)
-dups.AFR2 = dups.AFR %>% filter(position %in% dups.po$position)
-dups.NFE2 = dups.NFE %>% filter(position %in% dups.po$position) %>% filter(!(position %in% dups.AFR2$position))
-dups.keep = rbind(dups.AFR2, dups.NFE2)
-
-# subset the triplicate positions in both populations
-trips.po = probs %>% filter(prob.AFR=="." & prob.NFE==".") %>% select(position)
-trips = trips.AFR %>% filter(position %in% trips.po$position)
     
+# Main for loop to add randomness to admixed legend file for each simulation rep
 for (i in start:end){
     
+  ### TRIPLICATES 
+  
   # create a table of transitions/transversions for the triplicates
   trips.po1  =  as.data.frame(matrix(NA, nrow=nrow(trips.po), ncol=3))
   colnames(trips.po1) = c('position', 'draw', 'TiTv')
@@ -180,10 +161,13 @@ for (i in start:end){
     
   # subset the transitions
   ti = trips.po1 %>% filter(TiTv  == 'transition')
-  ann.ti = trips %>% filter(position %in% ti$position, alleles=='A/G' | alleles=='G/A' | alleles=='C/T' | alleles=='T/C')
+  
+  # subsetting from the first pop legend file since we filtered to the common triplicate positions so it doesn't matter which
+  # legend file we subset from
+  ann.ti = trips.pop[[1]] %>% filter(position %in% ti$position, alleles=='A/G' | alleles=='G/A' | alleles=='C/T' | alleles=='T/C')
     
   # remove all of the transitions
-  ann.tv = trips %>% filter(!(position %in% ti$position), !(alleles=='A/G' | alleles=='G/A' | alleles=='C/T' | alleles=='T/C'))
+  ann.tv = trips.pop[[1]] %>% filter(!(position %in% ti$position), !(alleles=='A/G' | alleles=='G/A' | alleles=='C/T' | alleles=='T/C'))
     
   # randomly pick an allele from the transversions
   ann.tv2 = ann.tv %>% group_by(position) %>% sample_n(size=1)
@@ -191,18 +175,98 @@ for (i in start:end){
   # merge transitions and transversions
   trips2 = union(ann.ti, ann.tv2)
     
+  ### DUPLICATES 
+  
+  # Create a list to store positions for each population
+  dups_no1 <- setNames(vector("list", length(Pops)), paste0(Pops))
+  
+  # Loop through each row and choose a population for each position based on the admixture proportions
+  for (i in 1:nrow(probs_dups_no1)) {
+    
+    # Subset dataframe to current row
+    row <- probs_dups_no1[i, ]
+    
+    # select only the pops with prob = 0.5 at current row
+    available_pops <- Pops[which(row[-1] == 0.5)] 
+    
+    # Use admixture props to choose which population's allele info to use for current position
+    # Note: sample will first normalize the probabilities if they don't sum to 1
+    selected_pop <- sample(available_pops, 1, prob = admx_props[available_pops]/100) 
+    
+    # store position in the pop's vector
+    dups_no1[[selected_pop]] <- c(dups_no1[[selected_pop]], row$position) 
+    
+  }
+  
+  # Create vector to store duplicate rows for each pop 
+  dups.keep <- c()
+  
+  # Store the duplicate rows from each legend file corresponding to the positions in dups_no1
+  for (i in 1:length(Pops)) {
+    pop_rows <- filter(dups[[i]], position %in% dups_no1[[i]])
+    dups.keep <- rbind(dups.keep, pop_rows)
+  }
+  
   # randomly pick an allele from the duplicates
   dups2 = dups.keep %>% group_by(position) %>% sample_n(size=1)
+  
+  ### SINGLES
+  
+  ### Singles scenario 2
+  
+  # Create a list to store the rows of the legend files chosen for each position in singles_diff_alt
+  singles.diff <- c()
+  
+  # Loop through each position
+  for (pos in singles_diff_alt) {
     
-  # subset the single positions with different alternate alleles in the populations
-  singles.dif = singles.AFR2 %>% filter(alleles!=singles.NFE2$alleles)
+    # pick an allele for the single positions with diff alt alleles based on the admixed proportions
+    selected_pop <- sample(Pops, 1, prob = admx_props/100)
     
-  # pick an allele for the single positions with different alternate alleles based on the admixed proportion
-  singles.dif.AFR = singles.dif %>% sample_n(size=round(prop_ad*nrow(singles.dif)))
-  singles.dif.NFE = singles.NFE2 %>% filter(alleles!=singles.AFR2$alleles) %>% filter(!(position %in% singles.dif.AFR$position))
+    # Subset the selected pop's leg file to the current position
+    pop_row <- filter(singles[[paste0('singles.', selected_pop)]], position %in% pos)
+    
+    # Add the row from the selected pop's legend file to the singles diff vector
+    singles.diff <- rbind(singles.diff, pop_row)
+  }
+  
+  ### Singles scenario 4
+  
+  # Create a list to store positions for each population
+  singles_not_all1 <- setNames(vector("list", length(Pops)), paste0(Pops))
+  
+  # Loop through each row and choose a population for each position based on the admixture proportions
+  for (i in 1:nrow(probs_not_all1)) {
+    
+    # Subset dataframe to current row
+    row <- probs_not_all1[i, ]
+    
+    # select only the pops with prob = 1 at current row
+    available_pops <- Pops[which(row[-1] == 1)] 
+    
+    # Use admixture props to choose which population's allele info to use for current position
+    # Note: sample will first normalize the probabilities if they don't sum to 1
+    selected_pop <- sample(available_pops, 1, prob = admx_props[available_pops]/100) 
+    
+    # store position in the pop's vector
+    singles_not_all1[[selected_pop]] <- c(singles_not_all1[[selected_pop]], row$position) 
+  }
+  
+  # Create a list to store the rows of the legend files chosen for each position in singles_not_all1
+  singles.some1 <- c()
+  
+  # Loop through each pop
+  for (pop in Pops) {
+    
+    # Filter the leg file of the current pop to the positions stored in singles_not_all1
+    pop_rows <- filter(singles[[paste0('singles.', pop)]], position %in% singles_not_all1[[pop]])
+    
+    # Add rows to singles vector
+    singles.some1 <- rbind(singles.some1, pop_rows)
+  }
     
   # combine the single positions together
-  singles2 = rbind(singles.keep2, singles.dif.AFR, singles.dif.NFE)
+  singles2 = rbind(singles.same, singles.diff, singles.one1, singles.some1)
     
   # merge all positions
   master2 = union(singles2, union(dups2, trips2)) %>% arrange(position) %>% 
