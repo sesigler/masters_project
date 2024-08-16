@@ -63,16 +63,16 @@ make_long = function(counts, leg, case, group) {
 #' merge_cases
 #' 
 #' @description
-#' Function to merge the case datasets for power and t1e calculations for by 
-#' gene association
+#' Function to merge the case datasets for power and t1e at the
+#' genes associated with each calculation
 #' 
 #' @param cases_power case haplotype file used for power calculation
 #' @param cases_t1e case haplotype file used for type I error calculation
 #' @param leg legend file
 #' @param genes_power a character vector of genes used to calculate power
 #' 
-#' @return the merged case haplotype file containing only the genes being used 
-#'         to calculate t1e and power
+#' @return the merged case haplotype file where the data pertaining to the power
+#' genes are from the cases power df and the remaining data comes from the cases t1e df
 
 merge_cases = function(cases_power, cases_t1e, leg, genes_power) {
   
