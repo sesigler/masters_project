@@ -17,24 +17,23 @@ calc = 'T1e'
 Pops = c('AFR', 'NFE')
 admx_props = c(80, 20)
 scen = 's2'
-sub_scens = c('default', 'Ncase1000_Nic1000', 'Ncase5000_Nic5000')
-comp = 'Nint'
+sub_scens = c('default', '160v100v85', '160v100v90', '160v100v95')
+comp = 'ccPrune'
+adj = 'adjNeff'
 int_prune = 100
-ext_prune = 80
-# Ncase = Nic = 2000
+# ext_prune = 80
+Ncase = Nic = 2000
 Ncc = 10000
 Nref = c(2000, 2000)
 maf = 0.001 
 
 
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/', tolower(calc), '/')
-dir1 = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scens[1], '/', tolower(calc), '/')
-dir2 = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scens[2], '/', tolower(calc), '/')
-dir3 = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scens[3], '/', tolower(calc), '/')
+dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', tolower(calc), '/')
 dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/')
 
-file_in = paste0(scen, "_", sub_scen, "_maf", maf, ".csv")
-file_out = paste0(scen, "_", comp, "_maf", maf, '.jpg')
+# file_in = paste0(scen, "_", sub_scen, "_maf", maf, ".csv")
+file_out = paste0(scen, "_", comp, "_", adj, "_maf", maf, '.jpg')
 
 # read in the results
 # Proportion Estimates 
@@ -42,28 +41,30 @@ file_out = paste0(scen, "_", comp, "_maf", maf, '.jpg')
 # t1e_cc_prop_ests = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_cc_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
 # t1e_int_prop_ests = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_int_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
 
-results = read.csv(paste0(dir, calc, "_all_gene_", file_in), header=T)
+# results = read.csv(paste0(dir, calc, "_all_gene_", file_in), header=T)
+# results = pivot_longer(results, prox_int:burden_all, names_to="Method", values_to="Value") %>%
+#   mutate(MAF = maf)
 
-res1 = read_results(dir=dir1, calc, scen, sub_scen=sub_scens[1], maf)
-res2 = read_results(dir=dir2, calc, scen, sub_scen=sub_scens[2], maf)
-res3 = read_results(dir=dir3, calc, scen, sub_scen=sub_scens[3], maf)
+# Read in results
+res1 = read_results(dir, calc, scen, sub_scen=sub_scens[1], maf)
+res2 = read_results(dir, calc, scen, sub_scen=sub_scens[2], maf)
+res3 = read_results(dir, calc, scen, sub_scen=sub_scens[3], maf)
+res4 = read_results(dir, calc, scen, sub_scen=sub_scens[4], maf)
 
-
-# puts in a format for ggplot
+# Format for ggplot
 res1 = pivot_longer(res1, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, Nint = "Internal Cases and Controls: 2000") 
+  mutate(MAF = maf, ccPrune = "160v100v80") 
 
 res2 = pivot_longer(res2, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, Nint = "Internal Cases and Controls: 1000")
+  mutate(MAF = maf, ccPrune = "160v100v85")
 
 res3 = pivot_longer(res3, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, Nint = "Internal Cases and Controls: 5000")
-res = rbind(res1, res2, res3)
+  mutate(MAF = maf, ccPrune = "160v100v90")
 
+res4 = pivot_longer(res4, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
+  mutate(MAF = maf, ccPrune = "160v100v95")
 
-results = pivot_longer(results, prox_int:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf)
-
+res = rbind(res1, res2, res3, res4)
 
 
 results2 = res %>% mutate(MACs = rep(c("Unadjusted", "Adjusted Ncc", "Adjusted Neff",
@@ -73,7 +74,7 @@ results2 = res %>% mutate(MACs = rep(c("Unadjusted", "Adjusted Ncc", "Adjusted N
                                        "Unadjusted", "Adjusted Ncc", "Adjusted Neff",
                                        "Unadjusted", "Unadjusted", "Unadjusted",
                                        "Unadjusted", "Unadjusted", "Unadjusted",
-                                       "Unadjusted", "Unadjusted", "Unadjusted"), times=36))
+                                       "Unadjusted", "Unadjusted", "Unadjusted"), times=48)) #36 or 48
 
 results2$Method = factor(results2$Method, levels=c("prox_ext", "prox_ext_adj_Ncc", "prox_ext_adj_Neff", 
                                                    "proxW_ext", "proxW_ext_adj_Ncc", "proxW_ext_adj_Neff",
@@ -90,33 +91,23 @@ results2$Method = factor(results2$Method, levels=c("prox_ext", "prox_ext_adj_Ncc
                                       "SKAT (Internal)", "SKAT (External)", "SKAT (Internal + External)", 
                                       "Burden (Internal)", "Burden (External)", "Burden (Internal + External)"), times=c(3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1)))
 
-# results2$Method = factor(results2$Method, levels=c("prox_int", "prox_ext", "prox_ext_var_adj_Ncc", "prox_ext_var_adj_Neff", "prox_ext_gene_adj_Ncc", "prox_ext_gene_adj_Neff", 
-#                                                    "proxW_int", "proxW_ext", "proxW_ext_var_adj_Ncc", "proxW_ext_var_adj_Neff", "proxW_ext_gene_adj_Ncc", "proxW_ext_gene_adj_Neff"),
-#                          labels=rep(c("ProxECAT", "ProxECAT-weighted"), times=c(6, 6)))
-
-results2 = results2 %>% mutate(Data = rep(c("External", "External", "External",
-                                            "External", "External", "External",
-                                            "External", "External", "External", 
-                                            "Internal + External", "Internal + External", "Internal + External",
-                                            "Internal + External", "Internal + External", "Internal + External",
-                                            "Internal", "External", "Internal + External",
-                                            "Internal", "External", "Internal + External",
-                                            "Internal", "External", "Internal + External"), 36))
+# results2 = results2 %>% mutate(Data = rep(c("External", "External", "External",
+#                                             "External", "External", "External",
+#                                             "External", "External", "External", 
+#                                             "Internal + External", "Internal + External", "Internal + External",
+#                                             "Internal + External", "Internal + External", "Internal + External",
+#                                             "Internal", "External", "Internal + External",
+#                                             "Internal", "External", "Internal + External",
+#                                             "Internal", "External", "Internal + External"), 36))
+# results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal + External"))
 
 results2$MAF = factor(results2$MAF)
-results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal + External"))
 results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Adjusted Ncc", "Adjusted Neff"), 
                        labels = c("Unadjusted", "Adjusted Ncc", "Adjusted"))
 results2$Gene = factor(results2$Gene, levels=c("ADGRE2", "ADGRE3", "ADGRE5", "CLEC17A", "DDX39A", "DNAJB1", 
                                                "GIPC1", "NDUFB7", "PKN1", "PTGER1", "TECR", "ZNF333"))
-results2$Nref = factor(results2$Nint, levels=c("Internal Cases and Controls: 1000", "Internal Cases and Controls: 2000", "Internal Cases and Controls: 5000"))
-
-# results2$MAF = factor(results2$MAF)
-# results2$Data = factor(results2$Data, levels=c("Internal", "External"))
-# results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Variant Adjusted Ncc", "Variant Adjusted Neff", "Gene Adjusted Ncc", "Gene Adjusted Neff"))
-# results2$Gene = factor(results2$Gene, levels=c("ADGRE2", "ADGRE3", "ADGRE5", "CLEC17A", "DDX39A", "DNAJB1", 
-#                                                "GIPC1", "NDUFB7", "PKN1", "PTGER1", "TECR", "ZNF333"))
-# results2$Nref = factor(results2$Nref, levels=c(500, 2000, 10000))
+results2$ccPrune = factor(results2$ccPrune, levels=c("160v100v80", "160v100v85", "160v100v90", '160v100v95'), 
+                          labels = c("Common Controls: 80% Pruned", "Common Controls: 85% Pruned", "Common Controls: 90% Pruned", "Common Controls: 95% Pruned"))
 
 # get CI's
 results2$Lower = '.'
@@ -296,14 +287,13 @@ p14 <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O (
   scale_shape_manual(values = c(1, 16)) +
   # scale_linetype_manual(values = c("dashed", "solid")) +
   # scale_size_manual(values = c(0.5, 0.8)) +
-  facet_wrap(~Nref, ncol = 1, scales = 'fixed') +
+  facet_wrap(~ccPrune, ncol = 1, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
-  labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Internal Sample Size \nCases and Internal Controls: ', int_prune, '% pruned, 100% AFR \nCommon Controls: ', 
-                                                ext_prune, '% pruned, 80% AFR, 20% NFE', 
-                                                '\nNcc: ', Ncc, ', MAF: ', maf, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2])) +
+  labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Common Control Pruning \nCases and Internal Controls: ', int_prune, '% pruned, 100% AFR',
+                                                '\nCommon Controls: 80% AFR, 20% NFE\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
-  theme_bw(base_size = 15)
+  theme_bw(base_size = 14)
 p14
 ggsave(file = paste0(dir_out, calc, '_gene_', file_out), plot = p14, height = 8, width = 16, units = 'in')
 
