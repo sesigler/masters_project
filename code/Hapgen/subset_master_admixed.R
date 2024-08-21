@@ -53,6 +53,11 @@ for (i in 1:length(Pops)) {
 # Merge the dataframes in pop_probs by the position column
 probs <- Reduce(function(x, y) merge(x, y, by = "position", all = TRUE), pop_probs)
 
+# Calculate the number of 1s, 0.5s, and '.'s in each row, excluding the position column
+num_ones <- rowSums(probs[, -1] == 1)
+num_half <- rowSums(probs[, -1] == 0.5)
+num_dot <- rowSums(probs[, -1] == '.')
+
 ### DIFFERENT SINGLE SCENARIOS
 # 1. Prob = 1 in all pops and they all have same alt allele (choose one pop to subset positions from its legend)
 # 2. Prob = 1 in all pops but they have diff alt alleles (use admixture props to choose alt allele)
@@ -62,7 +67,8 @@ probs <- Reduce(function(x, y) merge(x, y, by = "position", all = TRUE), pop_pro
 ### Singles scenarios 1 and 2
 
 # Filter probs df to rows where all probability columns have value of 1
-probs_all1 = probs %>% filter(if_all(-position, ~ . == 1))
+#probs_all1 = probs %>% filter(if_all(-position, ~ . == 1))
+probs_all1 <- probs[num_ones==length(Pops),]
 
 # Create vectors to store positions
 singles_same_alt <- c() # positions where prob=1 across all pops AND alt (and ref) alleles are the same  
@@ -96,7 +102,8 @@ singles.same <- singles[[1]] %>% filter(position %in% singles_same_alt)
 ### Singles scenario 3
 
 # Filter probs df to rows where only one pop has prob = 1
-probs_one1 = probs %>% rowwise() %>% filter(sum(c_across(-position) == 1) == 1) %>% ungroup
+#probs_one1 = probs %>% rowwise() %>% filter(sum(c_across(-position) == 1) == 1) %>% ungroup # this way is much slower and less intuitive
+probs_one1 = probs[num_ones==1,]
 
 # Create a vector to store row from leg file where only one pop has prob = 1
 singles.one1 <- c()
@@ -117,8 +124,8 @@ for (pos in probs_one1$position) {
 ### Singles scenario 4 (rows subset below in main for loop)
 # Note: there are other ways you can do this, but this was the easiest
 
-# Calculate the number of 1s in each row, excluding the position column
-num_ones <- rowSums(probs[, -1] == 1)
+# Calculate the number of 1s in each row, excluding the position column - I would do this in the beginning and use it to subset probs_all1 and probs_one1 (see above)
+#num_ones <- rowSums(probs[, -1] == 1)
 
 # Filter probs df to positions where more than one pop has prob = 1 but not every pop has prob = 1
 probs_not_all1 <- probs[num_ones > 1 & num_ones < length(Pops), ]
@@ -128,21 +135,24 @@ probs_not_all1 <- probs[num_ones > 1 & num_ones < length(Pops), ]
 # Similar to scenario 4 from singles
 
 # Filter probs df to positions where at least one pop has prob = 0.5 but no pop has prob = 1
-probs_dups_no1 <- probs %>% rowwise() %>% filter(any(c_across(-position) == 0.5) & all(c_across(-position) != 1)) %>% ungroup()
+#probs_dups_no1 <- probs %>% rowwise() %>% filter(any(c_across(-position) == 0.5) & all(c_across(-position) != 1)) %>% ungroup()
+probs_dups_no1 <- probs[num_ones==0 & num_half>0,]
 
 
 ### TRIPLICATES 
 
 # Filter probs df to triplicate positions across all populations
-trips.po <- probs %>% rowwise() %>% filter(all(c_across(-position) == '.')) %>% ungroup()
+#trips.po <- probs %>% rowwise() %>% filter(all(c_across(-position) == '.')) %>% ungroup()
+trips.po <- probs[num_dot==length(Pops),]
 
 # Create vector to store same triplicate positions across all pops
-trips.pop <- setNames(vector("list", length(Pops)), paste0("trips.", Pops))
+#trips.pop <- setNames(vector("list", length(Pops)), paste0("trips.", Pops))
+trips.pop <- trips[[1]] %>% filter(position %in% trips.po$position)
 
-# Subset trips list so each pop contains same positions
-for (i in 1:length(Pops)) {
-  trips.pop[[i]] <- trips[[i]] %>% filter(position %in% trips.po$position)
-}
+# Subset trips list so each pop contains same positions - only need to do for one population since the positions and alleles are the same (see above)
+#for (i in 1:length(Pops)) {
+#  trips.pop[[i]] <- trips[[i]] %>% filter(position %in% trips.po$position)
+#}
 
     
 # Main for loop to add randomness to admixed legend file for each simulation rep
