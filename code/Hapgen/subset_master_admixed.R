@@ -174,10 +174,12 @@ for (i in start:end){
   
   # subsetting from the first pop legend file since we filtered to the common triplicate positions so it doesn't matter which
   # legend file we subset from
-  ann.ti = trips.pop[[1]] %>% filter(position %in% ti$position, alleles=='A/G' | alleles=='G/A' | alleles=='C/T' | alleles=='T/C')
+  #ann.ti = trips.pop[[1]] %>% filter(position %in% ti$position, alleles=='A/G' | alleles=='G/A' | alleles=='C/T' | alleles=='T/C')
+  ann.ti = trips.pop %>% filter(position %in% ti$position, alleles=='A/G' | alleles=='G/A' | alleles=='C/T' | alleles=='T/C')
     
   # remove all of the transitions
-  ann.tv = trips.pop[[1]] %>% filter(!(position %in% ti$position), !(alleles=='A/G' | alleles=='G/A' | alleles=='C/T' | alleles=='T/C'))
+  #ann.tv = trips.pop[[1]] %>% filter(!(position %in% ti$position), !(alleles=='A/G' | alleles=='G/A' | alleles=='C/T' | alleles=='T/C'))
+  ann.tv = trips.pop %>% filter(!(position %in% ti$position), !(alleles=='A/G' | alleles=='G/A' | alleles=='C/T' | alleles=='T/C'))
     
   # randomly pick an allele from the transversions
   ann.tv2 = ann.tv %>% group_by(position) %>% sample_n(size=1)
@@ -187,8 +189,11 @@ for (i in start:end){
     
   ### DUPLICATES 
   
-  # Create a list to store positions for each population
-  dups_no1 <- setNames(vector("list", length(Pops)), paste0(Pops))
+  # Create a list to store positions for each population - not necessary (see below)
+  #dups_no1 <- setNames(vector("list", length(Pops)), paste0(Pops))
+
+  # Create vector to store duplicate rows for each pop 
+  dups.keep <- c()
   
   # Loop through each row and choose a population for each position based on the admixture proportions
   for (i in 1:nrow(probs_dups_no1)) {
@@ -196,7 +201,7 @@ for (i in start:end){
     # Subset dataframe to current row
     row <- probs_dups_no1[i, ]
     
-    # select only the pops with prob = 0.5 at current row
+    # select only the pops with prob = 0.5 at current row - they are all 0.5 so not sure if this is needed
     available_pops <- Pops[which(row[-1] == 0.5)] 
     
     # Use admixture props to choose which population's allele info to use for current position
@@ -204,18 +209,21 @@ for (i in start:end){
     selected_pop <- sample(available_pops, 1, prob = admx_props[available_pops]/100) 
     
     # store position in the pop's vector
-    dups_no1[[selected_pop]] <- c(dups_no1[[selected_pop]], row$position) 
-    
+    #dups_no1[[selected_pop]] <- c(dups_no1[[selected_pop]], row$position) 
+
+    # Subset the selected pop's leg file to the current position
+    pop_rows <- filter(dups[[paste0('dups.', selected_pop)]], position==row$position)
+    dups.keep <- rbind(dups.keep2, pop_rows)
   }
   
-  # Create vector to store duplicate rows for each pop 
-  dups.keep <- c()
+  # Create vector to store duplicate rows for each pop (moved above)
+  #dups.keep <- c()
   
-  # Store the duplicate rows from each legend file corresponding to the positions in dups_no1
-  for (i in 1:length(Pops)) {
-    pop_rows <- filter(dups[[i]], position %in% dups_no1[[i]])
-    dups.keep <- rbind(dups.keep, pop_rows)
-  }
+  # Store the duplicate rows from each legend file corresponding to the positions in dups_no1 - combined this loop with the above loop
+  #for (i in 1:length(Pops)) {
+  #  pop_rows <- filter(dups[[i]], position %in% dups_no1[[i]])
+  #  dups.keep <- rbind(dups.keep, pop_rows)
+  #}
   
   # randomly pick an allele from the duplicates
   dups2 = dups.keep %>% group_by(position) %>% sample_n(size=1)
@@ -243,7 +251,10 @@ for (i in start:end){
   ### Singles scenario 4
   
   # Create a list to store positions for each population
-  singles_not_all1 <- setNames(vector("list", length(Pops)), paste0(Pops))
+  #singles_not_all1 <- setNames(vector("list", length(Pops)), paste0(Pops))
+
+  # Create a list to store the rows of the legend files chosen for each position in singles_not_all1
+  singles.some1 <- c()
   
   # Loop through each row and choose a population for each position based on the admixture proportions
   for (i in 1:nrow(probs_not_all1)) {
@@ -259,21 +270,25 @@ for (i in start:end){
     selected_pop <- sample(available_pops, 1, prob = admx_props[available_pops]/100) 
     
     # store position in the pop's vector
-    singles_not_all1[[selected_pop]] <- c(singles_not_all1[[selected_pop]], row$position) 
-  }
-  
-  # Create a list to store the rows of the legend files chosen for each position in singles_not_all1
-  singles.some1 <- c()
-  
-  # Loop through each pop
-  for (pop in Pops) {
-    
-    # Filter the leg file of the current pop to the positions stored in singles_not_all1
-    pop_rows <- filter(singles[[paste0('singles.', pop)]], position %in% singles_not_all1[[pop]])
-    
-    # Add rows to singles vector
+    #singles_not_all1[[selected_pop]] <- c(singles_not_all1[[selected_pop]], row$position) 
+
+    # Subset the selected pop's leg file to the current position
+    pop_rows <- filter(singles[[paste0('singles.', selected_pop)]], position==row$position)
     singles.some1 <- rbind(singles.some1, pop_rows)
   }
+  
+  # Create a list to store the rows of the legend files chosen for each position in singles_not_all1 (moved above)
+  #singles.some1 <- c()
+  
+  # Loop through each pop - combined this loop with the above loop
+  #for (pop in Pops) {
+    
+    # Filter the leg file of the current pop to the positions stored in singles_not_all1
+    #pop_rows <- filter(singles[[paste0('singles.', pop)]], position %in% singles_not_all1[[pop]])
+    
+    # Add rows to singles vector
+    #singles.some1 <- rbind(singles.some1, pop_rows)
+  #}
     
   # combine the single positions together
   singles2 = rbind(singles.same, singles.diff, singles.one1, singles.some1)
