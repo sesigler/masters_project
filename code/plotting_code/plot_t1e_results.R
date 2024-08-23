@@ -16,21 +16,21 @@ library(data.table) # for fread
 calc = 'T1e'
 Pops = c('AFR', 'NFE')
 admx_props = c(80, 20)
-scen = 's2'
-sub_scens = c('default', '160v100v85', '160v100v90', '160v100v95')
-comp = 'ccPrune'
+scen = 's1'
+sub_scens = c('default', 'NrefAFR704_NrefNFE642', 'NrefAFR5000_NrefNFE5000', 'NrefAFR10000_NrefNFE10000')
+comp = 'Nref'
 adj = 'adjNeff'
 int_prune = 100
-# ext_prune = 80
+ext_prune = 80
 Ncase = Nic = 2000
 Ncc = 10000
-Nref = c(2000, 2000)
+# Nref = c(2000, 2000)
 maf = 0.001 
 
 
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/', tolower(calc), '/')
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', tolower(calc), '/')
-dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/')
+dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/')
 
 # file_in = paste0(scen, "_", sub_scen, "_maf", maf, ".csv")
 file_out = paste0(scen, "_", comp, "_", adj, "_maf", maf, '.jpg')
@@ -53,16 +53,16 @@ res4 = read_results(dir, calc, scen, sub_scen=sub_scens[4], maf)
 
 # Format for ggplot
 res1 = pivot_longer(res1, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, ccPrune = "160v100v80") 
+  mutate(MAF = maf, Nref = "default") 
 
 res2 = pivot_longer(res2, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, ccPrune = "160v100v85")
+  mutate(MAF = maf, Nref = "NrefAFR704_NrefNFE642")
 
 res3 = pivot_longer(res3, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, ccPrune = "160v100v90")
+  mutate(MAF = maf, Nref = "NrefAFR5000_NrefNFE5000")
 
 res4 = pivot_longer(res4, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, ccPrune = "160v100v95")
+  mutate(MAF = maf, Nref = "NrefAFR10000_NrefNFE10000")
 
 res = rbind(res1, res2, res3, res4)
 
@@ -106,8 +106,13 @@ results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Adjusted Ncc", "Ad
                        labels = c("Unadjusted", "Adjusted Ncc", "Adjusted"))
 results2$Gene = factor(results2$Gene, levels=c("ADGRE2", "ADGRE3", "ADGRE5", "CLEC17A", "DDX39A", "DNAJB1", 
                                                "GIPC1", "NDUFB7", "PKN1", "PTGER1", "TECR", "ZNF333"))
-results2$ccPrune = factor(results2$ccPrune, levels=c("160v100v80", "160v100v85", "160v100v90", '160v100v95'), 
-                          labels = c("Common Controls: 80% Pruned", "Common Controls: 85% Pruned", "Common Controls: 90% Pruned", "Common Controls: 95% Pruned"))
+
+results2$Nref = factor(results2$Nref, levels=c("NrefAFR704_NrefNFE642", "default", "NrefAFR5000_NrefNFE5000", "NrefAFR10000_NrefNFE10000"), 
+                          labels = c("AFR References: 704, NFE References: 642", "AFR References: 2000, NFE References: 2000", 
+                                     "AFR References: 5000, NFE References: 5000", "AFR References: 10000, NFE References: 10000"))
+
+results2$Nref = factor(results2$Nref, levels=c("NrefAFR704_NrefNFE642", "default", "NrefAFR5000_NrefNFE5000", "NrefAFR10000_NrefNFE10000"), 
+                            labels = c("(704, 642)", "(2K, 2K)", "(5K, 5K)", "(10K, 10K)"))
 
 # get CI's
 results2$Lower = '.'
@@ -145,134 +150,8 @@ colors_gene = c("#009E73", "#0072B2", "#D55E00", "#CC79A7", "#999999",
 
  
 
-# t1e for admixed by gene results from pcasev100vpconf pipeline-a for all methods
-p10a <- ggplot(results2 %>% filter(MACs != paste0("Variant Adjusted Ncc ", Ncc) & ((Method == "ProxECAT" & Data == "External") | (Method == "ProxECAT-weighted" & Data == "External") | 
-                                     (Method == "LogProx" & (Data == "External" | Data == "Internal + External")) |
-                                     (Method == "iECAT-O") |
-                                     ((Method == "SKAT-O" | Method == "SKAT" | Method == "Burden") & Data == "Internal"))), 
-               aes(x=Gene, y=Value, color=Method, shape=MACs)) +
-          geom_point(size=2, position=position_dodge(width=0.5)) +
-          geom_hline(yintercept=0.05, linetype=2, linewidth=1) +
-          # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
-          # scale_y_continuous(limits=c(0, 1)) +
-          # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
-          # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
-          geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1, width=.3, position=position_dodge(width=0.5)) +
-          scale_color_manual(values=colors_meth) +
-          scale_shape_manual(values = c(1, 16)) +
-          # scale_linetype_manual(values = c("solid", "dotted", "dashed")) +
-          # scale_size_manual(values = c(0.5, 1, 3)) +
-          facet_wrap(~Data, ncol = 1, scales = 'free_y') +
-          # facet_wrap(~Data, ncol = 1) +
-          labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Controls Used \nCases and Internal Controls: ', int_prune, '% pruned, 100% AFR \nCommon Controls: ', 
-                                                        ext_prune, '% pruned, 80% AFR, 20% NFE', 
-                                                        '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: ', maf)) +
-          # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
-          theme_bw(base_size = 15)
-p10a
-ggsave(file = paste0(dir_out, calc, '_', file_out), plot = p10a, height = 8, width = 16, units = 'in')
-
-# t1e for admixed by gene results from pcasev100vpconf pipeline-m for main methods
-p10m <- ggplot(results2 %>% filter(!(Method == "SKAT-O" | Method =="SKAT" | Method == "Burden")), aes(x=Gene, y=Value, color=Method, shape=MACs)) +
-  geom_point(size=2, position=position_dodge(width=0.5)) +
-  geom_hline(yintercept=0.05, linetype=2, linewidth=1) +
-  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
-  # scale_y_continuous(limits=c(0, 1)) +
-  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
-  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
-  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1, width=.3, position=position_dodge(width=0.5)) +
-  scale_color_manual(values=colors_meth) +
-  scale_shape_manual(values = c(9, 1, 16)) +
-  # scale_linetype_manual(values = c("solid", "dotted", "dashed")) +
-  # scale_size_manual(values = c(0.5, 1, 3)) +
-  facet_wrap(~Data, ncol = 1, scales = 'free_y') +
-  # facet_wrap(~Data, ncol = 1) +
-  labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Controls Used \nInternal Data ', int_prune, '% pruned vs External Data ', ext_prune, '% pruned from ', folder, 
-                                                ' Data \nScenario: ', scen, ', Pruning: ', pruning_plot, 
-                                                '\nCases and Internal Controls: 80% AFR 20% NFE, External Controls: 80% AFR 20% NFE \nNsim: ', Nsim, ', Ncase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref ', Pop1, ': ', Nref_pop1, ', Nref ', Pop2, ': ', Nref_pop2, ', MAF: ', maf)) +
-  # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
-  # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
-  theme_bw(base_size = 15)
-p10m
-ggsave(file = paste0(dir_out_t1e, file_out), plot = p10m, height = 8, width = 16, units = 'in')
-
-# t1e for different adjustments from pcasev100vpconf pipeline-proxECAT only
-p11 <- ggplot(results2 %>% filter(!(MACs == "Gene Adjusted Ncc" | MACs == "Gene Adjusted Neff")), aes(x=Gene, y=Value, color=MACs, shape=Method)) +
-          geom_point(size=3, position=position_dodge(width=0.5)) +
-          geom_hline(yintercept=0.05, linetype=2, linewidth=1) +
-          # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
-          # scale_y_continuous(limits=c(0, 1)) +
-          # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
-          # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
-          geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1, width=.3, position=position_dodge(width=0.5)) +
-          scale_color_manual(values=colors_prox) +
-          scale_shape_manual(values = c(1, 16)) +
-          facet_wrap(~Nref+Data, ncol = 2, scales = 'fixed', labeller = label_wrap_gen(multi_line=FALSE)) +
-          # facet_wrap(~Data, ncol = 1) +
-          labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene: ', int_prune, '% vs ', ext_prune, '% from ', folder, 
-                                                        ' Data \nScenario: ', scen, ', Pruning: ', pruning_plot, 
-                                                        '\nCases and Internal Controls: 80% AFR 20% NFE, External Controls: 80% AFR 20% NFE \nNsim: ', Nsim, ', Ncase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref: Varies, MAF: ', maf)) +
-          theme(axis.text.x = element_text(angle = 35, hjust=0.65))
-          # theme_bw(base_size = 15)
-p11
-ggsave(file = paste0(dir_out_t1e, file_out), plot = p11, height = 8, width = 16, units = 'in')
-
-# t1e for admixed by gene results for STATGEN-EXTERNAL ONLY
-p12 <- ggplot(results2 %>% filter(!(Method == "SKAT-O" | Method =="SKAT" | Method == "Burden")) %>% 
-                filter(Data == "External") %>%
-                filter(!(MACs == "Variant Adjusted Neff")), 
-              aes(x=Gene, y=Value, color=Method, shape=MACs)) +
-  geom_point(size=3, position=position_dodge(width=0.5)) +
-  geom_hline(yintercept=0.05, linetype=2, linewidth=1) +
-  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
-  # scale_y_continuous(limits=c(0, 1)) +
-  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
-  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
-  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1, width=.3, position=position_dodge(width=0.5)) +
-  scale_color_manual(values=colors_meth) +
-  scale_shape_manual(values = c(1, 16)) +
-  # scale_linetype_manual(values = c("solid", "dotted", "dashed")) +
-  # scale_size_manual(values = c(0.5, 1, 3)) +
-  facet_wrap(~Nref, ncol = 1, scales = 'fixed') +
-  # facet_wrap(~Data, ncol = 1) +
-  labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Reference Sample Size: Cases vs Common Controls \nCases: ', int_prune, '% pruned, 100% AFR \nCommon Controls: ', 
-                                                ext_prune, '% pruned, 80% AFR, 20% NFE', 
-                                                '\nNsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', MAF: ', maf)) +
-  # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
-  # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
-  theme_bw(base_size = 15)
-p12
-ggsave(file = paste0(dir_out_t1e, 't1e_gene_Nref_ext_only_', file_out), plot = p12, height = 8, width = 16, units = 'in')
-
-# t1e for admixed by gene results for STATGEN-INTERNAL+EXTERNAL ONLY
-p13 <- ggplot(results2 %>% filter(!(Method == "SKAT-O" | Method =="SKAT" | Method == "Burden")) %>% 
-                filter(Data == "Internal + External") %>%
-                filter(!(MACs == "Variant Adjusted Neff")), 
-              aes(x=Gene, y=Value, color=Method, shape=MACs)) +
-  geom_point(size=3, position=position_dodge(width=0.5)) +
-  geom_hline(yintercept=0.05, linetype=2, linewidth=1) +
-  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
-  # scale_y_continuous(limits=c(0, 1)) +
-  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
-  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
-  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=1, width=.3, position=position_dodge(width=0.5)) +
-  scale_color_manual(values=colors_meth) +
-  scale_shape_manual(values = c(1, 16)) +
-  # scale_linetype_manual(values = c("solid", "dotted", "dashed")) +
-  # scale_size_manual(values = c(0.5, 1, 3)) +
-  facet_wrap(~Nint, ncol = 1, scales = 'fixed') +
-  # facet_wrap(~Data, ncol = 1) +
-  labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Internal Sample Size \nCases and Internal Controls: ', int_prune, '% pruned, 100% AFR \nCommon Controls: ', 
-                                                ext_prune, '% pruned, 80% AFR, 20% NFE', 
-                                                '\nNcc: ', Ncc, ', MAF: ', maf, ', Nref AFR: ', Nref, ', Nref NFE: ', Nref)) +
-  # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
-  # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
-  theme_bw(base_size = 15)
-p13
-ggsave(file = paste0(dir_out_t1e, 't1e_gene_Nref_int_and_ext_only_', file_out), plot = p13, height = 8, width = 16, units = 'in')
-
-# t1e for new admixed AFR results
-p14 <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O (External)" | Method == "SKAT-O (Internal + External)" |
+# t1e for new admixed AFR results-Cases (Power) % Pruned
+pcasePrune <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O (External)" | Method == "SKAT-O (Internal + External)" |
                                       Method == "SKAT (External)" | Method == "SKAT (Internal + External)" |
                                       Method == "Burden (External)" | Method == "Burden (Internal + External)")), 
               aes(x=Gene, y=Value, color=Method, shape=MACs)) +
@@ -287,16 +166,119 @@ p14 <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O (
   scale_shape_manual(values = c(1, 16)) +
   # scale_linetype_manual(values = c("dashed", "solid")) +
   # scale_size_manual(values = c(0.5, 0.8)) +
-  facet_wrap(~ccPrune, ncol = 1, scales = 'fixed') +
+  facet_wrap(~casePrune, ncol = 1, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
-  labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Common Control Pruning \nCases and Internal Controls: ', int_prune, '% pruned, 100% AFR',
+  labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Cases (Power) Pruning \nCases and Internal Controls: ', int_prune, '% pruned, 80% AFR, 20% NFE',
+                                                '\nCommon Controls: ', ext_prune, '% pruned, 80% AFR, 20% NFE\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+  # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
+  # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
+  theme_bw(base_size = 14)
+pcasePrune
+ggsave(file = paste0(dir_out, calc, '_v1_gene_', file_out), plot = pcasePrune, height = 8, width = 16, units = 'in')
+
+# t1e for new admixed AFR results-Common Controls % Pruned
+pccPrune <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O (External)" | Method == "SKAT-O (Internal + External)" |
+                                             Method == "SKAT (External)" | Method == "SKAT (Internal + External)" |
+                                             Method == "Burden (External)" | Method == "Burden (Internal + External)")), 
+                     aes(x=ccPrune, y=Value, color=Method, shape=MACs)) +
+  geom_point(size=1.8, position=position_dodge(width=0.8)) +
+  geom_hline(yintercept=0.05, linetype=2, linewidth=0.5) +
+  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+  # scale_y_continuous(limits=c(0, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
+  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=0.5, width=.5, position=position_dodge(width=0.8)) +
+  scale_color_manual(values = colors2) +
+  scale_shape_manual(values = c(1, 16)) +
+  # scale_linetype_manual(values = c("dashed", "solid")) +
+  # scale_size_manual(values = c(0.5, 0.8)) +
+  facet_wrap(~Gene, ncol = 3, scales = 'fixed') +
+  # facet_wrap(~Data, ncol = 1) +
+  labs(y='Type I Error', x='Common Controls: % Pruned ', title=paste0('Type I Error by Gene and Common Controls Pruning \nCases and Internal Controls: ', int_prune, '% pruned, 80% AFR, 20% NFE',
                                                 '\nCommon Controls: 80% AFR, 20% NFE\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
-p14
-ggsave(file = paste0(dir_out, calc, '_gene_', file_out), plot = p14, height = 8, width = 16, units = 'in')
+pccPrune
+ggsave(file = paste0(dir_out, calc, '_v2_gene_', file_out), plot = pccPrune, height = 8, width = 16, units = 'in')
 
+# t1e for new admixed AFR results-Internal Sample Size
+pNint <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O (External)" | Method == "SKAT-O (Internal + External)" |
+                                        Method == "SKAT (External)" | Method == "SKAT (Internal + External)" |
+                                        Method == "Burden (External)" | Method == "Burden (Internal + External)")), 
+                   aes(x=Gene, y=Value, color=Method, shape=MACs)) +
+  geom_point(size=1.8, position=position_dodge(width=0.8)) +
+  geom_hline(yintercept=0.05, linetype=2, linewidth=0.5) +
+  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+  # scale_y_continuous(limits=c(0, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
+  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=0.5, width=.5, position=position_dodge(width=0.8)) +
+  scale_color_manual(values = colors2) +
+  scale_shape_manual(values = c(1, 16)) +
+  # scale_linetype_manual(values = c("dashed", "solid")) +
+  # scale_size_manual(values = c(0.5, 0.8)) +
+  facet_wrap(~Nint, ncol = 1, scales = 'fixed') +
+  # facet_wrap(~Data, ncol = 1) +
+  labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Internal Sample Size \nCases and Internal Controls: ', int_prune, '% pruned, 80% AFR, 20% NFE',
+                                                                      '\nCommon Controls: ', ext_prune, '% pruned, 80% AFR, 20% NFE\nNcc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+  # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
+  # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
+  theme_bw(base_size = 14)
+pNint
+ggsave(file = paste0(dir_out, calc, '_v2_gene_', file_out), plot = pNint, height = 8, width = 16, units = 'in')
+
+# t1e for new admixed AFR results-Common Control Sample Size
+pNcc <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O (External)" | Method == "SKAT-O (Internal + External)" |
+                                       Method == "SKAT (External)" | Method == "SKAT (Internal + External)" |
+                                       Method == "Burden (External)" | Method == "Burden (Internal + External)")), 
+                     aes(x=Ncc, y=Value, color=Method, shape=MACs)) +
+  geom_point(size=1.8, position=position_dodge(width=0.8)) +
+  geom_hline(yintercept=0.05, linetype=2, linewidth=0.5) +
+  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+  # scale_y_continuous(limits=c(0, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
+  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=0.5, width=.5, position=position_dodge(width=0.8)) +
+  scale_color_manual(values = colors2) +
+  scale_shape_manual(values = c(1, 16)) +
+  # scale_linetype_manual(values = c("dashed", "solid")) +
+  # scale_size_manual(values = c(0.5, 0.8)) +
+  facet_wrap(~Gene, ncol = 3, scales = 'fixed') +
+  # facet_wrap(~Data, ncol = 1) +
+  labs(y='Type I Error', x='Common Control Sample Size', title=paste0('Type I Error by Gene and Common Control Sample Size \nCases and Internal Controls: ', int_prune, '% pruned, 80% AFR, 20% NFE',
+                                                '\nCommon Controls: ', ext_prune, '% pruned, 80% AFR, 20% NFE\nNcase: ', Ncase, ', Nic: ', Nic, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+  # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
+  # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
+  theme_bw(base_size = 14)
+pNcc
+ggsave(file = paste0(dir_out, calc, '_v2_gene_', file_out), plot = pNcc, height = 8, width = 16, units = 'in')
+
+# t1e for new admixed AFR results-Reference Sample Size
+pNref <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O (External)" | Method == "SKAT-O (Internal + External)" |
+                                             Method == "SKAT (External)" | Method == "SKAT (Internal + External)" |
+                                             Method == "Burden (External)" | Method == "Burden (Internal + External)")), 
+                     aes(x=Nref, y=Value, color=Method, shape=MACs)) +
+  geom_point(size=1.8, position=position_dodge(width=0.8)) +
+  geom_hline(yintercept=0.05, linetype=2, linewidth=0.5) +
+  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+  # scale_y_continuous(limits=c(0, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
+  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=0.5, width=.5, position=position_dodge(width=0.8)) +
+  scale_color_manual(values = colors2) +
+  scale_shape_manual(values = c(1, 16)) +
+  # scale_linetype_manual(values = c("dashed", "solid")) +
+  # scale_size_manual(values = c(0.5, 0.8)) +
+  facet_wrap(~Gene, ncol = 3, scales = 'fixed') +
+  # facet_wrap(~Data, ncol = 1) +
+  labs(y='Type I Error', x='Reference Sample Size (AFR, NFE)', title=paste0('Type I Error by Gene and Reference Sample Size \nCases and Internal Controls: ', int_prune, '% pruned, 80% AFR, 20% NFE',
+                                                '\nCommon Controls: ', ext_prune, '% pruned, 80% AFR, 20% NFE\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', MAF: ', maf)) +
+  # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
+  # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
+  theme_bw(base_size = 14)
+pNref
+ggsave(file = paste0(dir_out, calc, '_v2_gene_', file_out), plot = pNref, height = 8, width = 16, units = 'in')
 
 
 # t1e for new admixed AFR results-trying a Bar plot

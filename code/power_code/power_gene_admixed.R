@@ -85,7 +85,7 @@ for (i in start:end){
   }
   
   # FOR POWER ONLY
-  # Create a new hap cases dataframe that merges the cases used for power and t1e but only contains
+  # Create a new hap cases dataframe that merges the cases used for power and t1e but only for
   # the genes associated with each calculation
   hap_case = merge_cases(hap_cases_power, hap_cases_t1e, leg, genes_power)
   
