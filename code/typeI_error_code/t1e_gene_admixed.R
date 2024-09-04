@@ -15,47 +15,49 @@ source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/fun
 source("https://raw.githubusercontent.com/hendriau/Summix/main/R/adjAF.R")
 source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
 
-Pop_admx = 'AFR_NFE'  
-Pops = c('AFR', 'NFE')
-admx_props = c(80, 20)
-scen = 's2'
-sub_scen = 'NrefAFR10000_NrefNFE10000'
-p_case = 160
-p_case_fun = p_case_syn = p_int_fun = p_int_syn = 100
-p_cc_fun = p_cc_syn = 80
-Ncase = Nic = 2000
-Ncc = 10000  
-Nrefs = c(10000, 10000)
-maf = 0.001 
+Pop_admx <- 'LTX'  
+Pops <- c('IAM', 'NFE', 'EAS', 'AFR')
+admx_props <- c(47, 44, 5, 4)
+scen <- 's2'
+sub_scen <- 'default'
+p_case <- 160
+p_case_fun <- p_case_syn <- p_int_fun <- p_int_syn <- 100
+p_cc_fun <- p_cc_syn <- 80
+Ncase <- 2000 
+Nic <- 2000
+Ncc <- 10000  
+Nrefs <- c(2000, 2000, 2000, 2000)
+maf <- 0.001 
 
-end = 100 # change back to mysim
-start = end-99
+end <- 100 # change back to mysim
+start <- end-99
 
 
-dir_leg = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/pruned_haps/')
-dir_in = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/datasets/')
-dir_out = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/t1e/')
+dir_leg <- paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/pruned_haps/')
+dir_in <- paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/datasets/')
+dir_out <- paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/t1e/')
 
-# dir_leg = dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/')
-# dir_in = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
-# dir_out = 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
+# dir_leg <- dir_in <- paste0('C:/Users/sagee/Documents/HendricksLab/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/')
+# dir_in <- paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
+# dir_out <- 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
 
 # Vectors to store p-values
-prox_ext_genes_p = prox_ext_genes_p_adj_Ncc = prox_ext_genes_p_adj_Neff = c()
-proxW_ext_genes_p = proxW_ext_genes_p_adj_Ncc = proxW_ext_genes_p_adj_Neff = c() 
-prox2_ext_genes_p = prox2_ext_genes_p_adj_Ncc = prox2_ext_genes_p_adj_Neff = c()
-prox2_all_genes_p = prox2_all_genes_p_adj_Ncc = prox2_all_genes_p_adj_Neff = c()
-iecat_genes_p = iecat_genes_p_adj_Ncc = iecat_genes_p_adj_Neff = c() 
-skato_int_genes_p = skato_ext_genes_p = skato_all_genes_p = c() 
-skat_int_genes_p = skat_ext_genes_p = skat_all_genes_p = c() 
-burden_int_genes_p = burden_ext_genes_p = burden_all_genes_p = c() 
+prox_ext_genes_p <- prox_ext_genes_p_adj_Ncc <- prox_ext_genes_p_adj_Neff <- c()
+proxW_ext_genes_p <- proxW_ext_genes_p_adj_Ncc <- proxW_ext_genes_p_adj_Neff <- c() 
+prox2_ext_genes_p <- prox2_ext_genes_p_adj_Ncc <- prox2_ext_genes_p_adj_Neff <- c()
+prox2_all_genes_p <- prox2_all_genes_p_adj_Ncc <- prox2_all_genes_p_adj_Neff <- c()
+iecat_genes_p <- iecat_genes_p_adj_Ncc <- iecat_genes_p_adj_Neff <- c() 
+skato_int_genes_p <- skato_ext_genes_p <- skato_all_genes_p <- c() 
+skat_int_genes_p <- skat_ext_genes_p <- skat_all_genes_p <- c() 
+burden_int_genes_p <- burden_ext_genes_p <- burden_all_genes_p <- c() 
 
 # Vectors to store proxECAT and LogProx AC info
-prox_ext_ACs = prox_ext_adj_Ncc_ACs = prox_ext_adj_Neff_ACs = c()
-prox2_ext_ACs = prox2_ext_adj_Ncc_ACs = prox2_ext_adj_Neff_ACs = prox2_all_ACs = prox2_all_adj_Ncc_ACs = prox2_all_adj_Neff_ACs = c()
+prox_ext_ACs <- prox_ext_adj_Ncc_ACs <- prox_ext_adj_Neff_ACs <- c()
+prox2_ext_ACs <- prox2_ext_adj_Ncc_ACs <- prox2_ext_adj_Neff_ACs <- c()
+prox2_all_ACs <- prox2_all_adj_Ncc_ACs <- prox2_all_adj_Neff_ACs <- c()
 
 # Vectors to store effective sample sizes
-neff_vec = c()
+neff_vec <- c()
 
 # loop through the simulation replicates
 set.seed(1) 
@@ -64,23 +66,23 @@ for (i in start:end){
   
   # read in the legend file
   # leg = read_leg_homo(dir_leg, Pop, i)
-  leg = read.table(paste0(dir_leg, 'chr19.block37.', Pop_admx, '.sim', i, '.', p_case, 'fun.100syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
-  leg$row = 1:nrow(leg)
+  leg <- read.table(paste0(dir_leg, 'chr19.block37.', Pop_admx, '.sim', i, '.', p_case, 'fun.100syn.legend'), header=T, sep='\t') #RAREsim v2.1.1 pruning only
+  leg$row <- 1:nrow(leg)
   
   # Need to mutate so counts get added up correctly for ZNF333
-  leg = leg %>% mutate(gene = ifelse(gene == "ZNF333;ZNF333(NM_001352243:exon9:UTR5)", "ZNF333", gene))
+  leg <- leg %>% mutate(gene = ifelse(gene == "ZNF333;ZNF333(NM_001352243:exon9:UTR5)", "ZNF333", gene))
   
   # subset the synonymous variants from the legend file
-  leg_syn = leg %>% filter(fun=="syn")
-  leg_fun = leg %>% filter(fun=="fun")
+  leg_syn <- leg %>% filter(fun=="syn")
+  leg_fun <- leg %>% filter(fun=="fun")
   
   # read in the haplotype files
-  hap_case = read_hap(dir_in, Pop_admx, i, scen, "cases", p_case_fun, p_case_syn)
-  hap_ic = read_hap(dir_in, Pop_admx, i, scen, "internal.controls", p_int_fun, p_int_syn)
-  hap_cc = read_hap(dir_in, Pop_admx, i, scen, "common.controls", p_cc_fun, p_cc_syn)
+  hap_case <- read_hap(dir_in, Pop_admx, i, scen, "cases", p_case_fun, p_case_syn)
+  hap_ic <- read_hap(dir_in, Pop_admx, i, scen, "internal.controls", p_int_fun, p_int_syn)
+  hap_cc <- read_hap(dir_in, Pop_admx, i, scen, "common.controls", p_cc_fun, p_cc_syn)
   
   # Create empty list to store reference haplotytpes
-  hap_refs = setNames(vector("list", length(Pops)), paste0("hap_ref_pop", 1:length(Pops)))
+  hap_refs <- setNames(vector("list", length(Pops)), paste0("hap_ref_pop", 1:length(Pops)))
   
   # Read in the reference haplotypes
   for (j in seq_along(Pops)) {
@@ -88,30 +90,30 @@ for (i in start:end){
   }
   
   # convert the haplotypes into genotypes
-  geno_case = make_geno(hap_case)
-  geno_ic = make_geno(hap_ic)
-  geno_cc = make_geno(hap_cc)
+  geno_case <- make_geno(hap_case)
+  geno_ic <- make_geno(hap_ic)
+  geno_cc <- make_geno(hap_cc)
   
   # calculate the allele counts/frequencies
-  count_case = calc_allele_freqs(geno_case, Ncase, Pop=NULL)
-  count_ic = calc_allele_freqs(geno_ic, Nic, Pop=NULL)
-  count_cc = calc_allele_freqs(geno_cc, Ncc, Pop=NULL)
+  count_case <- calc_allele_freqs(geno_case, Ncase, Pop=NULL)
+  count_ic <- calc_allele_freqs(geno_ic, Nic, Pop=NULL)
+  count_cc <- calc_allele_freqs(geno_cc, Ncc, Pop=NULL)
   
   # Create empty list to store reference allele counts/frequencies
-  count_refs = list()
+  count_refs <- list()
   
   # calculate the reference allele counts/frequencies
   for (j in seq_along(Pops)) {
-    count_refs[[j]] = calc_allele_freqs(hap_refs[[j]], Nrefs[j], Pop=Pops[j])
+    count_refs[[j]] <- calc_allele_freqs(hap_refs[[j]], Nrefs[j], Pop=Pops[j])
   }
   
   # Commbine data with references for Summix
-  cc_refs = cbind(count_cc, do.call(cbind, count_refs))
-  case_refs = cbind(count_case, do.call(cbind, count_refs))
+  cc_refs <- cbind(count_cc, do.call(cbind, count_refs))
+  case_refs <- cbind(count_case, do.call(cbind, count_refs))
 
   # Estimate ancestry proportions using only COMMON variants
-  cc_est_prop = est_props(cc_refs, Pops, maf)
-  case_est_prop = est_props(case_refs, Pops, maf)
+  cc_est_prop <- est_props(cc_refs, Pops, maf)
+  case_est_prop <- est_props(case_refs, Pops, maf)
   # int_est_prop = est_props(int_refs, Pop1, Pop2, maf)
 
   # prop_ests_cc <- rbind(prop_ests_cc, cc_est_prop)
@@ -119,169 +121,169 @@ for (i in start:end){
   # prop_ests_int <- rbind(prop_ests_int, int_est_prop)
   
   # Calculate adjusted AFs
-  count_cc_adj_Ncc = calc_adjusted_AF(cc_refs, Pops, case_est_prop, cc_est_prop, Nref=Nrefs, Ncc, Neff=FALSE)
-  adj_Neff = calc_adjusted_AF(cc_refs, Pops, case_est_prop, cc_est_prop, Nref=Nrefs, Ncc, Neff=TRUE)
+  count_cc_adj_Ncc <- calc_adjusted_AF(cc_refs, Pops, case_est_prop, cc_est_prop, Nref=Nrefs, Ncc, Neff=FALSE)
+  adj_Neff <- calc_adjusted_AF(cc_refs, Pops, case_est_prop, cc_est_prop, Nref=Nrefs, Ncc, Neff=TRUE)
   
   # return counts and effective sample size from Neff adjusted data
-  count_cc_adj_Neff = adj_Neff[[1]]
-  Neff = adj_Neff[[2]]
+  count_cc_adj_Neff <- adj_Neff[[1]]
+  Neff <- adj_Neff[[2]]
   
   # Save effective sample size
-  neff_vec = c(neff_vec, Neff)
+  neff_vec <- c(neff_vec, Neff)
 
   # Identify variants where AF >= 1-maf
-  flip_int = which(count_case$af >= 1-maf | count_ic$af >= 1-maf)
-  flip_ext = which(count_case$af >= 1-maf | count_cc$af >= 1-maf)
-  flip_all = which(count_case$af >= 1-maf | count_ic$af >= 1-maf | count_cc$af > 1-maf)
+  flip_int <- which(count_case$af >= 1-maf | count_ic$af >= 1-maf)
+  flip_ext <- which(count_case$af >= 1-maf | count_cc$af >= 1-maf)
+  flip_all <- which(count_case$af >= 1-maf | count_ic$af >= 1-maf | count_cc$af > 1-maf)
   
-  flip_ext_adj_Ncc = which(count_case$af >= 1-maf | count_cc_adj_Ncc$af >= 1-maf)
-  flip_all_adj_Ncc = which(count_case$af >= 1-maf | count_ic$af >= 1-maf | count_cc_adj_Ncc$af >= 1-maf)
+  flip_ext_adj_Ncc <- which(count_case$af >= 1-maf | count_cc_adj_Ncc$af >= 1-maf)
+  flip_all_adj_Ncc <- which(count_case$af >= 1-maf | count_ic$af >= 1-maf | count_cc_adj_Ncc$af >= 1-maf)
   
-  flip_ext_adj_Neff = which(count_case$af >= 1-maf | count_cc_adj_Neff$af >= 1-maf)
-  flip_all_adj_Neff = which(count_case$af >= 1-maf | count_ic$af >= 1-maf | count_cc_adj_Neff$af >= 1-maf)
+  flip_ext_adj_Neff <- which(count_case$af >= 1-maf | count_cc_adj_Neff$af >= 1-maf)
+  flip_all_adj_Neff <- which(count_case$af >= 1-maf | count_ic$af >= 1-maf | count_cc_adj_Neff$af >= 1-maf)
 
   # Flip the data at the variants identified above for all the different combination of datasets
   # If no variants need to be flipped, return the unaltered datasets
   # Cases and internal controls
-  int_data = flip_data(leg, flip_int, geno_case, count_case, Ncase, cntrl="int", geno_ic, count_ic, Nic, 
+  int_data <- flip_data(leg, flip_int, geno_case, count_case, Ncase, cntrl="int", geno_ic, count_ic, Nic, 
                        geno.cc=NULL, count.cc=NULL, count.cc.adj=NULL, Ncc=NULL, adj=FALSE)
   
-  leg_int = int_data[[1]]
-  geno_case_int = int_data[[2]]
-  geno_ic_int = int_data[[3]]
-  count_case_int = int_data[[5]]
-  count_ic_int = int_data[[6]]
+  leg_int <- int_data[[1]]
+  geno_case_int <- int_data[[2]]
+  geno_ic_int <- int_data[[3]]
+  count_case_int <- int_data[[5]]
+  count_ic_int <- int_data[[6]]
   
   # Cases and external controls
-  ext_data = flip_data(leg, flip_ext, geno_case, count_case, Ncase, cntrl="ext", geno.ic=NULL, count.ic=NULL, Nic=NULL, 
+  ext_data <- flip_data(leg, flip_ext, geno_case, count_case, Ncase, cntrl="ext", geno.ic=NULL, count.ic=NULL, Nic=NULL, 
                        geno_cc, count_cc, count.cc.adj=NULL, Ncc, adj=FALSE)
   
-  leg_ext = ext_data[[1]]
-  geno_case_ext = ext_data[[2]]
-  geno_cc_ext = ext_data[[4]]
-  count_case_ext = ext_data[[5]]
-  count_cc_ext = ext_data[[7]]
+  leg_ext <- ext_data[[1]]
+  geno_case_ext <- ext_data[[2]]
+  geno_cc_ext <- ext_data[[4]]
+  count_case_ext <- ext_data[[5]]
+  count_cc_ext <- ext_data[[7]]
   
   # Cases, internal controls, and external controls
-  all_data = flip_data(leg, flip_all, geno_case, count_case, Ncase, cntrl="all", geno_ic, count_ic, Nic, 
+  all_data <- flip_data(leg, flip_all, geno_case, count_case, Ncase, cntrl="all", geno_ic, count_ic, Nic, 
                        geno_cc, count_cc, count.cc.adj=NULL, Ncc, adj=FALSE)
   
-  leg_all = all_data[[1]]
-  geno_case_all = all_data[[2]]
-  geno_ic_all = all_data[[3]]
-  geno_cc_all = all_data[[4]]
-  count_case_all = all_data[[5]]
-  count_ic_all = all_data[[6]]
-  count_cc_all = all_data[[7]]
+  leg_all <- all_data[[1]]
+  geno_case_all <- all_data[[2]]
+  geno_ic_all <- all_data[[3]]
+  geno_cc_all <- all_data[[4]]
+  count_case_all <- all_data[[5]]
+  count_ic_all <- all_data[[6]]
+  count_cc_all <- all_data[[7]]
   
   # Cases and Ncc adjusted external controls
-  ext_adj_Ncc_data = flip_data(leg, flip_ext_adj_Ncc, geno_case, count_case, Ncase, cntrl="ext", geno.ic=NULL, count.ic=NULL, Nic=NULL, 
+  ext_adj_Ncc_data <- flip_data(leg, flip_ext_adj_Ncc, geno_case, count_case, Ncase, cntrl="ext", geno.ic=NULL, count.ic=NULL, Nic=NULL, 
                            geno.cc=NULL, count.cc=NULL, count_cc_adj_Ncc, Ncc, adj=TRUE)
   
-  leg_ext_adj_Ncc = ext_adj_Ncc_data[[1]]
-  geno_case_ext_adj_Ncc = ext_adj_Ncc_data[[2]]
-  count_case_ext_adj_Ncc = ext_adj_Ncc_data[[5]]
-  count_cc_ext_adj_Ncc = ext_adj_Ncc_data[[8]]
+  leg_ext_adj_Ncc <- ext_adj_Ncc_data[[1]]
+  geno_case_ext_adj_Ncc <- ext_adj_Ncc_data[[2]]
+  count_case_ext_adj_Ncc <- ext_adj_Ncc_data[[5]]
+  count_cc_ext_adj_Ncc <- ext_adj_Ncc_data[[8]]
   
   # Cases, internal controls, and Ncc adjusted external controls
-  all_adj_Ncc_data = flip_data(leg, flip_all_adj_Ncc, geno_case, count_case, Ncase, cntrl="all", geno_ic, count_ic, Nic, 
+  all_adj_Ncc_data <- flip_data(leg, flip_all_adj_Ncc, geno_case, count_case, Ncase, cntrl="all", geno_ic, count_ic, Nic, 
                            geno.cc=NULL, count.cc=NULL, count_cc_adj_Ncc, Ncc, adj=TRUE)
   
-  leg_all_adj_Ncc = all_adj_Ncc_data[[1]]
-  geno_case_all_adj_Ncc = all_adj_Ncc_data[[2]]
-  geno_ic_all_adj_Ncc = all_adj_Ncc_data[[3]]
-  count_case_all_adj_Ncc = all_adj_Ncc_data[[5]]
-  count_ic_all_adj_Ncc = all_adj_Ncc_data[[6]]
-  count_cc_all_adj_Ncc = all_adj_Ncc_data[[8]]
+  leg_all_adj_Ncc <- all_adj_Ncc_data[[1]]
+  geno_case_all_adj_Ncc <- all_adj_Ncc_data[[2]]
+  geno_ic_all_adj_Ncc <- all_adj_Ncc_data[[3]]
+  count_case_all_adj_Ncc <- all_adj_Ncc_data[[5]]
+  count_ic_all_adj_Ncc <- all_adj_Ncc_data[[6]]
+  count_cc_all_adj_Ncc <- all_adj_Ncc_data[[8]]
   
   # Cases and Neff adjusted external controls
-  ext_adj_Neff_data = flip_data(leg, flip_ext_adj_Neff, geno_case, count_case, Ncase, cntrl="ext", geno.ic=NULL, count.ic=NULL, Nic=NULL, 
+  ext_adj_Neff_data <- flip_data(leg, flip_ext_adj_Neff, geno_case, count_case, Ncase, cntrl="ext", geno.ic=NULL, count.ic=NULL, Nic=NULL, 
                            geno.cc=NULL, count.cc=NULL, count_cc_adj_Neff, Ncc=Neff, adj=TRUE)
   
-  leg_ext_adj_Neff = ext_adj_Neff_data[[1]]
-  geno_case_ext_adj_Neff = ext_adj_Neff_data[[2]]
-  count_case_ext_adj_Neff = ext_adj_Neff_data[[5]]
-  count_cc_ext_adj_Neff = ext_adj_Neff_data[[8]]
+  leg_ext_adj_Neff <- ext_adj_Neff_data[[1]]
+  geno_case_ext_adj_Neff <- ext_adj_Neff_data[[2]]
+  count_case_ext_adj_Neff <- ext_adj_Neff_data[[5]]
+  count_cc_ext_adj_Neff <- ext_adj_Neff_data[[8]]
   
   # Cases, internal controls, and Neff adjusted external controls
-  all_adj_Neff_data = flip_data(leg, flip_all_adj_Neff, geno_case, count_case, Ncase, cntrl="all", geno_ic, count_ic, Nic, 
+  all_adj_Neff_data <- flip_data(leg, flip_all_adj_Neff, geno_case, count_case, Ncase, cntrl="all", geno_ic, count_ic, Nic, 
                                 geno.cc=NULL, count.cc=NULL, count_cc_adj_Neff, Ncc=Neff, adj=TRUE)
   
-  leg_all_adj_Neff = all_adj_Neff_data[[1]]
-  geno_case_all_adj_Neff = all_adj_Neff_data[[2]]
-  geno_ic_all_adj_Neff = all_adj_Neff_data[[3]]
-  count_case_all_adj_Neff = all_adj_Neff_data[[5]]
-  count_ic_all_adj_Neff = all_adj_Neff_data[[6]]
-  count_cc_all_adj_Neff = all_adj_Neff_data[[8]]
+  leg_all_adj_Neff <- all_adj_Neff_data[[1]]
+  geno_case_all_adj_Neff <- all_adj_Neff_data[[2]]
+  geno_ic_all_adj_Neff <- all_adj_Neff_data[[3]]
+  count_case_all_adj_Neff <- all_adj_Neff_data[[5]]
+  count_ic_all_adj_Neff <- all_adj_Neff_data[[6]]
+  count_cc_all_adj_Neff <- all_adj_Neff_data[[8]]
   
   # identify the common variants
-  common_int = leg[which(count_case_int$af > maf | count_ic_int$af > maf),]
-  common_ext = leg[which(count_case_ext$af > maf | count_cc_ext$af > maf),]
-  common_all = leg[which(count_case_all$af > maf | count_ic_all$af > maf | count_cc_all$af > maf),]
+  common_int <- leg[which(count_case_int$af > maf | count_ic_int$af > maf),]
+  common_ext <- leg[which(count_case_ext$af > maf | count_cc_ext$af > maf),]
+  common_all <- leg[which(count_case_all$af > maf | count_ic_all$af > maf | count_cc_all$af > maf),]
 
-  common_ext_adj_Ncc = leg[which(count_case_ext_adj_Ncc$af > maf | count_cc_ext_adj_Ncc$af > maf),]
-  common_all_adj_Ncc = leg[which(count_case_all_adj_Ncc$af > maf | count_ic_all_adj_Ncc$af > maf | count_cc_all_adj_Ncc$af > maf),]
+  common_ext_adj_Ncc <- leg[which(count_case_ext_adj_Ncc$af > maf | count_cc_ext_adj_Ncc$af > maf),]
+  common_all_adj_Ncc <- leg[which(count_case_all_adj_Ncc$af > maf | count_ic_all_adj_Ncc$af > maf | count_cc_all_adj_Ncc$af > maf),]
   
-  common_ext_adj_Neff = leg[which(count_case_ext_adj_Neff$af > maf | count_cc_ext_adj_Neff$af > maf),]
-  common_all_adj_Neff = leg[which(count_case_all_adj_Neff$af > maf | count_ic_all_adj_Neff$af > maf | count_cc_all_adj_Neff$af > maf),]
+  common_ext_adj_Neff <- leg[which(count_case_ext_adj_Neff$af > maf | count_cc_ext_adj_Neff$af > maf),]
+  common_all_adj_Neff <- leg[which(count_case_all_adj_Neff$af > maf | count_ic_all_adj_Neff$af > maf | count_cc_all_adj_Neff$af > maf),]
 
   # proxECAT
-  counts_ext_wide = prox_gene_data_prep(count_case_ext, count_cc_ext, leg_ext, common_ext)
-  counts_ext_wide_adj_Ncc = prox_gene_data_prep(count_case_ext_adj_Ncc, count_cc_ext_adj_Ncc, leg_ext_adj_Ncc, common_ext_adj_Ncc)
-  counts_ext_wide_adj_Neff = prox_gene_data_prep(count_case_ext_adj_Neff, count_cc_ext_adj_Neff, leg_ext_adj_Neff, common_ext_adj_Neff)
+  counts_ext_wide <- prox_gene_data_prep(count_case_ext, count_cc_ext, leg_ext, common_ext)
+  counts_ext_wide_adj_Ncc <- prox_gene_data_prep(count_case_ext_adj_Ncc, count_cc_ext_adj_Ncc, leg_ext_adj_Ncc, common_ext_adj_Ncc)
+  counts_ext_wide_adj_Neff <- prox_gene_data_prep(count_case_ext_adj_Neff, count_cc_ext_adj_Neff, leg_ext_adj_Neff, common_ext_adj_Neff)
 
   # Store the proxECAT and proxECAT-weighted p-values
-  prox_ext_genes_p = rbind(prox_ext_genes_p, counts_ext_wide$prox)
-  prox_ext_genes_p_adj_Ncc = rbind(prox_ext_genes_p_adj_Ncc, counts_ext_wide_adj_Ncc$prox)
-  prox_ext_genes_p_adj_Neff = rbind(prox_ext_genes_p_adj_Neff, counts_ext_wide_adj_Neff$prox)
+  prox_ext_genes_p <- rbind(prox_ext_genes_p, counts_ext_wide$prox)
+  prox_ext_genes_p_adj_Ncc <- rbind(prox_ext_genes_p_adj_Ncc, counts_ext_wide_adj_Ncc$prox)
+  prox_ext_genes_p_adj_Neff <- rbind(prox_ext_genes_p_adj_Neff, counts_ext_wide_adj_Neff$prox)
 
-  proxW_ext_genes_p = rbind(proxW_ext_genes_p, counts_ext_wide$prox_w)
-  proxW_ext_genes_p_adj_Ncc = rbind(proxW_ext_genes_p_adj_Ncc, counts_ext_wide_adj_Ncc$prox_w)
-  proxW_ext_genes_p_adj_Neff = rbind(proxW_ext_genes_p_adj_Neff, counts_ext_wide_adj_Neff$prox_w)
+  proxW_ext_genes_p <- rbind(proxW_ext_genes_p, counts_ext_wide$prox_w)
+  proxW_ext_genes_p_adj_Ncc <- rbind(proxW_ext_genes_p_adj_Ncc, counts_ext_wide_adj_Ncc$prox_w)
+  proxW_ext_genes_p_adj_Neff <- rbind(proxW_ext_genes_p_adj_Neff, counts_ext_wide_adj_Neff$prox_w)
   
   # Save the proxECAT AC info, add rep column, and move it to front of df
-  prox_ext_ACs = rbind(prox_ext_ACs, counts_ext_wide %>% mutate(rep = i) %>% relocate(rep))
-  prox_ext_adj_Ncc_ACs = rbind(prox_ext_adj_Ncc_ACs, counts_ext_wide_adj_Ncc %>% mutate(rep = i) %>% relocate(rep))
-  prox_ext_adj_Neff_ACs = rbind(prox_ext_adj_Neff_ACs, counts_ext_wide_adj_Neff %>% mutate(rep = i) %>% relocate(rep))
+  prox_ext_ACs <- rbind(prox_ext_ACs, counts_ext_wide %>% mutate(rep = i) %>% relocate(rep))
+  prox_ext_adj_Ncc_ACs <- rbind(prox_ext_adj_Ncc_ACs, counts_ext_wide_adj_Ncc %>% mutate(rep = i) %>% relocate(rep))
+  prox_ext_adj_Neff_ACs <- rbind(prox_ext_adj_Neff_ACs, counts_ext_wide_adj_Neff %>% mutate(rep = i) %>% relocate(rep))
   
 
   ### Prep data for other methods
   # convert genotypes into long format for ProxECAT v2, combine datasets, and remove common variants
-  data_prox = format_logprox_data(leg_ext, count_case_ext, count_cc_ext, control_type="ext", count.control2=NULL, common_ext, data.all=FALSE)
-  data_prox_adj_Ncc = format_logprox_data(leg_ext_adj_Ncc, count_case_ext_adj_Ncc, count_cc_ext_adj_Ncc, control_type="ext", count.control2=NULL, common_ext_adj_Ncc, data.all=FALSE)
-  data_prox_adj_Neff = format_logprox_data(leg_ext_adj_Neff, count_case_ext_adj_Neff, count_cc_ext_adj_Neff, control_type="ext", count.control2=NULL, common_ext_adj_Neff, data.all=FALSE)
+  data_prox <- format_logprox_data(leg_ext, count_case_ext, count_cc_ext, control_type="ext", count.control2=NULL, common_ext, data.all=FALSE)
+  data_prox_adj_Ncc <- format_logprox_data(leg_ext_adj_Ncc, count_case_ext_adj_Ncc, count_cc_ext_adj_Ncc, control_type="ext", count.control2=NULL, common_ext_adj_Ncc, data.all=FALSE)
+  data_prox_adj_Neff <- format_logprox_data(leg_ext_adj_Neff, count_case_ext_adj_Neff, count_cc_ext_adj_Neff, control_type="ext", count.control2=NULL, common_ext_adj_Neff, data.all=FALSE)
   
-  data_all = format_logprox_data(leg_all, count_case_all, count_ic_all, control_type="int", count.control2=count_cc_all, common_all, data.all=TRUE)
-  data_all_adj_Ncc = format_logprox_data(leg_all_adj_Ncc, count_case_all_adj_Ncc, count_ic_all_adj_Ncc, control_type="int", count.control2=count_cc_all_adj_Ncc, common_all_adj_Ncc, data.all=TRUE)
-  data_all_adj_Neff = format_logprox_data(leg_all_adj_Neff, count_case_all_adj_Neff, count_ic_all_adj_Neff, control_type="int", count.control2=count_cc_all_adj_Neff, common_all_adj_Neff, data.all=TRUE)
+  data_all <- format_logprox_data(leg_all, count_case_all, count_ic_all, control_type="int", count.control2=count_cc_all, common_all, data.all=TRUE)
+  data_all_adj_Ncc <- format_logprox_data(leg_all_adj_Ncc, count_case_all_adj_Ncc, count_ic_all_adj_Ncc, control_type="int", count.control2=count_cc_all_adj_Ncc, common_all_adj_Ncc, data.all=TRUE)
+  data_all_adj_Neff <- format_logprox_data(leg_all_adj_Neff, count_case_all_adj_Neff, count_ic_all_adj_Neff, control_type="int", count.control2=count_cc_all_adj_Neff, common_all_adj_Neff, data.all=TRUE)
 
   # create case/control phenotype matrices for iECAT/SKAT
-  pheno_int = rep(0, (ncol(geno_case_int) + ncol(geno_ic_int)))
-  pheno_int[1:ncol(geno_case_int)] = 1
+  pheno_int <- rep(0, (ncol(geno_case_int) + ncol(geno_ic_int)))
+  pheno_int[1:ncol(geno_case_int)] <- 1
 
-  pheno_ext = rep(0, (ncol(geno_case_ext) + ncol(geno_cc_ext)))
-  pheno_ext[1:ncol(geno_case_ext)] = 1
+  pheno_ext <- rep(0, (ncol(geno_case_ext) + ncol(geno_cc_ext)))
+  pheno_ext[1:ncol(geno_case_ext)] <- 1
 
-  pheno_all = rep(0, (ncol(geno_case_all) + ncol(geno_ic_all) + ncol(geno_cc_all)))
-  pheno_all[1:ncol(geno_case_all)] = 1
+  pheno_all <- rep(0, (ncol(geno_case_all) + ncol(geno_ic_all) + ncol(geno_cc_all)))
+  pheno_all[1:ncol(geno_case_all)] <- 1
 
   # null model object
-  obj_int = SKAT_Null_Model(as.numeric(pheno_int) ~ 1, out_type="D") # D-dichotomous
-  obj_ext = SKAT_Null_Model(as.numeric(pheno_ext) ~ 1, out_type="D") # D-dichotomous
-  obj_all = SKAT_Null_Model(as.numeric(pheno_all) ~ 1, out_type="D") # D-dichotomous
+  obj_int <- SKAT_Null_Model(as.numeric(pheno_int) ~ 1, out_type="D") # D-dichotomous
+  obj_ext <- SKAT_Null_Model(as.numeric(pheno_ext) ~ 1, out_type="D") # D-dichotomous
+  obj_all <- SKAT_Null_Model(as.numeric(pheno_all) ~ 1, out_type="D") # D-dichotomous
 
   # create combined genotype matrices
-  geno_iecat_int = cbind(geno_case_all, geno_ic_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
-  geno_iecat_int_adj_Ncc = cbind(geno_case_all_adj_Ncc, geno_ic_all_adj_Ncc, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Ncc$row),] #iECAT-O
-  geno_iecat_int_adj_Neff = cbind(geno_case_all_adj_Neff, geno_ic_all_adj_Neff, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Neff$row),] #iECAT-O
+  geno_iecat_int <- cbind(geno_case_all, geno_ic_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
+  geno_iecat_int_adj_Ncc <- cbind(geno_case_all_adj_Ncc, geno_ic_all_adj_Ncc, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Ncc$row),] #iECAT-O
+  geno_iecat_int_adj_Neff <- cbind(geno_case_all_adj_Neff, geno_ic_all_adj_Neff, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Neff$row),] #iECAT-O
 
-  geno_iecat_ext = cbind(count_cc_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
-  geno_iecat_ext_adj_Ncc = cbind(count_cc_all_adj_Ncc, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Ncc$row),] #iECAT-O
-  geno_iecat_ext_adj_Neff = cbind(count_cc_all_adj_Neff, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Neff$row),] #iECAT-O
+  geno_iecat_ext <- cbind(count_cc_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #iECAT-O
+  geno_iecat_ext_adj_Ncc <- cbind(count_cc_all_adj_Ncc, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Ncc$row),] #iECAT-O
+  geno_iecat_ext_adj_Neff <- cbind(count_cc_all_adj_Neff, gene=leg$gene)[-union(leg_syn$row, common_all_adj_Neff$row),] #iECAT-O
 
-  geno_skat_int = cbind(geno_case_int, geno_ic_int, gene=leg$gene)[-union(leg_syn$row, common_int$row),] #internal
-  geno_skat_ext = cbind(geno_case_ext, geno_cc_ext, gene=leg$gene)[-union(leg_syn$row, common_ext$row),] #external
-  geno_skat_all = cbind(geno_case_all, geno_ic_all, geno_cc_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #internal+external
+  geno_skat_int <- cbind(geno_case_int, geno_ic_int, gene=leg$gene)[-union(leg_syn$row, common_int$row),] #internal
+  geno_skat_ext <- cbind(geno_case_ext, geno_cc_ext, gene=leg$gene)[-union(leg_syn$row, common_ext$row),] #external
+  geno_skat_all <- cbind(geno_case_all, geno_ic_all, geno_cc_all, gene=leg$gene)[-union(leg_syn$row, common_all$row),] #internal+external
 
   # some colnames are same from cbinding the geno matrices, need to make them unique
   colnames(geno_iecat_int) <- make.unique(colnames(geno_iecat_int))
@@ -293,23 +295,23 @@ for (i in start:end){
   colnames(geno_skat_all) <- make.unique(colnames(geno_skat_all))
 
   # create MAC matrix for external controls
-  tbl = data.frame(a0=geno_iecat_ext$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_iecat_ext$gene)
-  tbl_adj_Ncc = data.frame(a0=geno_iecat_ext_adj_Ncc$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_iecat_ext_adj_Ncc$gene)
-  tbl_adj_Neff = data.frame(a0=geno_iecat_ext_adj_Neff$ac) %>% mutate(a1=2*Neff-a0, gene = geno_iecat_ext_adj_Neff$gene)
+  tbl <- data.frame(a0=geno_iecat_ext$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_iecat_ext$gene)
+  tbl_adj_Ncc <- data.frame(a0=geno_iecat_ext_adj_Ncc$ac) %>% mutate(a1=2*Ncc-a0, gene = geno_iecat_ext_adj_Ncc$gene)
+  tbl_adj_Neff <- data.frame(a0=geno_iecat_ext_adj_Neff$ac) %>% mutate(a1=2*Neff-a0, gene = geno_iecat_ext_adj_Neff$gene)
 
   # call ProxECATv2/iECAT/SKAT once per gene
-  prox2_ext_genes = prox2_ext_genes_adj_Ncc = prox2_ext_genes_adj_Neff = c()
-  prox2_all_genes = prox2_all_genes_adj_Ncc = prox2_all_genes_adj_Neff = c()
-  iecat_genes = iecat_genes_adj_Ncc = iecat_genes_adj_Neff = c()
-  skato_int_genes = skato_ext_genes = skato_all_genes = c()
-  skat_int_genes = skat_ext_genes = skat_all_genes = c()
-  burden_int_genes = burden_ext_genes = burden_all_genes = c()
+  prox2_ext_genes <- prox2_ext_genes_adj_Ncc <- prox2_ext_genes_adj_Neff <- c()
+  prox2_all_genes <- prox2_all_genes_adj_Ncc <- prox2_all_genes_adj_Neff <- c()
+  iecat_genes <- iecat_genes_adj_Ncc <- iecat_genes_adj_Neff <- c()
+  skato_int_genes <- skato_ext_genes <- skato_all_genes <- c()
+  skat_int_genes <- skat_ext_genes <- skat_all_genes <- c()
+  burden_int_genes <- burden_ext_genes <- burden_all_genes <- c()
   
   # Create vectors to store ACs for LogProx
-  prox2_ext_genes_ACs = prox2_ext_adj_Ncc_genes_ACs = prox2_ext_adj_Neff_genes_ACs = c()
-  prox2_all_genes_ACs = prox2_all_adj_Ncc_genes_ACs = prox2_all_adj_Neff_genes_ACs = c()
+  prox2_ext_genes_ACs <- prox2_ext_adj_Ncc_genes_ACs <- prox2_ext_adj_Neff_genes_ACs <- c()
+  prox2_all_genes_ACs <- prox2_all_adj_Ncc_genes_ACs <- prox2_all_adj_Neff_genes_ACs <- c()
 
-  genes = levels(droplevels(as.factor(leg$gene)))
+  genes <- levels(droplevels(as.factor(leg$gene)))
   # g = 1
   # gene_counts = leg %>% count(gene)
   # loop through the genes
@@ -318,143 +320,143 @@ for (i in start:end){
     # print(paste0('current gene: ', genes[g], ' (', g, ' of ', length(genes), ')'))
 
     # LogProx
-    prox2_ext = logprox_gene_data_prep(data_prox, genes[g], data.all=FALSE)
-    prox2_ext_adj_Ncc = logprox_gene_data_prep(data_prox_adj_Ncc, genes[g], data.all=FALSE)
-    prox2_ext_adj_Neff = logprox_gene_data_prep(data_prox_adj_Neff, genes[g], data.all=FALSE)
+    prox2_ext <- logprox_gene_data_prep(data_prox, genes[g], data.all=FALSE)
+    prox2_ext_adj_Ncc <- logprox_gene_data_prep(data_prox_adj_Ncc, genes[g], data.all=FALSE)
+    prox2_ext_adj_Neff <- logprox_gene_data_prep(data_prox_adj_Neff, genes[g], data.all=FALSE)
     
-    prox2_all = logprox_gene_data_prep(data_all, genes[g], data.all=TRUE)
-    prox2_all_adj_Ncc = logprox_gene_data_prep(data_all_adj_Ncc, genes[g], data.all=TRUE)
-    prox2_all_adj_Neff = logprox_gene_data_prep(data_all_adj_Neff, genes[g], data.all=TRUE)
+    prox2_all <- logprox_gene_data_prep(data_all, genes[g], data.all=TRUE)
+    prox2_all_adj_Ncc <- logprox_gene_data_prep(data_all_adj_Ncc, genes[g], data.all=TRUE)
+    prox2_all_adj_Neff <- logprox_gene_data_prep(data_all_adj_Neff, genes[g], data.all=TRUE)
 
     # Save the LogProx p-values
-    prox2_ext_genes = c(prox2_ext_genes, prox2_ext[[1]])
-    prox2_ext_genes_adj_Ncc = c(prox2_ext_genes_adj_Ncc, prox2_ext_adj_Ncc[[1]])
-    prox2_ext_genes_adj_Neff = c(prox2_ext_genes_adj_Neff, prox2_ext_adj_Neff[[1]])
+    prox2_ext_genes <- c(prox2_ext_genes, prox2_ext[[1]])
+    prox2_ext_genes_adj_Ncc <- c(prox2_ext_genes_adj_Ncc, prox2_ext_adj_Ncc[[1]])
+    prox2_ext_genes_adj_Neff <- c(prox2_ext_genes_adj_Neff, prox2_ext_adj_Neff[[1]])
     
-    prox2_all_genes = c(prox2_all_genes, prox2_all[[1]])
-    prox2_all_genes_adj_Ncc = c(prox2_all_genes_adj_Ncc, prox2_all_adj_Ncc[[1]])
-    prox2_all_genes_adj_Neff = c(prox2_all_genes_adj_Neff, prox2_all_adj_Neff[[1]])
+    prox2_all_genes <- c(prox2_all_genes, prox2_all[[1]])
+    prox2_all_genes_adj_Ncc <- c(prox2_all_genes_adj_Ncc, prox2_all_adj_Ncc[[1]])
+    prox2_all_genes_adj_Neff <- c(prox2_all_genes_adj_Neff, prox2_all_adj_Neff[[1]])
     
     # Save the LogProx ACs (saving the simulation replicate number, the gene, and the ACs)
-    prox2_ext_genes_ACs = rbind(prox2_ext_genes_ACs, prox2_ext[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
-    prox2_ext_adj_Ncc_genes_ACs = rbind(prox2_ext_adj_Ncc_genes_ACs, prox2_ext_adj_Ncc[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
-    prox2_ext_adj_Neff_genes_ACs = rbind(prox2_ext_adj_Neff_genes_ACs, prox2_ext_adj_Neff[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
+    prox2_ext_genes_ACs <- rbind(prox2_ext_genes_ACs, prox2_ext[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
+    prox2_ext_adj_Ncc_genes_ACs <- rbind(prox2_ext_adj_Ncc_genes_ACs, prox2_ext_adj_Ncc[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
+    prox2_ext_adj_Neff_genes_ACs <- rbind(prox2_ext_adj_Neff_genes_ACs, prox2_ext_adj_Neff[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
     
-    prox2_all_genes_ACs = rbind(prox2_all_genes_ACs, prox2_all[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
-    prox2_all_adj_Ncc_genes_ACs = rbind(prox2_all_adj_Ncc_genes_ACs, prox2_all_adj_Ncc[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
-    prox2_all_adj_Neff_genes_ACs = rbind(prox2_all_adj_Neff_genes_ACs, prox2_all_adj_Neff[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
+    prox2_all_genes_ACs <- rbind(prox2_all_genes_ACs, prox2_all[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
+    prox2_all_adj_Ncc_genes_ACs <- rbind(prox2_all_adj_Ncc_genes_ACs, prox2_all_adj_Ncc[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
+    prox2_all_adj_Neff_genes_ACs <- rbind(prox2_all_adj_Neff_genes_ACs, prox2_all_adj_Neff[[2]] %>% mutate(rep = i, gene = genes[g]) %>% relocate(rep, gene))
 
     ### Prepare data for iECAT and SKAT methods
-    Z_iecat = geno_iecat_int %>% filter(gene == genes[g]) %>% select(-gene) #iECAT
-    Z_iecat_adj_Ncc = geno_iecat_int_adj_Ncc %>% filter(gene == genes[g]) %>% select(-gene) #iECAT
-    Z_iecat_adj_Neff = geno_iecat_int_adj_Neff %>% filter(gene == genes[g]) %>% select(-gene) #iECAT
+    Z_iecat <- geno_iecat_int %>% filter(gene == genes[g]) %>% select(-gene) #iECAT
+    Z_iecat_adj_Ncc <- geno_iecat_int_adj_Ncc %>% filter(gene == genes[g]) %>% select(-gene) #iECAT
+    Z_iecat_adj_Neff <- geno_iecat_int_adj_Neff %>% filter(gene == genes[g]) %>% select(-gene) #iECAT
 
-    Z_int = geno_skat_int %>% filter(gene == genes[g]) %>% select(-gene)
-    Z_ext = geno_skat_ext %>% filter(gene == genes[g]) %>% select(-gene)
-    Z_all = geno_skat_all %>% filter(gene == genes[g]) %>% select(-gene)
+    Z_int <- geno_skat_int %>% filter(gene == genes[g]) %>% select(-gene)
+    Z_ext <- geno_skat_ext %>% filter(gene == genes[g]) %>% select(-gene)
+    Z_all <- geno_skat_all %>% filter(gene == genes[g]) %>% select(-gene)
 
     # subset the MAC matrix for the external controls for iECAT
-    tbl_gene = tbl %>% filter(gene == genes[g]) %>% select(-gene)
-    tbl_gene_adj_Ncc = tbl_adj_Ncc %>% filter(gene == genes[g]) %>% select(-gene)
-    tbl_gene_adj_Neff = tbl_adj_Neff %>% filter(gene == genes[g]) %>% select(-gene)
+    tbl_gene <- tbl %>% filter(gene == genes[g]) %>% select(-gene)
+    tbl_gene_adj_Ncc <- tbl_adj_Ncc %>% filter(gene == genes[g]) %>% select(-gene)
+    tbl_gene_adj_Neff <- tbl_adj_Neff %>% filter(gene == genes[g]) %>% select(-gene)
 
     # call the iECAT-O function
-    re_gene = iECAT(t(Z_iecat), obj_int, as.matrix(tbl_gene), method="optimal")
-    re_gene_adj_Ncc = iECAT(t(Z_iecat_adj_Ncc), obj_int, as.matrix(tbl_gene_adj_Ncc), method="optimal")
-    re_gene_adj_Neff = iECAT(t(Z_iecat_adj_Neff), obj_int, as.matrix(tbl_gene_adj_Neff), method="optimal")
+    re_gene <- iECAT(t(Z_iecat), obj_int, as.matrix(tbl_gene), method="optimal")
+    re_gene_adj_Ncc <- iECAT(t(Z_iecat_adj_Ncc), obj_int, as.matrix(tbl_gene_adj_Ncc), method="optimal")
+    re_gene_adj_Neff <- iECAT(t(Z_iecat_adj_Neff), obj_int, as.matrix(tbl_gene_adj_Neff), method="optimal")
 
     # Save the iECAT-O p-values
-    iecat_genes = c(iecat_genes, re_gene$p.value)
-    iecat_genes_adj_Ncc = c(iecat_genes_adj_Ncc, re_gene_adj_Ncc$p.value)
-    iecat_genes_adj_Neff = c(iecat_genes_adj_Neff, re_gene_adj_Neff$p.value)
+    iecat_genes <- c(iecat_genes, re_gene$p.value)
+    iecat_genes_adj_Ncc <- c(iecat_genes_adj_Ncc, re_gene_adj_Ncc$p.value)
+    iecat_genes_adj_Neff <- c(iecat_genes_adj_Neff, re_gene_adj_Neff$p.value)
 
     # call the SKAT-O functions
-    skato_int_gene = SKATBinary(t(Z_int), obj_int, method="SKATO") # SKAT-O internal
-    skato_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O external
-    skato_all_gene = SKATBinary(t(Z_all), obj_all, method="SKATO") # SKAT-O internal+external
+    skato_int_gene <- SKATBinary(t(Z_int), obj_int, method="SKATO") # SKAT-O internal
+    skato_ext_gene <- SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O external
+    skato_all_gene <- SKATBinary(t(Z_all), obj_all, method="SKATO") # SKAT-O internal+external
 
     # Save SKAT-O p-values
-    skato_int_genes = c(skato_int_genes, skato_int_gene$p.value)
-    skato_ext_genes = c(skato_ext_genes, skato_ext_gene$p.value)
-    skato_all_genes = c(skato_all_genes, skato_all_gene$p.value)
+    skato_int_genes <- c(skato_int_genes, skato_int_gene$p.value)
+    skato_ext_genes <- c(skato_ext_genes, skato_ext_gene$p.value)
+    skato_all_genes <- c(skato_all_genes, skato_all_gene$p.value)
 
     # Call the SKAT functions
-    skat_int_gene = SKATBinary(t(Z_int), obj_int, method="SKAT") # SKAT internal
-    skat_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="SKAT") # SKAT external
-    skat_all_gene = SKATBinary(t(Z_all), obj_all, method="SKAT") # SKAT internal+external
+    skat_int_gene <- SKATBinary(t(Z_int), obj_int, method="SKAT") # SKAT internal
+    skat_ext_gene <- SKATBinary(t(Z_ext), obj_ext, method="SKAT") # SKAT external
+    skat_all_gene <- SKATBinary(t(Z_all), obj_all, method="SKAT") # SKAT internal+external
 
     # Save the SKAT p-values
-    skat_int_genes = c(skat_int_genes, skat_int_gene$p.value)
-    skat_ext_genes = c(skat_ext_genes, skat_ext_gene$p.value)
-    skat_all_genes = c(skat_all_genes, skat_all_gene$p.value)
+    skat_int_genes <- c(skat_int_genes, skat_int_gene$p.value)
+    skat_ext_genes <- c(skat_ext_genes, skat_ext_gene$p.value)
+    skat_all_genes <- c(skat_all_genes, skat_all_gene$p.value)
 
     # Call the Burden functions
-    burden_int_gene = SKATBinary(t(Z_int), obj_int, method="Burden") # Burden internal
-    burden_ext_gene = SKATBinary(t(Z_ext), obj_ext, method="Burden") # Burden external
-    burden_all_gene = SKATBinary(t(Z_all), obj_all, method="Burden") # Burden internal+external
+    burden_int_gene <- SKATBinary(t(Z_int), obj_int, method="Burden") # Burden internal
+    burden_ext_gene <- SKATBinary(t(Z_ext), obj_ext, method="Burden") # Burden external
+    burden_all_gene <- SKATBinary(t(Z_all), obj_all, method="Burden") # Burden internal+external
 
     # Save the Burden p-values
-    burden_int_genes = c(burden_int_genes, burden_int_gene$p.value)
-    burden_ext_genes = c(burden_ext_genes, burden_ext_gene$p.value)
-    burden_all_genes = c(burden_all_genes, burden_all_gene$p.value)
+    burden_int_genes <- c(burden_int_genes, burden_int_gene$p.value)
+    burden_ext_genes <- c(burden_ext_genes, burden_ext_gene$p.value)
+    burden_all_genes <- c(burden_all_genes, burden_all_gene$p.value)
   }
 
   # Store the LogProx, iECAT-O, SKAT gene p-values
   # Each col represents a gene and each row represents a sim rep
   
   # LogProx p-values
-  prox2_ext_genes_p = rbind(prox2_ext_genes_p, prox2_ext_genes)
-  prox2_ext_genes_p_adj_Ncc = rbind(prox2_ext_genes_p_adj_Ncc, prox2_ext_genes_adj_Ncc)
-  prox2_ext_genes_p_adj_Neff = rbind(prox2_ext_genes_p_adj_Neff, prox2_ext_genes_adj_Neff)
+  prox2_ext_genes_p <- rbind(prox2_ext_genes_p, prox2_ext_genes)
+  prox2_ext_genes_p_adj_Ncc <- rbind(prox2_ext_genes_p_adj_Ncc, prox2_ext_genes_adj_Ncc)
+  prox2_ext_genes_p_adj_Neff <- rbind(prox2_ext_genes_p_adj_Neff, prox2_ext_genes_adj_Neff)
   
-  prox2_all_genes_p = rbind(prox2_all_genes_p, prox2_all_genes)
-  prox2_all_genes_p_adj_Ncc = rbind(prox2_all_genes_p_adj_Ncc, prox2_all_genes_adj_Ncc)
-  prox2_all_genes_p_adj_Neff = rbind(prox2_all_genes_p_adj_Neff, prox2_all_genes_adj_Neff)
+  prox2_all_genes_p <- rbind(prox2_all_genes_p, prox2_all_genes)
+  prox2_all_genes_p_adj_Ncc <- rbind(prox2_all_genes_p_adj_Ncc, prox2_all_genes_adj_Ncc)
+  prox2_all_genes_p_adj_Neff <- rbind(prox2_all_genes_p_adj_Neff, prox2_all_genes_adj_Neff)
   
   # LogProx AC info
-  prox2_ext_ACs = rbind(prox2_ext_ACs, prox2_ext_genes_ACs)
-  prox2_ext_adj_Ncc_ACs = rbind(prox2_ext_adj_Ncc_ACs, prox2_ext_adj_Ncc_genes_ACs)
-  prox2_ext_adj_Neff_ACs = rbind(prox2_ext_adj_Neff_ACs, prox2_ext_adj_Neff_genes_ACs)
+  prox2_ext_ACs <- rbind(prox2_ext_ACs, prox2_ext_genes_ACs)
+  prox2_ext_adj_Ncc_ACs <- rbind(prox2_ext_adj_Ncc_ACs, prox2_ext_adj_Ncc_genes_ACs)
+  prox2_ext_adj_Neff_ACs <- rbind(prox2_ext_adj_Neff_ACs, prox2_ext_adj_Neff_genes_ACs)
   
-  prox2_all_ACs = rbind(prox2_all_ACs, prox2_all_genes_ACs)
-  prox2_all_adj_Ncc_ACs = rbind(prox2_all_adj_Ncc_ACs, prox2_all_adj_Ncc_genes_ACs)
-  prox2_all_adj_Neff_ACs = rbind(prox2_all_adj_Neff_ACs, prox2_all_adj_Neff_genes_ACs)
+  prox2_all_ACs <- rbind(prox2_all_ACs, prox2_all_genes_ACs)
+  prox2_all_adj_Ncc_ACs <- rbind(prox2_all_adj_Ncc_ACs, prox2_all_adj_Ncc_genes_ACs)
+  prox2_all_adj_Neff_ACs <- rbind(prox2_all_adj_Neff_ACs, prox2_all_adj_Neff_genes_ACs)
 
   # iECAT-O p-values
-  iecat_genes_p = rbind(iecat_genes_p, iecat_genes)
-  iecat_genes_p_adj_Ncc = rbind(iecat_genes_p_adj_Ncc, iecat_genes_adj_Ncc)
-  iecat_genes_p_adj_Neff = rbind(iecat_genes_p_adj_Neff, iecat_genes_adj_Neff)
+  iecat_genes_p <- rbind(iecat_genes_p, iecat_genes)
+  iecat_genes_p_adj_Ncc <- rbind(iecat_genes_p_adj_Ncc, iecat_genes_adj_Ncc)
+  iecat_genes_p_adj_Neff <- rbind(iecat_genes_p_adj_Neff, iecat_genes_adj_Neff)
 
   # SKAT-O p-values
-  skato_int_genes_p = rbind(skato_int_genes_p, skato_int_genes)
-  skato_ext_genes_p = rbind(skato_ext_genes_p, skato_ext_genes)
-  skato_all_genes_p = rbind(skato_all_genes_p, skato_all_genes)
+  skato_int_genes_p <- rbind(skato_int_genes_p, skato_int_genes)
+  skato_ext_genes_p <- rbind(skato_ext_genes_p, skato_ext_genes)
+  skato_all_genes_p <- rbind(skato_all_genes_p, skato_all_genes)
 
   # SKAT p-values
-  skat_int_genes_p = rbind(skat_int_genes_p, skat_int_genes)
-  skat_ext_genes_p = rbind(skat_ext_genes_p, skat_ext_genes)
-  skat_all_genes_p = rbind(skat_all_genes_p, skat_all_genes)
+  skat_int_genes_p <- rbind(skat_int_genes_p, skat_int_genes)
+  skat_ext_genes_p <- rbind(skat_ext_genes_p, skat_ext_genes)
+  skat_all_genes_p <- rbind(skat_all_genes_p, skat_all_genes)
 
   # Burden p-values
-  burden_int_genes_p = rbind(burden_int_genes_p, burden_int_genes)
-  burden_ext_genes_p = rbind(burden_ext_genes_p, burden_ext_genes)
-  burden_all_genes_p = rbind(burden_all_genes_p, burden_all_genes)
+  burden_int_genes_p <- rbind(burden_int_genes_p, burden_int_genes)
+  burden_ext_genes_p <- rbind(burden_ext_genes_p, burden_ext_genes)
+  burden_all_genes_p <- rbind(burden_all_genes_p, burden_all_genes)
 
   print(i)
 }
 
 # Set col names to the genes
-colnames(prox_ext_genes_p) = colnames(prox_ext_genes_p_adj_Ncc) = colnames(prox_ext_genes_p_adj_Neff) = genes
-colnames(proxW_ext_genes_p) = colnames(proxW_ext_genes_p_adj_Ncc) = colnames(proxW_ext_genes_p_adj_Neff) = genes
-colnames(prox2_ext_genes_p) = colnames(prox2_ext_genes_p_adj_Ncc) = colnames(prox2_ext_genes_p_adj_Neff) = genes
-colnames(prox2_all_genes_p) = colnames(prox2_all_genes_p_adj_Ncc) = colnames(prox2_all_genes_p_adj_Neff) = genes
-colnames(iecat_genes_p) = colnames(iecat_genes_p_adj_Ncc) = colnames(iecat_genes_p_adj_Neff) = genes
-colnames(skato_int_genes_p) = colnames(skato_ext_genes_p) = colnames(skato_all_genes_p) = genes
-colnames(skat_int_genes_p) = colnames(skat_ext_genes_p) = colnames(skat_all_genes_p) = genes
-colnames(burden_int_genes_p) = colnames(burden_ext_genes_p) = colnames(burden_all_genes_p) = genes
+colnames(prox_ext_genes_p) <- colnames(prox_ext_genes_p_adj_Ncc) <- colnames(prox_ext_genes_p_adj_Neff) <- genes
+colnames(proxW_ext_genes_p) <- colnames(proxW_ext_genes_p_adj_Ncc) <- colnames(proxW_ext_genes_p_adj_Neff) <- genes
+colnames(prox2_ext_genes_p) <- colnames(prox2_ext_genes_p_adj_Ncc) <- colnames(prox2_ext_genes_p_adj_Neff) <- genes
+colnames(prox2_all_genes_p) <- colnames(prox2_all_genes_p_adj_Ncc) <- colnames(prox2_all_genes_p_adj_Neff) <- genes
+colnames(iecat_genes_p) <- colnames(iecat_genes_p_adj_Ncc) <- colnames(iecat_genes_p_adj_Neff) <- genes
+colnames(skato_int_genes_p) <- colnames(skato_ext_genes_p) <- colnames(skato_all_genes_p) <- genes
+colnames(skat_int_genes_p) <- colnames(skat_ext_genes_p) <- colnames(skat_all_genes_p) <- genes
+colnames(burden_int_genes_p) <- colnames(burden_ext_genes_p) <- colnames(burden_all_genes_p) <- genes
 
 # Set file path name
-file_path = paste0(scen, "_", sub_scen, "_maf", maf, ".txt")
+file_path <- paste0(scen, "_", sub_scen, "_maf", maf, ".txt")
 
 # Save the proportion estimates
 # write.table(data.frame(prop_ests_cc), paste0(dir_out, "T1e_cc_prop_ests_", int_prune, "_v_", ext_prune, "_", Pop1, '_', Pop2, "_", scen, "_maf", maf, ".txt"), quote=F, row.names=F)

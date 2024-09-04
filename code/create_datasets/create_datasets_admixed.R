@@ -13,24 +13,27 @@ library(dplyr)
 source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/create_haps_funcs.R")
 
 # Set simulation parameters
-Pop_admx = 'LTX'
-Pops = c('IAM', 'NFE', 'EAS', 'AFR')
-admx_props_int = c(47, 44, 5, 4) # internal sample admixture proportions
-admx_props_ext = c(47, 44, 5, 4) # common control admixture proportions
-p_case = 160 # % confounding cases (power)
-p_conf = 80 # % confounding common controls
-scen = 's1'
-sub_scen = 'default'
-Ncase = 2000
-Nic = 2000
-Ncc = 10000
-Nrefs = c(2000, 2000, 2000, 2000)
-Nhaps = c(17160, 16320, 5400, 5120)
+Pop_admx <- 'LTX'
+Pops <- c('IAM', 'NFE', 'EAS', 'AFR')
+admx_props_int <- c(75, 19, 3, 3) # internal sample admixture proportions
+admx_props_ext <- c(47, 44, 5, 4) # common control admixture proportions
+p_case <- 160 # % confounding cases (power)
+p_conf <- 80 # % confounding common controls
+scen <- 's2'
+sub_scen <- 'default'
+Ncase <- 2000
+Nic <- 2000
+Ncc <- 10000
+Nrefs <- c(2000, 2000, 2000, 2000)
+Nhaps <- c(19400, 14320, 5240, 5040)
 
-dir_in = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props_ext, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/pruned_haps/')
-dir_out = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props_ext, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/datasets/')
+end <- 100
+start <- end - 99
 
-# dir_in = dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/', scen, '/', sub_scen, '/')
+dir_in <- paste0('/home/math/siglersa/admixed/', paste(paste(admx_props_ext, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/pruned_haps/')
+dir_out <- paste0('/home/math/siglersa/admixed/', paste(paste(admx_props_ext, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/datasets/')
+
+# dir_in = dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/', paste(paste(admx_props_ext, Pops, sep = ""), collapse = "_"), '/',scen, '/', sub_scen, '/')
 # dir_out = paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_', Nsim, '/pruned_haps/')
 
 # Create empty list to store number of haplotypes for each dataset by pop
@@ -59,45 +62,45 @@ if (length(Pops) > 1) {
   for (i in 2:length(pop_cols)) {
     
     # Starting column index of pop i
-    start <- sum(Nhaps[1:(i-1)]) + 1 
+    pop_start <- sum(Nhaps[1:(i-1)]) + 1 
     
     # ending column index for pop i
-    end <- sum(Nhaps[1:i]) 
+    pop_end <- sum(Nhaps[1:i]) 
     
     # save column positions for pop i
-    pop_cols[[i]] <- start:end 
+    pop_cols[[i]] <- pop_start:pop_end 
   }
 }
 
 
 set.seed(1) # Will be different for each replicate but same for each run
 # j = 1
-for(j in 1:100){
+for(j in start:end){
   
   # Read in legend files
-  leg_pcase = read.table(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.', p_case, 'fun.100syn.legend'), header=T, sep='\t')
-  leg_pcase$row = 1:nrow(leg_pcase)
+  leg_pcase <- read.table(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.', p_case, 'fun.100syn.legend'), header=T, sep='\t')
+  leg_pcase$row <- 1:nrow(leg_pcase)
   
-  leg_pexp = read.table(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.100fun.100syn.legend'), header=T, sep='\t')
+  leg_pexp <- read.table(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.100fun.100syn.legend'), header=T, sep='\t')
   
-  leg_pconf = read.table(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.', p_conf, 'fun.', p_conf, 'syn.legend'), header=T, sep='\t')
+  leg_pconf <- read.table(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.', p_conf, 'fun.', p_conf, 'syn.legend'), header=T, sep='\t')
   
   ### Read in pruned hap files
-  hap_pcase = fread(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.all.', p_case, 'fun.100syn.haps.gz'))
-  hap_pcase = as.data.frame(hap_pcase)
+  hap_pcase <- fread(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.all.', p_case, 'fun.100syn.haps.gz'))
+  hap_pcase <- as.data.frame(hap_pcase)
   
-  hap_pexp = fread(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.all.100fun.100syn.haps.gz'))
-  hap_pexp = as.data.frame(hap_pexp)
+  hap_pexp <- fread(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.all.100fun.100syn.haps.gz'))
+  hap_pexp <- as.data.frame(hap_pexp)
   
-  hap_pconf = fread(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.all.', p_conf, 'fun.', p_conf, 'syn.haps.gz'))
-  hap_pconf = as.data.frame(hap_pconf)
+  hap_pconf <- fread(paste0(dir_in, 'chr19.block37.', Pop_admx, '.sim', j, '.all.', p_conf, 'fun.', p_conf, 'syn.haps.gz'))
+  hap_pconf <- as.data.frame(hap_pconf)
   
   # Add rows of zeros back into 100% and p_conf % pruned hap files
-  hap_exp_pruned = data.frame(matrix(0, nrow=nrow(leg_pcase), ncol=ncol(hap_pcase)))
-  hap_exp_pruned[which(leg_pcase$id %in% leg_pexp$id),] = hap_pexp
+  hap_exp_pruned <- data.frame(matrix(0, nrow=nrow(leg_pcase), ncol=ncol(hap_pcase)))
+  hap_exp_pruned[which(leg_pcase$id %in% leg_pexp$id),] <- hap_pexp
   
-  hap_all_pruned = data.frame(matrix(0, nrow=nrow(leg_pcase), ncol=ncol(hap_pcase)))
-  hap_all_pruned[which(leg_pcase$id %in% leg_pconf$id),] = hap_pconf
+  hap_all_pruned <- data.frame(matrix(0, nrow=nrow(leg_pcase), ncol=ncol(hap_pcase)))
+  hap_all_pruned[which(leg_pcase$id %in% leg_pconf$id),] <- hap_pconf
   
   # Randomly select the columns (i.e. individuals) for each dataset
   
@@ -116,16 +119,16 @@ for(j in 1:100){
   }
   
   # subset the case haplotypes (pcase % fun and 100% syn)
-  hap_cases_pcase = hap_pcase[, c(unlist(case_cols, use.names = FALSE))]
+  hap_cases_pcase <- hap_pcase[, c(unlist(case_cols, use.names = FALSE))]
   
   # write the haplotype file for the cases (power)
   fwrite(hap_cases_pcase, paste0(dir_out, 'chr19.block37.', Pop_admx, '.sim', j, '.', scen, '.cases.', p_case, 'fun.100syn.haps.gz'),
          quote=F, row.names=F, col.names=F, sep=' ')
   
   # subset the pruned haplotypes for 100% pruned
-  hap_cases = hap_exp_pruned[, c(unlist(case_cols, use.names = FALSE))]
-  hap_int = hap_exp_pruned[, c(unlist(ic_cols, use.names = FALSE))]
-  hap_cc = hap_exp_pruned[, c(unlist(cc_cols, use.names = FALSE))]
+  hap_cases <- hap_exp_pruned[, c(unlist(case_cols, use.names = FALSE))]
+  hap_int <- hap_exp_pruned[, c(unlist(ic_cols, use.names = FALSE))]
+  hap_cc <- hap_exp_pruned[, c(unlist(cc_cols, use.names = FALSE))]
   
   # write the haplotype files for the cases, internal and common controls
   fwrite(hap_cases, paste0(dir_out, 'chr19.block37.', Pop_admx, '.sim', j, '.', scen, '.cases.100fun.100syn.haps.gz'),
@@ -143,7 +146,7 @@ for(j in 1:100){
   for (i in 1:length(Pops)) {
     
     # Subset the pruned ref haps for 100% pruned
-    ref_haps[[i]] <- hap_exp_pruned[, ref_cols[[i]]] #CHECK THIS
+    ref_haps[[i]] <- hap_exp_pruned[, ref_cols[[i]]]
     
     # Save the ref hap file for each pop
     fwrite(ref_haps[[i]], paste0(dir_out, 'chr19.block37.', Pops[i], '.sim', j, '.', scen, '.refs.100fun.100syn.haps.gz'),
@@ -151,9 +154,9 @@ for(j in 1:100){
   }
   
   # Subset the datasets for the p_conf % pruned haplotype
-  hap_cases_pconf = hap_all_pruned[, c(unlist(case_cols, use.names = FALSE))]
-  hap_int_pconf = hap_all_pruned[, c(unlist(ic_cols, use.names = FALSE))]
-  hap_cc_pconf = hap_all_pruned[, c(unlist(cc_cols, use.names = FALSE))]
+  hap_cases_pconf <- hap_all_pruned[, c(unlist(case_cols, use.names = FALSE))]
+  hap_int_pconf <- hap_all_pruned[, c(unlist(ic_cols, use.names = FALSE))]
+  hap_cc_pconf <- hap_all_pruned[, c(unlist(cc_cols, use.names = FALSE))]
   
   # write the haplotype files for the cases, internal and common controls p_conf % pruned
   fwrite(hap_cases_pconf, paste0(dir_out, 'chr19.block37.', Pop_admx, '.sim', j, '.', scen, '.cases.', p_conf, 'fun.', p_conf, 'syn.haps.gz'),
