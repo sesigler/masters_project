@@ -2,18 +2,21 @@
 library(dplyr)
 library(tidyr)
 library(data.table)
-library(devtools) #need for installing Summix
+library(devtools) #need for installing Summix and proxECAT from github
 library(proxecat)
 library(SKAT)
 library(iECAT)
 # library(DescTools) # For Lin's CCC-problem installing package
-# library(Summix) #need to run install_github("hendriau/Summix2")
+# library(Summix) 
+# devtools::install_github("hendriau/Summix") 
+# devtools::install_github("hendriau/ProxECAT")
 
 source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/read_in_funcs.R")
 source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/general_data_manip.R")
 source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/methods_funcs.R")
 source("https://raw.githubusercontent.com/hendriau/Summix/main/R/adjAF.R")
-source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
+# source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
+source("https://raw.githubusercontent.com/sesigler/Summix/main/R/summix.R")
 
 Pop_admx <- 'LTX'  
 Pops <- c('IAM', 'NFE', 'EAS', 'AFR')
@@ -61,7 +64,7 @@ neff_vec <- c()
 
 # loop through the simulation replicates
 set.seed(1) 
-# i=55
+# i=83
 for (i in start:end){
   
   # read in the legend file
@@ -93,12 +96,12 @@ for (i in start:end){
   geno_case <- make_geno(hap_case)
   geno_ic <- make_geno(hap_ic)
   geno_cc <- make_geno(hap_cc)
-  
+
   # calculate the allele counts/frequencies
   count_case <- calc_allele_freqs(geno_case, Ncase, Pop=NULL)
   count_ic <- calc_allele_freqs(geno_ic, Nic, Pop=NULL)
   count_cc <- calc_allele_freqs(geno_cc, Ncc, Pop=NULL)
-  
+
   # Create empty list to store reference allele counts/frequencies
   count_refs <- list()
   

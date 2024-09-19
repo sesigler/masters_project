@@ -19,9 +19,9 @@ my.power <- function(values, alpha=0.05){
 
 # Define parameters
 calc = 'Power'
-Pops = c('AFR', 'NFE')
-admx_props = c(80, 20)
-scen = 's2'
+Pops = c('IAM', 'NFE', 'EAS', 'AFR')
+admx_props = c(47, 44, 5, 4)
+scen = 's1'
 sub_scen = 'default'
 maf = 0.001 
 
