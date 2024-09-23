@@ -11,7 +11,8 @@ source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/fun
 source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/general_data_manip.R")
 source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/methods_funcs.R")
 source("https://raw.githubusercontent.com/hendriau/Summix/main/R/adjAF.R")
-source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
+# source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
+source("https://raw.githubusercontent.com/sesigler/Summix/main/R/summix.R")
 
 Pop_admx <- 'LTX'  
 Pops <- c('IAM', 'NFE', 'EAS', 'AFR')
@@ -117,30 +118,6 @@ for (i in start:end){
   cc_est_prop <- est_props(cc_refs, Pops, maf)
   case_est_prop <- est_props(case_refs, Pops, maf)
   # int_est_prop = est_props(int_refs, Pop1, Pop2, maf)
-  
-  ### TEST
-  pops <- tolower(Pops)
-  
-  # Identify common variants for each population in pops
-  pop_vars <- lapply(pops, function(pop) {case_refs[, paste0("af_", pop)] > maf & case_refs[, paste0("af_", pop)] < 1-maf})
-  
-  # Generate a single logical vector stating whether each variant is common in at least one of the ref pops 
-  common_vars <- Reduce(`|`, pop_vars)
-  
-  # Find the common variant that are common in either the observed or the ref data
-  common <- (case_refs$af > maf & case_refs$af < 1-maf) | common_vars
-  
-  # Subset counts dataframe to only common variants
-  common_df <- case_refs[which(common),]
-  common2 <- case_refs[which(case_refs$af > maf & case_refs$af < 1-maf),]
-  
-  # Calculate proportion estimates using Summix
-  prop_est <- summix(data = common2,
-                     reference=c(sapply(pops, function(pop) paste0("af_", pop))),
-                     observed="af", 
-                     goodness.of.fit = TRUE, 
-                     override_removeSmallRef = TRUE) #show estimates for anc w/ <1% AFs
-  ####
   
   # prop_ests_cc <- rbind(prop_ests_cc, cc_est_prop)
   # prop_ests_cases <- rbind(prop_ests_cases, cases_est_prop)
