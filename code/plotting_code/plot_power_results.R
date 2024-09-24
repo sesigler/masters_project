@@ -14,23 +14,25 @@ library(binom)
 library(data.table) # for fread
 
 calc = 'Power'
-Pops = c('AFR', 'NFE')
-admx_props = c(80, 20)
+Pops = c('IAM', 'NFE', 'EAS', 'AFR')
+admx_props = c(47, 44, 5, 4)
 scen = 's2'
-int_admx = '100% AFR'
-ext_admx = '80% AFR, 20% NFE'
-sub_scens = c('default', 'Ncase2K_Nic1K_Ncc1K', 'Ncase2K_Nic1K_Ncc2K', 'Ncase2K_Nic1K_Ncc5K', 'Ncase2K_Nic1K_Ncc10K', 'Ncase2K_Nic500_Ncc5K')
+int_admx = '75% IAM, 19% NFE, 3% EAS, 3% AFR'
+ext_admx = '47% IAM, 44% NFE, 5% EAS, 4% AFR'
+sub_scens = c('default', 'NrefIAM47_NrefNFE642_NrefEAS787_NrefAFR704', 'NrefIAM5K_NrefNFE5K_NrefEAS5K_NrefAFR5K', 'NrefIAM10K_NrefNFE10K_NrefEAS10K_NrefAFR10K')
 # sub_scen = 'default'
-comp = 'lessIC'
+comp = 'Nref'
 adj = 'adjNeff'
 pcase = 160
 int_prune = 100
 ext_prune = 80
-# Ncase = Nic = 2000
-# Ncc = 10000
-Nref = c(2000, 2000)
+Ncase = 2000
+Nic = 2000
+Ncc = 10000
+# Nref = c(2000, 2000, 2000, 2000)
 maf = 0.001 
 genes_power = c("ADGRE5", "ADGRE3", "TECR") # genes used for cases (power)
+# str_Nrefs = 'Nref IAM: 2000, Nref NFE: 2000, Nref EAS: 2000, Nref AFR: 2000'
 
 
 
@@ -57,24 +59,24 @@ res6 = read_results(dir, calc, scen, sub_scen=sub_scens[6], maf)
 
 # Format for ggplot
 res1 = pivot_longer(res1, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, lessIC = "default") 
+  mutate(MAF = maf, Nref = "default") 
 
 res2 = pivot_longer(res2, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, lessIC = "Ncase2K_Nic1K_Ncc1K")
+  mutate(MAF = maf, Nref = sub_scens[2])
 
 res3 = pivot_longer(res3, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, lessIC = "Ncase2K_Nic1K_Ncc2K")
+  mutate(MAF = maf, Nref = sub_scens[3])
 
 res4 = pivot_longer(res4, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, lessIC = "Ncase2K_Nic1K_Ncc5K")
+  mutate(MAF = maf, Nref = sub_scens[4])
 
 res5 = pivot_longer(res5, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, lessIC = "Ncase2K_Nic1K_Ncc10K")
+  mutate(MAF = maf, Nint = sub_scens[5])
 
 res6 = pivot_longer(res6, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, lessIC = "Ncase2K_Nic500_Ncc5K")
+  mutate(MAF = maf, Nint = sub_scens[6])
 
-res = rbind(res1, res2, res3, res4, res5, res6)
+res = rbind(res1, res2, res3, res4)
 
 
 
@@ -84,7 +86,7 @@ results2 = res %>% mutate(MACs = rep(c("Unadjusted", "Adjusted Ncc", "Adjusted N
                                        "Unadjusted", "Adjusted Ncc", "Adjusted Neff", 
                                        "Unadjusted", "Adjusted Ncc", "Adjusted Neff",
                                        "Unadjusted", "Adjusted Ncc", "Adjusted Neff",
-                                       "Unadjusted", "Unadjusted", "Unadjusted"), times=72)) #36, 48, or 72
+                                       "Unadjusted", "Unadjusted", "Unadjusted"), times=48)) #36, 48, or 72
 
 results2$Method = factor(results2$Method, levels=c("prox_ext", "prox_ext_adj_Ncc", "prox_ext_adj_Neff", 
                                                    "proxW_ext", "proxW_ext_adj_Ncc", "proxW_ext_adj_Neff",
@@ -133,6 +135,8 @@ results2$Ncc = factor(results2$Ncc, levels=c("default", "Ncc20000", "Ncc50000"),
 
 results2$Nref = factor(results2$Nref, levels=c("NrefAFR704_NrefNFE642", "default", "NrefAFR5000_NrefNFE5000", "NrefAFR10000_NrefNFE10000"), 
                           labels = c("Nref AFR: 704, Nref NFE: 642", "Nref AFR: 2000, Nref NFE: 2000", "Nref AFR: 5000, Nref NFE: 5000", "Nref AFR: 10000, Nref NFE: 10000"))
+results2$Nref = factor(results2$Nref, levels=c("NrefIAM47_NrefNFE642_NrefEAS787_NrefAFR704", "default", "NrefIAM5K_NrefNFE5K_NrefEAS5K_NrefAFR5K", "NrefIAM10K_NrefNFE10K_NrefEAS10K_NrefAFR10K"), 
+                       labels = c("Nref IAM: 47, Nref NFE: 642, Nref EAS: 787, Nref AFR: 704", "Nref IAM: 2K, Nref NFE: 2K, Nref EAS: 2K, Nref AFR: 2K", "Nref IAM: 5K, Nref NFE: 5K, Nref EAS: 5K, Nref AFR: 5K", "Nref IAM: 10K, Nref NFE: 10K, Nref EAS: 10K, Nref AFR: 10K"))
 
 ### version 2 plot labels
 results2$casePrune = factor(results2$casePrune, levels=c("120v100v80", "140v100v80", "default"), 
@@ -152,6 +156,8 @@ results2$Ncc = factor(results2$Ncc, levels=c("default", "Ncc20000", "Ncc50000"),
 
 results2$Nref = factor(results2$Nref, levels=c("NrefAFR704_NrefNFE642", "default", "NrefAFR5000_NrefNFE5000", "NrefAFR10000_NrefNFE10000"), 
                        labels = c("(704, 642)", "(2000, 2000)", "(5000, 5000)", "(10000, 10000)"))
+results2$Nref = factor(results2$Nref, levels=c("NrefIAM47_NrefNFE642_NrefEAS787_NrefAFR704", "default", "NrefIAM5K_NrefNFE5K_NrefEAS5K_NrefAFR5K", "NrefIAM10K_NrefNFE10K_NrefEAS10K_NrefAFR10K"), 
+                       labels = c("(47, 642, 787, 704)", "(2K, 2K, 2K, 2K)", "(5K, 5K, 5K, 5K)", "(10K, 10K, 10K, 10K)"))
 
 
 # get CI's
@@ -223,7 +229,7 @@ pcasePrune <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "A
   facet_wrap(~casePrune, ncol = 1, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
   labs(y='Power', x='Gene', title=paste0('Power by Gene and Cases (Power) Pruning \nCases: ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                                '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+                                                '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', ', str_Nrefs, ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
@@ -247,7 +253,7 @@ pccPrune <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADG
   facet_wrap(~ccPrune, ncol = 2, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
   labs(y='Power', x='Gene', title=paste0('Power by Gene and Common Control Pruning \nCases: 160% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                         '\nCommon Controls: ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+                                         '\nCommon Controls: ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', ', str_Nrefs, ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
@@ -271,7 +277,7 @@ plessIC <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGR
   facet_wrap(~lessIC, ncol = 2, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
   labs(y='Power', x='Gene', title=paste0('Power by Gene and Case, Internal Control, and Common Control Sample Size \nCases: 160% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\n', str_Nrefs, ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
@@ -295,7 +301,7 @@ pNint <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5
   facet_wrap(~Nint, ncol = 2, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
   labs(y='Power', x='Gene', title=paste0('Power by Gene and Internal Sample Size \nCases: 160% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcc: ', Ncc, ', ', str_Nrefs, ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
@@ -319,7 +325,7 @@ pNcc <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5"
   facet_wrap(~Ncc, ncol = 1, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
   labs(y='Power', x='Gene', title=paste0('Power by Gene and Common Control Sample Size \nCases: 160% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', ', str_Nrefs, ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
@@ -370,7 +376,7 @@ pcasePrune <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "A
   facet_wrap(~Gene, ncol = 1, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
   labs(y='Power', x='Cases (Power): % Pruned', title=paste0('Power by Gene and Cases (Power) Pruning \nCases: ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', ', str_Nrefs, ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
@@ -394,7 +400,7 @@ pccPrune <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADG
   facet_wrap(~Gene, ncol = 1, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
   labs(y='Power', x='Common Controls: % Pruned', title=paste0('Power by Gene and Common Control Pruning \nCases: 160% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                         '\nCommon Controls: ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+                                         '\nCommon Controls: ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', ', str_Nrefs, ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
@@ -418,7 +424,7 @@ plessIC <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGR
   facet_wrap(~Gene, ncol = 1, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
   labs(y='Power', x='Sample Size (Cases, Internal Controls, Common Controls)', title=paste0('Power by Gene and Case, Internal Control, and Common Control Sample Size \nCases: 160% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                                               '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+                                                               '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\n', str_Nrefs, ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
@@ -442,7 +448,7 @@ pNint <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5
   facet_wrap(~Gene, ncol = 1, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
   labs(y='Power', x='Internal Sample Size', title=paste0('Power by Gene and Internal Sample Size \nCases: 160% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcc: ', Ncc, ', ', str_Nrefs, ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
@@ -466,7 +472,7 @@ pNcc <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5"
   facet_wrap(~Gene, ncol = 1, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
   labs(y='Power', x='Common Control Sample Size', title=paste0('Power by Gene and Common Control Sample Size \nCases: 160% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', ', str_Nrefs, ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
