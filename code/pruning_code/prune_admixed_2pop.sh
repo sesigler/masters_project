@@ -36,14 +36,14 @@ echo "Simulation Replicate: ${rep}"
 
 ### extract the AFR haplotypes
 python3 ${WD}/raresim_fix/raresim/extract.py \
-    -i ${WD}/Sim_100k/${pop1}/data/chr19.block37.${pop1}.sim${rep}.100000.controls.haps.gz \
+    -i ${WD}/Sim_100k/${pop1}/data/chr19.block37.${pop1}.sim${rep}.controls.haps.gz \
     -o chr19.block37.${pop1}.reduced.sim${rep}.controls.haps.gz \
     -n $((2*$Npop1)) \
     --seed $rep
 
 ### extract the NFE haplotypes
 python3 ${WD}/raresim_fix/raresim/extract.py \
-    -i ${WD}/Sim_100k/${pop2}/data/chr19.block37.${pop2}.sim${rep}.100000.controls.haps.gz \
+    -i ${WD}/Sim_100k/${pop2}/data/chr19.block37.${pop2}.sim${rep}.controls.haps.gz \
     -o chr19.block37.${pop2}.reduced.sim${rep}.controls.haps.gz \
     -n $((2*$Npop2)) \
     --seed $rep
