@@ -14,22 +14,22 @@ library(binom)
 library(data.table) # for fread
 
 calc = 'T1e'
-Pops = c('AFR', 'NFE')
-admx_props = c(50, 50)
-scen = 's1'
-int_admx = '50% AFR, 50% NFE'
-ext_admx = '50% AFR, 50% NFE'
-sub_scens = c('default')
-comp = 'default'
+Pops =  c('IAM', 'NFE', 'EAS', 'AFR') # c('AFR', 'NFE')
+admx_props = c(47, 44, 5, 4) # c(80, 20)  
+scen = 's2'
+int_admx = '75% IAM, 19% NFE, 3% EAS, 3% AFR'  # '75% IAM, 19% NFE, 3% EAS, 3% AFR'
+ext_admx = '47% IAM, 44% NFE, 5% EAS, 4% AFR' # '80% AFR, 20% NFE' 
+sub_scens = c('default', "160v100v85", "160v100v90", "160v100v95", "160v100v100")
+comp = 'ccPrune'
 adj = 'adjNeff'
 int_prune = 100
-ext_prune = 80
+# ext_prune = 80
 Ncase = 2000
 Nic = 2000
 Ncc = 10000
-Nref = c(2000, 2000)
+Nref = c(2000, 2000, 2000, 2000)
 maf = 0.001 
-str_Nrefs = 'Nref AFR: 2000, Nref NFE: 2000'
+str_Nrefs = 'Nref IAM: 2000, Nref NFE: 2000, Nref EAS: 2000, Nref AFR: 2000' # 'Nref AFR: 2000, Nref NFE: 2000'
 
 
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/', tolower(calc), '/')
@@ -59,25 +59,24 @@ res6 = read_results(dir, calc, scen, sub_scen=sub_scens[6], maf)
 
 # Format for ggplot
 res1 = pivot_longer(res1, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, lessIC2 = "default") 
+  mutate(MAF = maf, ccPrune = "default") 
 
 res2 = pivot_longer(res2, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, lessIC2 = sub_scens[2])
+  mutate(MAF = maf, ccPrune = sub_scens[2])
 
 res3 = pivot_longer(res3, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, lessIC2 = sub_scens[3])
+  mutate(MAF = maf, ccPrune = sub_scens[3])
 
 res4 = pivot_longer(res4, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, lessIC2 = sub_scens[4])
+  mutate(MAF = maf, ccPrune = sub_scens[4])
 
 res5 = pivot_longer(res5, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, Nint = sub_scens[5])
+  mutate(MAF = maf, ccPrune = sub_scens[5])
 
 res6 = pivot_longer(res6, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
   mutate(MAF = maf, Nint = sub_scens[6])
 
-res = rbind(res1, res2, res3, res4)
-res <- res1
+res = rbind(res1, res2, res3, res4, res5)
 
 
 results2 = res %>% mutate(MACs = rep(c("Unadjusted", "Adjusted Ncc", "Adjusted Neff",
@@ -87,7 +86,7 @@ results2 = res %>% mutate(MACs = rep(c("Unadjusted", "Adjusted Ncc", "Adjusted N
                                        "Unadjusted", "Adjusted Ncc", "Adjusted Neff",
                                        "Unadjusted", "Unadjusted", "Unadjusted",
                                        "Unadjusted", "Unadjusted", "Unadjusted",
-                                       "Unadjusted", "Unadjusted", "Unadjusted"), times=12)) #12, 36, 48, 72
+                                       "Unadjusted", "Unadjusted", "Unadjusted"), times=60)) #12, 36, 48, 60, 72
 
 results2$Method = factor(results2$Method, levels=c("prox_ext", "prox_ext_adj_Ncc", "prox_ext_adj_Neff", 
                                                    "proxW_ext", "proxW_ext_adj_Ncc", "proxW_ext_adj_Neff",
@@ -104,15 +103,15 @@ results2$Method = factor(results2$Method, levels=c("prox_ext", "prox_ext_adj_Ncc
                                       "SKAT (Internal)", "SKAT (External)", "SKAT (Internal + External)", 
                                       "Burden (Internal)", "Burden (External)", "Burden (Internal + External)"), times=c(3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1)))
 
-results2 = results2 %>% mutate(Data = rep(c("External", "External", "External",
-                                            "External", "External", "External",
-                                            "External", "External", "External",
-                                            "Internal + External", "Internal + External", "Internal + External",
-                                            "Internal + External", "Internal + External", "Internal + External",
-                                            "Internal", "External", "Internal + External",
-                                            "Internal", "External", "Internal + External",
-                                            "Internal", "External", "Internal + External"), 12))
-results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal + External"))
+# results2 = results2 %>% mutate(Data = rep(c("External", "External", "External",
+#                                             "External", "External", "External",
+#                                             "External", "External", "External",
+#                                             "Internal + External", "Internal + External", "Internal + External",
+#                                             "Internal + External", "Internal + External", "Internal + External",
+#                                             "Internal", "External", "Internal + External",
+#                                             "Internal", "External", "Internal + External",
+#                                             "Internal", "External", "Internal + External"), 12))
+# results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal + External"))
 
 results2$MAF = factor(results2$MAF)
 results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Adjusted Ncc", "Adjusted Neff"), 
@@ -124,8 +123,8 @@ results2$Gene = factor(results2$Gene, levels=c("ADGRE2", "ADGRE3", "ADGRE5", "CL
 results2$casePrune = factor(results2$casePrune, levels=c("120v100v80", "140v100v80", "default"), 
                             labels = c("Cases (Power): 120% Pruned", "Cases (Power): 140% Pruned", "Cases (Power): 160% Pruned"))
 
-results2$ccPrune = factor(results2$ccPrune, levels=c("default", "160v100v85", "160v100v90", "160v100v95"), 
-                          labels = c("Common Controls: 80% Pruned", "Common Controls: 85% Pruned", "Common Controls: 90% Pruned", "Common Controls: 95% Pruned"))
+results2$ccPrune = factor(results2$ccPrune, levels=c("default", "160v100v85", "160v100v90", "160v100v95", "160v100v100"), 
+                          labels = c("Common Controls: 80% Pruned", "Common Controls: 85% Pruned", "Common Controls: 90% Pruned", "Common Controls: 95% Pruned", "Common Controls: 100% Pruned"))
 
 results2$lessIC = factor(results2$lessIC, levels = c("default", "Ncase2K_Nic1K_Ncc1K", "Ncase2K_Nic1K_Ncc2K", "Ncase2K_Nic1K_Ncc5K", "Ncase2K_Nic1K_Ncc10K", "Ncase2K_Nic500_Ncc5K"),
                          labels = c("Cases: 2000, Internal Controls: 2000, Common Controls: 10000", "Cases: 2000, Internal Controls: 1000, Common Controls: 1000", "Cases: 2000, Internal Controls: 1000, Common Controls: 2000",
@@ -135,9 +134,6 @@ results2$lessIC2 = factor(results2$lessIC2, levels = c("default", "Ncase2K_Nic50
                          labels = c("Cases: 2000, Internal Controls: 2000, Common Controls: 10000", "Cases: 2000, Internal Controls: 500, Common Controls: 10000", 
                                     "Cases: 5000, Internal Controls: 1000, Common Controls: 10000", "Cases: 5000, Internal Controls: 500, Common Controls: 10000"))
 
-results2$Nint = factor(results2$Nint, levels=c("Ncase500_Nic500", "Ncase3000_Nic3000", "Ncase1000_Nic1000", "Ncase4000_Nic4000", "default", "Ncase5000_Nic5000"),
-                       labels = c("Cases and Internal Controls: 500", "Cases and Internal Controls: 3000", "Cases and Internal Controls: 1000",
-                                  "Cases and Internal Controls: 4000", "Cases and Internal Controls: 2000", "Cases and Internal Controls: 5000"))
 results2$Nint = factor(results2$Nint, levels=c("Ncase500_Nic500", "Ncase1000_Nic1000", "default", "Ncase3000_Nic3000", "Ncase4000_Nic4000", "Ncase5000_Nic5000"),
                        labels = c("Cases and Internal Controls: 500", "Cases and Internal Controls: 1000", "Cases and Internal Controls: 2000",
                                   "Cases and Internal Controls: 3000", "Cases and Internal Controls: 4000", "Cases and Internal Controls: 5000"))
@@ -154,8 +150,8 @@ results2$Nref = factor(results2$Nref, levels=c("NrefIAM47_NrefNFE642_NrefEAS787_
 results2$casePrune = factor(results2$casePrune, levels=c("120v100v80", "140v100v80", "default"), 
                             labels = c("120%", "140%", "160%"))
 
-results2$ccPrune = factor(results2$ccPrune, levels=c("default", "160v100v85", "160v100v90", "160v100v95"), 
-                          labels = c("80%", "85%", "90%", "95%"))
+results2$ccPrune = factor(results2$ccPrune, levels=c("default", "160v100v85", "160v100v90", "160v100v95", "160v100v100"), 
+                          labels = c("80%", "85%", "90%", "95%", "100%"))
 
 results2$lessIC = factor(results2$lessIC, levels = c("default", "Ncase2K_Nic1K_Ncc1K", "Ncase2K_Nic1K_Ncc2K", "Ncase2K_Nic1K_Ncc5K", "Ncase2K_Nic1K_Ncc10K", "Ncase2K_Nic500_Ncc5K"),
                          labels = c("(2K, 2K, 10K)", "(2K, 1K, 1K)", "(2K, 1K, 2K)", "(2K, 1K, 5K)", "(2K, 1K, 10K)", "(2K, 500, 5K)"))
@@ -606,6 +602,39 @@ pNref <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O
   # theme_bw(base_size = 14)
 pNref
 ggsave(file = paste0(dir_out, calc, '_v2_gene_', file_out), plot = pNref, height = 8, width = 16, units = 'in')
+
+
+### Plot for R01 Grant Resubmission
+
+base_size = 25
+# t1e for new admixed AFR results-Internal Sample Size
+pgrant <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O (Internal)" | Method == "SKAT-O (External)" | Method == "SKAT-O (Internal + External)" |
+                                         Method == "SKAT (Internal)" | Method == "SKAT (External)" | Method == "SKAT (Internal + External)" |
+                                         Method == "Burden (Internal)" | Method == "Burden (External)" | Method == "Burden (Internal + External)") & 
+                                       Nint == "Cases and Internal Controls: 4000" & (Gene == "ADGRE5" | Gene == "DNAJB1" | Gene == "GIPC1")), 
+                aes(x=Gene, y=Value, color=Method, shape=MACs)) +
+  geom_point(size=3, position=position_dodge(width=0.8)) +
+  geom_hline(yintercept=0.05, linetype=2, linewidth=0.5) +
+  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+  # scale_y_continuous(limits=c(0, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
+  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=0.5, width=.5, position=position_dodge(width=0.8)) +
+  scale_color_manual(values = colors2) +
+  scale_shape_manual(values = c(1, 16)) +
+  # scale_linetype_manual(values = c("dashed", "solid")) +
+  # scale_size_manual(values = c(0.5, 0.8)) +
+  # facet_wrap(~Nint, ncol = 1, scales = 'fixed') +
+  # facet_wrap(~Data, ncol = 1) +
+  labs(y='Type I Error', x='Gene', color="Method (Controls Used)") +
+  # labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Internal Sample Size \nCases and Internal Controls: ', int_prune, '% pruned, ', int_admx,
+  #                                               '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcc: ', Ncc, ', ', str_Nrefs, ', MAF: ', maf)) +
+  # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
+  # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
+  theme_bw(base_size = 20)
+  # theme(legend.position = "bottom", legend.box = "vertical")
+pgrant
+ggsave(file = paste0(dir_out, 'Audrey_R01_grant_T1e_s2_Nint4K_adjNeff_maf0.001.jpg'), plot = pgrant, height = 4, width = 10, units = 'in')
 
 
 ################################################################################

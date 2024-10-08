@@ -14,25 +14,25 @@ library(binom)
 library(data.table) # for fread
 
 calc = 'Power'
-Pops = c('IAM', 'NFE', 'EAS', 'AFR')
-admx_props = c(47, 44, 5, 4)
+Pops = c('IAM', 'NFE', 'EAS', 'AFR') # c('AFR', 'NFE')
+admx_props = c(47, 44, 5, 4) # c(80, 20)
 scen = 's2'
-int_admx = '75% IAM, 19% NFE, 3% EAS, 3% AFR'
-ext_admx = '47% IAM, 44% NFE, 5% EAS, 4% AFR'
-sub_scens = c('default', 'NrefIAM47_NrefNFE642_NrefEAS787_NrefAFR704', 'NrefIAM5K_NrefNFE5K_NrefEAS5K_NrefAFR5K', 'NrefIAM10K_NrefNFE10K_NrefEAS10K_NrefAFR10K')
+int_admx = '75% IAM, 19% NFE, 3% EAS, 3% AFR' # '100% AFR
+ext_admx = '47% IAM, 44% NFE, 5% EAS, 4% AFR' # '80% AFR, 20% NFE' 
+sub_scens = c('default', "160v100v85", "160v100v90", "160v100v95", "160v100v100")
 # sub_scen = 'default'
-comp = 'Nref'
+comp = 'ccPrune'
 adj = 'adjNeff'
 pcase = 160
 int_prune = 100
-ext_prune = 80
+# ext_prune = 80
 Ncase = 2000
 Nic = 2000
 Ncc = 10000
-# Nref = c(2000, 2000, 2000, 2000)
+Nref = c(2000, 2000, 2000, 2000)
 maf = 0.001 
 genes_power = c("ADGRE5", "ADGRE3", "TECR") # genes used for cases (power)
-# str_Nrefs = 'Nref IAM: 2000, Nref NFE: 2000, Nref EAS: 2000, Nref AFR: 2000'
+str_Nrefs = 'Nref IAM: 2000, Nref NFE: 2000, Nref EAS: 2000, Nref AFR: 2000' # 'Nref AFR: 2000, Nref NFE: 2000'
 
 
 
@@ -59,24 +59,24 @@ res6 = read_results(dir, calc, scen, sub_scen=sub_scens[6], maf)
 
 # Format for ggplot
 res1 = pivot_longer(res1, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, Nref = "default") 
+  mutate(MAF = maf, ccPrune = "default") 
 
 res2 = pivot_longer(res2, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, Nref = sub_scens[2])
+  mutate(MAF = maf, ccPrune = sub_scens[2])
 
 res3 = pivot_longer(res3, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, Nref = sub_scens[3])
+  mutate(MAF = maf, ccPrune = sub_scens[3])
 
 res4 = pivot_longer(res4, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, Nref = sub_scens[4])
+  mutate(MAF = maf, ccPrune = sub_scens[4])
 
 res5 = pivot_longer(res5, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
-  mutate(MAF = maf, Nint = sub_scens[5])
+  mutate(MAF = maf, ccPrune = sub_scens[5])
 
 res6 = pivot_longer(res6, prox_ext:burden_int, names_to="Method", values_to="Value") %>%
   mutate(MAF = maf, Nint = sub_scens[6])
 
-res = rbind(res1, res2, res3, res4)
+res = rbind(res1, res2, res3, res4, res5)
 
 
 
@@ -86,7 +86,7 @@ results2 = res %>% mutate(MACs = rep(c("Unadjusted", "Adjusted Ncc", "Adjusted N
                                        "Unadjusted", "Adjusted Ncc", "Adjusted Neff", 
                                        "Unadjusted", "Adjusted Ncc", "Adjusted Neff",
                                        "Unadjusted", "Adjusted Ncc", "Adjusted Neff",
-                                       "Unadjusted", "Unadjusted", "Unadjusted"), times=48)) #36, 48, or 72
+                                       "Unadjusted", "Unadjusted", "Unadjusted"), times=60)) #12, 36, 48, 60, 72
 
 results2$Method = factor(results2$Method, levels=c("prox_ext", "prox_ext_adj_Ncc", "prox_ext_adj_Neff", 
                                                    "proxW_ext", "proxW_ext_adj_Ncc", "proxW_ext_adj_Neff",
@@ -100,13 +100,12 @@ results2$Method = factor(results2$Method, levels=c("prox_ext", "prox_ext_adj_Ncc
                                       "SKAT-O (Internal)", "SKAT (Internal)", "Burden (Internal)"), 
                                     times=c(3, 3, 3, 3, 3, 1, 1, 1)))
 
-# results2 = results2 %>% mutate(Data = rep(c("Internal", "External", "External", "External",
-#                                             "Internal", "External", "External", "External",
-#                                             "Internal", "External", "Internal + External", "External", "External", "Internal + External", "Internal + External",
+# results2 = results2 %>% mutate(Data = rep(c("External", "External", "External",
+#                                             "External", "External", "External",
+#                                             "External", "External", "External",
 #                                             "Internal + External", "Internal + External", "Internal + External",
-#                                             "Internal", "External", "Internal + External",
-#                                             "Internal", "External", "Internal + External",
-#                                             "Internal", "External", "Internal + External"), 36))
+#                                             "Internal + External", "Internal + External", "Internal + External",
+#                                             "Internal", "Internal", "Internal"), 12))
 # results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal + External"))
 
 results2$MAF = factor(results2$MAF)
@@ -119,12 +118,16 @@ results2$Gene = factor(results2$Gene, levels=c("ADGRE2", "ADGRE3", "ADGRE5", "CL
 results2$casePrune = factor(results2$casePrune, levels=c("120v100v80", "140v100v80", "default"), 
                        labels = c("Cases (Power): 120% Pruned", "Cases (Power): 140% Pruned", "Cases (Power): 160% Pruned"))
 
-results2$ccPrune = factor(results2$ccPrune, levels=c("default", "160v100v85", "160v100v90", "160v100v95"), 
-                            labels = c("Common Controls: 80% Pruned", "Common Controls: 85% Pruned", "Common Controls: 90% Pruned", "Common Controls: 95% Pruned"))
+results2$ccPrune = factor(results2$ccPrune, levels=c("default", "160v100v85", "160v100v90", "160v100v95", "160v100v100"), 
+                            labels = c("Common Controls: 80% Pruned", "Common Controls: 85% Pruned", "Common Controls: 90% Pruned", "Common Controls: 95% Pruned", "Common Controls: 100% Pruned"))
 
 results2$lessIC = factor(results2$lessIC, levels = c("default", "Ncase2K_Nic1K_Ncc1K", "Ncase2K_Nic1K_Ncc2K", "Ncase2K_Nic1K_Ncc5K", "Ncase2K_Nic1K_Ncc10K", "Ncase2K_Nic500_Ncc5K"),
                          labels = c("Cases: 2000, Internal Controls: 2000, Common Controls: 10000", "Cases: 2000, Internal Controls: 1000, Common Controls: 1000", "Cases: 2000, Internal Controls: 1000, Common Controls: 2000",
                                     "Cases: 2000, Internal Controls: 1000, Common Controls: 5000", "Cases: 2000, Internal Controls: 1000, Common Controls: 10000", "Cases: 2000, Internal Controls: 500, Common Controls: 5000"))
+
+results2$lessIC2 = factor(results2$lessIC2, levels = c("default", "Ncase2K_Nic500_Ncc10K", "Ncase5K_Nic1K_Ncc10K", "Ncase5K_Nic500_Ncc10K"),
+                          labels = c("Cases: 2000, Internal Controls: 2000, Common Controls: 10000", "Cases: 2000, Internal Controls: 500, Common Controls: 10000", 
+                                     "Cases: 5000, Internal Controls: 1000, Common Controls: 10000", "Cases: 5000, Internal Controls: 500, Common Controls: 10000"))
 
 results2$Nint = factor(results2$Nint, levels=c("Ncase500_Nic500", "Ncase3000_Nic3000", "Ncase1000_Nic1000", "Ncase4000_Nic4000", "default", "Ncase5000_Nic5000"),
                        labels = c("Cases and Internal Controls: 500", "Cases and Internal Controls: 3000", "Cases and Internal Controls: 1000",
@@ -142,11 +145,14 @@ results2$Nref = factor(results2$Nref, levels=c("NrefIAM47_NrefNFE642_NrefEAS787_
 results2$casePrune = factor(results2$casePrune, levels=c("120v100v80", "140v100v80", "default"), 
                             labels = c("120%", "140%", "160%"))
 
-results2$ccPrune = factor(results2$ccPrune, levels=c("default", "160v100v85", "160v100v90", "160v100v95"), 
-                          labels = c("80%", "85%", "90%", "95%"))
+results2$ccPrune = factor(results2$ccPrune, levels=c("default", "160v100v85", "160v100v90", "160v100v95", "160v100v100"), 
+                          labels = c("80%", "85%", "90%", "95%", "100%"))
 
 results2$lessIC = factor(results2$lessIC, levels = c("default", "Ncase2K_Nic1K_Ncc1K", "Ncase2K_Nic1K_Ncc2K", "Ncase2K_Nic1K_Ncc5K", "Ncase2K_Nic1K_Ncc10K", "Ncase2K_Nic500_Ncc5K"),
                          labels = c("(2K, 2K, 10K)", "(2K, 1K, 1K)", "(2K, 1K, 2K)", "(2K, 1K, 5K)", "(2K, 1K, 10K)", "(2K, 500, 5K)"))
+
+results2$lessIC2 = factor(results2$lessIC2, levels = c("default", "Ncase2K_Nic500_Ncc10K", "Ncase5K_Nic1K_Ncc10K", "Ncase5K_Nic500_Ncc10K"),
+                          labels = c("(2K, 2K, 10K)", "(2K, 500, 10K)", "(5K, 1K, 10K)", "(5K, 500, 10K)"))
 
 results2$Nint = factor(results2$Nint, levels=c("Ncase500_Nic500", "Ncase1000_Nic1000", "default", "Ncase3000_Nic3000", "Ncase4000_Nic4000", "Ncase5000_Nic5000"),
                        labels = c("500", "1K", "2K", "3K", "4K", "5K"))
@@ -186,11 +192,9 @@ colors2 = c("#56B4E9", "#0072B2", "#E69F00", "#D55E00", "#CC79A7", "#999999", "#
 # Controls everything in the graph
 # base_size = 25
 
-### Version 1 plots (Genes on x-axis, facet_wrap by comp)
-
 # t1e for new admixed AFR results
-p1 <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5" | Gene == "ADGRE3" | Gene == "TECR")), 
-              aes(x=Gene, y=Value, color=Method, shape=MACs)) +
+pdefault <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5" | Gene == "ADGRE3" | Gene == "TECR")), 
+                   aes(x=Gene, y=Value, color=Method, shape=MACs)) +
   geom_point(size=1.8, position=position_dodge(width=0.8)) +
   geom_hline(yintercept=0.8, linetype=2, linewidth=0.5) +
   # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
@@ -202,15 +206,17 @@ p1 <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5" |
   scale_shape_manual(values = c(1, 16)) +
   # scale_linetype_manual(values = c("dashed", "solid")) +
   # scale_size_manual(values = c(0.5, 0.8)) +
-  # facet_wrap(~ccPrune, ncol = 1, scales = 'fixed') +
+  facet_wrap(~Data, ncol = 1, scales = 'fixed') +
   # facet_wrap(~Data, ncol = 1) +
-  labs(y='Power', x='Gene', title=paste0('Power by Gene (Default Parameters) \nCases: ', pcase,  '% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
-                                                '\nCommon Controls: ', ext_prune,  '% pruned, ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
+  labs(y='Power', x='Gene', title=paste0('Power by Gene \nCases: ', pcase,  '% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
+                                         '\nCommon Controls: ', ext_prune,  '% pruned, ', ext_admx, '\nNcase: ', Ncase, ', Nic: ', Nic, ', Ncc: ', Ncc, ', Nref AFR: ', Nref[1], ', Nref NFE: ', Nref[2], ', MAF: ', maf)) +
   # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
   # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
   theme_bw(base_size = 14)
-p1
-ggsave(file = paste0(dir_out, calc, '_gene_', file_out), plot = p1, height = 8, width = 16, units = 'in')
+pdefault
+ggsave(file = paste0(dir_out, calc, '_gene_', file_out), plot = pdefault, height = 8, width = 16, units = 'in')
+
+### Version 1 plots (Genes on x-axis, facet_wrap by comp)
 
 # power for new admixed AFR results-Cases (Power) % Pruned
 pcasePrune <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5" | Gene == "ADGRE3" | Gene == "TECR")), 
@@ -283,6 +289,30 @@ plessIC <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGR
   theme_bw(base_size = 14)
 plessIC
 ggsave(file = paste0(dir_out, calc, '_v1_gene_', file_out), plot = plessIC, height = 8, width = 16, units = 'in')
+
+# power for new admixed AFR results-Less Internal Controls than Common Controls v2
+plessIC2 <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5" | Gene == "ADGRE3" | Gene == "TECR")), 
+                  aes(x=Gene, y=Value, color=Method, shape=MACs)) +
+  geom_point(size=1.8, position=position_dodge(width=0.8)) +
+  geom_hline(yintercept=0.80, linetype=2, linewidth=0.5) +
+  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+  # scale_y_continuous(limits=c(0, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
+  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=0.5, width=.5, position=position_dodge(width=0.8)) +
+  scale_color_manual(values = colors2) +
+  scale_shape_manual(values = c(1, 16)) +
+  # scale_linetype_manual(values = c("dashed", "solid")) +
+  # scale_size_manual(values = c(0.5, 0.8)) +
+  facet_wrap(~lessIC2, ncol = 2, scales = 'fixed') +
+  # facet_wrap(~Data, ncol = 1) +
+  labs(y='Power', x='Gene', title=paste0('Power by Gene and Case, Internal Control, and Common Control Sample Size \nCases: 160% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
+                                         '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\n', str_Nrefs, ', MAF: ', maf)) +
+  # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
+  # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
+  theme_bw(base_size = 14)
+plessIC2
+ggsave(file = paste0(dir_out, calc, '_v1_gene_', file_out), plot = plessIC2, height = 8, width = 16, units = 'in')
 
 # power for new admixed AFR results-Internal Sample Size
 pNint <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5" | Gene == "ADGRE3" | Gene == "TECR")), 
@@ -430,6 +460,30 @@ plessIC <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGR
   theme_bw(base_size = 14)
 plessIC
 ggsave(file = paste0(dir_out, calc, '_v2_gene_', file_out), plot = plessIC, height = 8, width = 16, units = 'in')
+
+# power for new admixed AFR results-Less Internal Controls than Common Controls v2
+plessIC2 <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5" | Gene == "ADGRE3" | Gene == "TECR")), 
+                  aes(x=lessIC2, y=Value, color=Method, shape=MACs)) +
+  geom_point(size=1.8, position=position_dodge(width=0.8)) +
+  geom_hline(yintercept=0.80, linetype=2, linewidth=0.5) +
+  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
+  # scale_y_continuous(limits=c(0, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
+  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
+  geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=0.5, width=.5, position=position_dodge(width=0.8)) +
+  scale_color_manual(values = colors2) +
+  scale_shape_manual(values = c(1, 16)) +
+  # scale_linetype_manual(values = c("dashed", "solid")) +
+  # scale_size_manual(values = c(0.5, 0.8)) +
+  facet_wrap(~Gene, ncol = 1, scales = 'fixed') +
+  # facet_wrap(~Data, ncol = 1) +
+  labs(y='Power', x='Sample Size (Cases, Internal Controls, Common Controls)', title=paste0('Power by Gene and Case, Internal Control, and Common Control Sample Size \nCases: 160% pruned, ', int_admx, '\nInternal Controls: ', int_prune, '% pruned, ', int_admx,
+                                                                                            '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\n', str_Nrefs, ', MAF: ', maf)) +
+  # '\nPop: Admixed ', admx, " ", Pop1, '-', Pop2, ', Nsim: ', Nsim, ', Ncase: ', Ncase, ', Ncc: ', Ncc, ', Nref: ', Nref, ', MAF: 0.001')) +
+  # theme(axis.text.x = element_text(angle = 35, hjust=0.65))
+  theme_bw(base_size = 14)
+plessIC2
+ggsave(file = paste0(dir_out, calc, '_v2_gene_', file_out), plot = plessIC2, height = 8, width = 16, units = 'in')
 
 # power for new admixed AFR results-Internal Sample Size
 pNint <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc") & (Gene == "ADGRE5" | Gene == "ADGRE3" | Gene == "TECR")), 
