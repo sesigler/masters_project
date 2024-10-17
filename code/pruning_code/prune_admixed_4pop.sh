@@ -22,9 +22,8 @@ pcase=160
 pconf=80
 
 # define parameters
-# end=100
-# start=$(($end-99))
-rep=1
+end=mysim
+start=$(($end-99))
 
 #WD=/storage/math/projects/compinfo/simulations
 WD=/home/math/siglersa
@@ -32,8 +31,8 @@ WD=/home/math/siglersa
 cd ${WD}/admixed/${admx_folder}/${scen}/${sub_scen}/pruned_haps
 
 ### use RAREsim to prune to pcase % functional and 100% synonymous
-# for rep in $(eval echo "{$start..$end}")
-# do 
+for rep in $(eval echo "{$start..$end}")
+do 
 
 echo "Simulation Replicate: ${rep}"
 
@@ -122,4 +121,4 @@ python3 ${WD}/raresim_fix/raresim/sim.py \
     -H chr19.block37.${pop_admx}.sim${rep}.all.${pconf}fun.${pconf}syn.haps.gz \
     -z
 
-# done
+done
