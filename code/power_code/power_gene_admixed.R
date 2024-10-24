@@ -16,9 +16,9 @@ source("https://raw.githubusercontent.com/sesigler/Summix/main/R/summix.R")
 
 Pop_admx <- 'AFR_NFE'  
 Pops <- c('AFR', 'NFE')
-admx_props <- c(50, 50)
-scen <- 's2'
-sub_scen <- 'default'
+admx_props <- c(80, 20)
+scen <- 'xSCENx'
+sub_scen <- 'xSUBx'
 p_case <- 160
 p_case_fun <- p_case_syn <- p_int_fun <- p_int_syn <- 100
 p_cc_fun <- p_cc_syn <- 80
@@ -29,7 +29,7 @@ Nrefs <- c(2000, 2000)
 maf <- 0.001 
 genes_power <- c("ADGRE5", "ADGRE3", "TECR") # genes used for cases (power)
 
-end <- 100 # change back to mysim
+end <- mysim
 start <- end-99
 
 
@@ -57,7 +57,6 @@ neff_vec <- c()
 
 
 # loop through the simulation replicates
-set.seed(1) 
 # i=1
 for (i in start:end){
   

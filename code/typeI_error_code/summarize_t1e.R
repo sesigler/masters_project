@@ -29,7 +29,7 @@ maf = 0.001
 dir = paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/', tolower(calc), '/')
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/', tolower(calc), '/')
 
-file_in = paste0(scen, "_", sub_scen, "_maf", maf, "_NEW.txt")
+file_in = paste0(scen, "_", sub_scen, "_maf", maf, "_Nsim", Nsim, ".txt")
 file_out = paste0(scen, "_", sub_scen, "_maf", maf, "_Nsim", Nsim, ".csv")
 
 

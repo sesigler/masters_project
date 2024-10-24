@@ -1,7 +1,7 @@
 ### Used to plot type I error results ###
 
-read_results <- function(dir, calc, scen, sub_scen, maf) {
-  res <- read.csv(paste0(dir, calc, "_all_gene_", scen, "_", sub_scen, "_maf", maf, ".csv"), header=T)
+read_results <- function(dir, calc, scen, sub_scen, maf, Nsim) {
+  res <- read.csv(paste0(dir, calc, "_all_gene_", scen, "_", sub_scen, "_maf", maf, "_Nsim", Nsim, ".csv"), header=T)
   return(res)
 }
 
@@ -19,24 +19,27 @@ admx_props = c(47, 44, 5, 4) # c(80, 20)
 scen = 's2'
 int_admx = '75% IAM, 19% NFE, 3% EAS, 3% AFR' # '75% IAM, 19% NFE, 3% EAS, 3% AFR' 
 ext_admx = '47% IAM, 44% NFE, 5% EAS, 4% AFR' # '80% AFR, 20% NFE' 
-sub_scens = c('default', "Ncase1K_Nic4K_Nref5K", "Ncase2K_Nic3K_Nref5K", "Ncase3K_Nic2K_Nref5K", "Ncase4K_Nic1K_Nref5K")
-comp = 'Nint5K'
+# sub_scens = c('default', "Ncase1K_Nic4K_Nref5K", "Ncase2K_Nic3K_Nref5K", "Ncase3K_Nic2K_Nref5K", "Ncase4K_Nic1K_Nref5K")
+sub_scen = 'Ncase4000_Nic4000'
+comp = 'Nint'
 adj = 'adjNeff'
+Nsim = '1K'
+nsim_ci = 1000
 int_prune = 100
 ext_prune = 80
 # Ncase = 2000
 # Nic = 2000
 Ncc = 10000
-Nref = c(5000, 5000, 5000, 5000)
+Nref = c(2000, 2000, 2000, 2000)
 maf = 0.001 
-str_Nrefs = 'Nref IAM: 5000, Nref NFE: 5000, Nref EAS: 5000, Nref AFR: 5000' # 'Nref AFR: 5000, Nref NFE: 5000'
+str_Nrefs = 'Nref IAM: 2000, Nref NFE: 2000, Nref EAS: 2000, Nref AFR: 2000' # 'Nref AFR: 2000, Nref NFE: 2000'
 
 
 # dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/', tolower(calc), '/')
 dir = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Data/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', tolower(calc), '/')
 dir_out = paste0('C:/Users/sagee/Documents/GitHub/masters_project/Results/typeI_error_plots/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/')
 
-# file_in = paste0(scen, "_", sub_scen, "_maf", maf, ".csv")
+file_in = paste0(scen, "_", sub_scen, "_maf", maf, "_Nsim", Nsim, ".csv")
 file_out = paste0(scen, "_", comp, "_", adj, "_maf", maf, '.jpg')
 
 # read in the results
@@ -45,11 +48,7 @@ file_out = paste0(scen, "_", comp, "_", adj, "_maf", maf, '.jpg')
 # t1e_cc_prop_ests = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_cc_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
 # t1e_int_prop_ests = read.table(paste0(dir, "T1e_", int_prune, "_v_", ext_prune, "_int_prop_ests_", scen, "_", Pop1, '-', Pop2, "_maf", maf, ".txt"), header = T)
 
-# results = read.csv(paste0(dir, calc, "_all_gene_", file_in), header=T)
-# results = pivot_longer(results, prox_int:burden_all, names_to="Method", values_to="Value") %>%
-#   mutate(MAF = maf)
-
-# Read in results
+# Read in results-for comparing multiple scenarios
 res1 = read_results(dir, calc, scen, sub_scen=sub_scens[1], maf)
 res2 = read_results(dir, calc, scen, sub_scen=sub_scens[2], maf)
 res3 = read_results(dir, calc, scen, sub_scen=sub_scens[3], maf)
@@ -57,7 +56,7 @@ res4 = read_results(dir, calc, scen, sub_scen=sub_scens[4], maf)
 res5 = read_results(dir, calc, scen, sub_scen=sub_scens[5], maf)
 res6 = read_results(dir, calc, scen, sub_scen=sub_scens[6], maf)
 
-# Format for ggplot
+# Format for ggplot-for comparing multiple scenarios
 res1 = pivot_longer(res1, prox_ext:burden_all, names_to="Method", values_to="Value") %>%
   mutate(MAF = maf, Nint5K = "default") 
 
@@ -79,6 +78,7 @@ res6 = pivot_longer(res6, prox_ext:burden_all, names_to="Method", values_to="Val
 res = rbind(res1, res2, res3, res4, res5)
 
 
+# for comparing multiple scenarios
 results2 = res %>% mutate(MACs = rep(c("Unadjusted", "Adjusted Ncc", "Adjusted Neff",
                                        "Unadjusted", "Adjusted Ncc", "Adjusted Neff",
                                        "Unadjusted", "Adjusted Ncc", "Adjusted Neff", 
@@ -88,6 +88,7 @@ results2 = res %>% mutate(MACs = rep(c("Unadjusted", "Adjusted Ncc", "Adjusted N
                                        "Unadjusted", "Unadjusted", "Unadjusted",
                                        "Unadjusted", "Unadjusted", "Unadjusted"), times=60)) #12, 36, 48, 60, 72
 
+# for comparing multiple scenarios
 results2$Method = factor(results2$Method, levels=c("prox_ext", "prox_ext_adj_Ncc", "prox_ext_adj_Neff", 
                                                    "proxW_ext", "proxW_ext_adj_Ncc", "proxW_ext_adj_Neff",
                                                    "prox2_ext", "prox2_ext_adj_Ncc", "prox2_ext_adj_Neff", 
@@ -112,6 +113,23 @@ results2$Method = factor(results2$Method, levels=c("prox_ext", "prox_ext_adj_Ncc
 #                                             "Internal", "External", "Internal + External",
 #                                             "Internal", "External", "Internal + External"), 12))
 # results2$Data = factor(results2$Data, levels=c("Internal", "External", "Internal + External"))
+
+# For single simulation scenario
+res = read.csv(paste0(dir, calc, "_all_gene_", file_in), header=T)
+res = pivot_longer(res, prox_ext:iecat_all_adj_Neff, names_to="Method", values_to="Value") %>%
+  mutate(MAF = maf)
+
+# For single scenario
+results2 = res %>% mutate(MACs = rep(c("Unadjusted", "Adjusted Ncc", "Adjusted Neff",
+                                       "Unadjusted", "Adjusted Ncc", "Adjusted Neff",
+                                       "Unadjusted", "Adjusted Ncc", "Adjusted Neff"), times=12)) #12, 36, 48, 60, 72
+
+# For single scenario
+results2$Method = factor(results2$Method, levels=c("prox_ext", "prox_ext_adj_Ncc", "prox_ext_adj_Neff", 
+                                                   "proxW_ext", "proxW_ext_adj_Ncc", "proxW_ext_adj_Neff",
+                                                   "iecat_all", "iecat_all_adj_Ncc", "iecat_all_adj_Neff"),
+                         labels=rep(c("ProxECAT (External)", "ProxECAT-weighted (External)", "iECAT-O (Internal + External)"), times=c(3, 3, 3)))
+
 
 results2$MAF = factor(results2$MAF)
 results2$MACs = factor(results2$MACs, levels=c("Unadjusted", "Adjusted Ncc", "Adjusted Neff"), 
@@ -186,7 +204,7 @@ results2$Upper = '.'
 # paper: https://projecteuclid.org/journals/statistical-science/volume-16/issue-2/Interval-Estimation-for-a-Binomial-Proportion/10.1214/ss/1009213286.full?tab=ArticleFirstPage
 
 # default level is 95% confidence
-nsim = 100
+nsim = nsim_ci
 for(i in 1:nrow(results2)){
   results2$Lower[i] = binom.confint(nsim*results2$Value[i], nsim, method=c("wilson"), type="central")$lower
   results2$Upper[i] = binom.confint(nsim*results2$Value[i], nsim, method=c("wilson"), type="central")$upper
@@ -659,13 +677,10 @@ ggsave(file = paste0(dir_out, calc, '_v2_gene_', file_out), plot = pNref, height
 
 
 ### Plot for R01 Grant Resubmission
-
+#& (Gene == "ADGRE2" | Gene == "GIPC1" | Gene == "PTGER1")
 base_size = 25
 # t1e for new admixed AFR results-Internal Sample Size
-pgrant <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-O (Internal)" | Method == "SKAT-O (External)" | Method == "SKAT-O (Internal + External)" |
-                                         Method == "SKAT (Internal)" | Method == "SKAT (External)" | Method == "SKAT (Internal + External)" |
-                                         Method == "Burden (Internal)" | Method == "Burden (External)" | Method == "Burden (Internal + External)") & 
-                                       Nint == "Cases and Internal Controls: 4000" & (Gene == "ADGRE5" | Gene == "DNAJB1" | Gene == "GIPC1")), 
+pgrant <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc")), 
                 aes(x=Gene, y=Value, color=Method, shape=MACs)) +
   geom_point(size=3, position=position_dodge(width=0.8)) +
   geom_hline(yintercept=0.05, linetype=2, linewidth=0.5) +
@@ -674,7 +689,7 @@ pgrant <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "SKAT-
   # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
   # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
   geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=0.5, width=.5, position=position_dodge(width=0.8)) +
-  scale_color_manual(values = colors2) +
+  scale_color_manual(values = colors3) +
   scale_shape_manual(values = c(1, 16)) +
   # scale_linetype_manual(values = c("dashed", "solid")) +
   # scale_size_manual(values = c(0.5, 0.8)) +
