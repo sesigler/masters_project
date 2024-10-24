@@ -677,24 +677,19 @@ ggsave(file = paste0(dir_out, calc, '_v2_gene_', file_out), plot = pNref, height
 
 
 ### Plot for R01 Grant Resubmission
-#& (Gene == "ADGRE2" | Gene == "GIPC1" | Gene == "PTGER1")
-base_size = 25
+#& (Gene == "CLEC17A" | Gene == "GIPC1" | Gene == "PTGER1")
+#MACs == "Adjusted Ncc" | 
 # t1e for new admixed AFR results-Internal Sample Size
-pgrant <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc")), 
+pgrant <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc" | Method == "iECAT-O (Internal + External)") & (Gene == "CLEC17A" | Gene == "GIPC1" | Gene == "PTGER1")), 
                 aes(x=Gene, y=Value, color=Method, shape=MACs)) +
   geom_point(size=3, position=position_dodge(width=0.8)) +
   geom_hline(yintercept=0.05, linetype=2, linewidth=0.5) +
-  # geom_hline(yintercept=1, linetype="blank", linewidth=1.5) +
-  # scale_y_continuous(limits=c(0, 1)) +
-  # scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.5, 0.75, 1)) +
-  # scale_y_continuous(breaks=c(0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60)) +
+  scale_y_continuous(limits=c(0, 0.15)) +
   geom_errorbar(aes(ymin=Lower, ymax=Upper), linewidth=0.5, width=.5, position=position_dodge(width=0.8)) +
-  scale_color_manual(values = colors3) +
-  scale_shape_manual(values = c(1, 16)) +
+  scale_color_manual(values = c("#0072B2", "#D55E00")) +
+  scale_shape_manual(values = c(1, 16, 18)) +
   # scale_linetype_manual(values = c("dashed", "solid")) +
   # scale_size_manual(values = c(0.5, 0.8)) +
-  # facet_wrap(~Nint, ncol = 1, scales = 'fixed') +
-  # facet_wrap(~Data, ncol = 1) +
   labs(y='Type I Error', x='Gene', color="Method (Controls Used)") +
   # labs(y='Type I Error', x='Gene', title=paste0('Type I Error by Gene and Internal Sample Size \nCases and Internal Controls: ', int_prune, '% pruned, ', int_admx,
   #                                               '\nCommon Controls: ', ext_prune, '% pruned, ', ext_admx, '\nNcc: ', Ncc, ', ', str_Nrefs, ', MAF: ', maf)) +
@@ -703,7 +698,7 @@ pgrant <- ggplot(results2 %>% filter(!(MACs == "Adjusted Ncc")),
   theme_bw(base_size = 20)
   # theme(legend.position = "bottom", legend.box = "vertical")
 pgrant
-ggsave(file = paste0(dir_out, 'Audrey_R01_grant_T1e_s2_Nint4K_adjNeff_maf0.001.jpg'), plot = pgrant, height = 4, width = 10, units = 'in')
+ggsave(file = paste0(dir_out, 'Audrey_R01_grant_T1e_s2_Nint4K_adjNeff_maf0.001_Nsim1K.jpg'), plot = pgrant, height = 4, width = 10, units = 'in')
 
 
 ################################################################################
