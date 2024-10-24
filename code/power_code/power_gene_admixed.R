@@ -14,9 +14,9 @@ source("https://raw.githubusercontent.com/hendriau/Summix/main/R/adjAF.R")
 # source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
 source("https://raw.githubusercontent.com/sesigler/Summix/main/R/summix.R")
 
-Pop_admx <- 'LTX'  
-Pops <- c('IAM', 'NFE', 'EAS', 'AFR')
-admx_props <- c(47, 44, 5, 4)
+Pop_admx <- 'AFR_NFE'  
+Pops <- c('AFR', 'NFE')
+admx_props <- c(50, 50)
 scen <- 's2'
 sub_scen <- 'default'
 p_case <- 160
@@ -25,7 +25,7 @@ p_cc_fun <- p_cc_syn <- 80
 Ncase <- 2000 
 Nic <- 2000
 Ncc <- 10000  
-Nrefs <- c(2000, 2000, 2000, 2000)
+Nrefs <- c(2000, 2000)
 maf <- 0.001 
 genes_power <- c("ADGRE5", "ADGRE3", "TECR") # genes used for cases (power)
 

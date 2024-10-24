@@ -13,21 +13,21 @@ library(dplyr)
 source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/create_haps_funcs.R")
 
 # Set simulation parameters
-Pop_admx <- 'LTX'
-Pops <- c('IAM', 'NFE', 'EAS', 'AFR')
-admx_props_int <- c(75, 19, 3, 3) # internal sample admixture proportions
-admx_props_ext <- c(47, 44, 5, 4) # common control admixture proportions
+Pop_admx <- 'LTX' # 'AFR_NFE'
+Pops <- c('IAM', 'NFE', 'EAS', 'AFR') # c('AFR', 'NFE')
+admx_props_int <- c(75, 19, 3, 3) # c(100, 0) # internal sample admixture proportions
+admx_props_ext <- c(47, 44, 5, 4) # c(80, 20) # common control admixture proportions
 p_case <- 160 # % confounding cases (power)
 p_conf <- 80 # % confounding common controls
-scen <- 's2'
-sub_scen <- 'default'
-Ncase <- 2000
-Nic <- 2000
+scen <- 'xSCENx'
+sub_scen <- 'xSUBx'
+Ncase <- 4000
+Nic <- 4000
 Ncc <- 10000
 Nrefs <- c(2000, 2000, 2000, 2000)
-Nhaps <- c(19400, 14320, 5240, 5040)
+Nhaps <- c(25400, 15840, 5480, 5280)
 
-end <- 100
+end <- mysim
 start <- end - 99
 
 dir_in <- paste0('/home/math/siglersa/admixed/', paste(paste(admx_props_ext, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/pruned_haps/')
@@ -73,7 +73,7 @@ if (length(Pops) > 1) {
 }
 
 
-set.seed(1) # Will be different for each replicate but same for each run
+set.seed(mysim) # Will be different for each replicate but same for each run
 # j = 1
 for(j in start:end){
   

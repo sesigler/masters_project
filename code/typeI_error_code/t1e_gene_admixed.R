@@ -15,14 +15,14 @@ source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/fun
 source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/general_data_manip.R")
 source("https://raw.githubusercontent.com/sesigler/masters_project/main/code/functions/methods_funcs.R")
 source("https://raw.githubusercontent.com/hendriau/Summix/main/R/adjAF.R")
-# source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R")
+# source("https://raw.githubusercontent.com/hendriau/Summix/main/R/summix.R") # Adelle said she fixed this so can switch back to this version
 source("https://raw.githubusercontent.com/sesigler/Summix/main/R/summix.R")
 
-Pop_admx <- 'LTX'  
-Pops <- c('IAM', 'NFE', 'EAS', 'AFR')
-admx_props <- c(47, 44, 5, 4)
-scen <- 's2'
-sub_scen <- 'default'
+Pop_admx <- 'LTX' # 'AFR_NFE'  
+Pops <- c('IAM', 'NFE', 'EAS', 'AFR') # c('AFR', 'NFE')
+admx_props <- c(47, 44, 5, 4) # c(80, 20)
+scen <- 'xSCENx'
+sub_scen <- 'xSUBx'
 p_case <- 160
 p_case_fun <- p_case_syn <- p_int_fun <- p_int_syn <- 100
 p_cc_fun <- p_cc_syn <- 80
@@ -32,9 +32,8 @@ Ncc <- 10000
 Nrefs <- c(2000, 2000, 2000, 2000)
 maf <- 0.001 
 
-end <- 100 # change back to mysim
+end <- mysim
 start <- end-99
-
 
 dir_leg <- paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/pruned_haps/')
 dir_in <- paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, sep = ""), collapse = "_"), '/', scen, '/', sub_scen, '/datasets/')
@@ -44,26 +43,28 @@ dir_out <- paste0('/home/math/siglersa/admixed/', paste(paste(admx_props, Pops, 
 # dir_in <- paste0('C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/', sim_params, '/')
 # dir_out <- 'C:/Users/sagee/Documents/HendricksLab/admixed/Sim_42k/'
 
+# Set file path name
+file_path <- paste0(scen, "_", sub_scen, "_maf", maf, "_", mysim, ".txt")
+
 # Vectors to store p-values
 prox_ext_genes_p <- prox_ext_genes_p_adj_Ncc <- prox_ext_genes_p_adj_Neff <- c()
-proxW_ext_genes_p <- proxW_ext_genes_p_adj_Ncc <- proxW_ext_genes_p_adj_Neff <- c() 
-prox2_ext_genes_p <- prox2_ext_genes_p_adj_Ncc <- prox2_ext_genes_p_adj_Neff <- c()
-prox2_all_genes_p <- prox2_all_genes_p_adj_Ncc <- prox2_all_genes_p_adj_Neff <- c()
-iecat_genes_p <- iecat_genes_p_adj_Ncc <- iecat_genes_p_adj_Neff <- c() 
-skato_int_genes_p <- skato_ext_genes_p <- skato_all_genes_p <- c() 
-skat_int_genes_p <- skat_ext_genes_p <- skat_all_genes_p <- c() 
-burden_int_genes_p <- burden_ext_genes_p <- burden_all_genes_p <- c() 
+proxW_ext_genes_p <- proxW_ext_genes_p_adj_Ncc <- proxW_ext_genes_p_adj_Neff <- c()
+iecat_genes_p <- iecat_genes_p_adj_Ncc <- iecat_genes_p_adj_Neff <- c()
+# prox2_ext_genes_p <- prox2_ext_genes_p_adj_Ncc <- prox2_ext_genes_p_adj_Neff <- c()
+# prox2_all_genes_p <- prox2_all_genes_p_adj_Ncc <- prox2_all_genes_p_adj_Neff <- c()
+# skato_int_genes_p <- skato_ext_genes_p <- skato_all_genes_p <- c() 
+# skat_int_genes_p <- skat_ext_genes_p <- skat_all_genes_p <- c() 
+# burden_int_genes_p <- burden_ext_genes_p <- burden_all_genes_p <- c() 
 
 # Vectors to store proxECAT and LogProx AC info
 prox_ext_ACs <- prox_ext_adj_Ncc_ACs <- prox_ext_adj_Neff_ACs <- c()
-prox2_ext_ACs <- prox2_ext_adj_Ncc_ACs <- prox2_ext_adj_Neff_ACs <- c()
-prox2_all_ACs <- prox2_all_adj_Ncc_ACs <- prox2_all_adj_Neff_ACs <- c()
+# prox2_ext_ACs <- prox2_ext_adj_Ncc_ACs <- prox2_ext_adj_Neff_ACs <- c()
+# prox2_all_ACs <- prox2_all_adj_Ncc_ACs <- prox2_all_adj_Neff_ACs <- c()
 
 # Vectors to store effective sample sizes
 neff_vec <- c()
 
 # loop through the simulation replicates
-set.seed(1) 
 # i=83
 for (i in start:end){
   
@@ -373,77 +374,77 @@ for (i in start:end){
     iecat_genes_adj_Ncc <- c(iecat_genes_adj_Ncc, re_gene_adj_Ncc$p.value)
     iecat_genes_adj_Neff <- c(iecat_genes_adj_Neff, re_gene_adj_Neff$p.value)
 
-    # call the SKAT-O functions
-    skato_int_gene <- SKATBinary(t(Z_int), obj_int, method="SKATO") # SKAT-O internal
-    skato_ext_gene <- SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O external
-    skato_all_gene <- SKATBinary(t(Z_all), obj_all, method="SKATO") # SKAT-O internal+external
-
-    # Save SKAT-O p-values
-    skato_int_genes <- c(skato_int_genes, skato_int_gene$p.value)
-    skato_ext_genes <- c(skato_ext_genes, skato_ext_gene$p.value)
-    skato_all_genes <- c(skato_all_genes, skato_all_gene$p.value)
-
-    # Call the SKAT functions
-    skat_int_gene <- SKATBinary(t(Z_int), obj_int, method="SKAT") # SKAT internal
-    skat_ext_gene <- SKATBinary(t(Z_ext), obj_ext, method="SKAT") # SKAT external
-    skat_all_gene <- SKATBinary(t(Z_all), obj_all, method="SKAT") # SKAT internal+external
-
-    # Save the SKAT p-values
-    skat_int_genes <- c(skat_int_genes, skat_int_gene$p.value)
-    skat_ext_genes <- c(skat_ext_genes, skat_ext_gene$p.value)
-    skat_all_genes <- c(skat_all_genes, skat_all_gene$p.value)
-
-    # Call the Burden functions
-    burden_int_gene <- SKATBinary(t(Z_int), obj_int, method="Burden") # Burden internal
-    burden_ext_gene <- SKATBinary(t(Z_ext), obj_ext, method="Burden") # Burden external
-    burden_all_gene <- SKATBinary(t(Z_all), obj_all, method="Burden") # Burden internal+external
-
-    # Save the Burden p-values
-    burden_int_genes <- c(burden_int_genes, burden_int_gene$p.value)
-    burden_ext_genes <- c(burden_ext_genes, burden_ext_gene$p.value)
-    burden_all_genes <- c(burden_all_genes, burden_all_gene$p.value)
+    # # call the SKAT-O functions
+    # skato_int_gene <- SKATBinary(t(Z_int), obj_int, method="SKATO") # SKAT-O internal
+    # skato_ext_gene <- SKATBinary(t(Z_ext), obj_ext, method="SKATO") # SKAT-O external
+    # skato_all_gene <- SKATBinary(t(Z_all), obj_all, method="SKATO") # SKAT-O internal+external
+    # 
+    # # Save SKAT-O p-values
+    # skato_int_genes <- c(skato_int_genes, skato_int_gene$p.value)
+    # skato_ext_genes <- c(skato_ext_genes, skato_ext_gene$p.value)
+    # skato_all_genes <- c(skato_all_genes, skato_all_gene$p.value)
+    # 
+    # # Call the SKAT functions
+    # skat_int_gene <- SKATBinary(t(Z_int), obj_int, method="SKAT") # SKAT internal
+    # skat_ext_gene <- SKATBinary(t(Z_ext), obj_ext, method="SKAT") # SKAT external
+    # skat_all_gene <- SKATBinary(t(Z_all), obj_all, method="SKAT") # SKAT internal+external
+    # 
+    # # Save the SKAT p-values
+    # skat_int_genes <- c(skat_int_genes, skat_int_gene$p.value)
+    # skat_ext_genes <- c(skat_ext_genes, skat_ext_gene$p.value)
+    # skat_all_genes <- c(skat_all_genes, skat_all_gene$p.value)
+    # 
+    # # Call the Burden functions
+    # burden_int_gene <- SKATBinary(t(Z_int), obj_int, method="Burden") # Burden internal
+    # burden_ext_gene <- SKATBinary(t(Z_ext), obj_ext, method="Burden") # Burden external
+    # burden_all_gene <- SKATBinary(t(Z_all), obj_all, method="Burden") # Burden internal+external
+    # 
+    # # Save the Burden p-values
+    # burden_int_genes <- c(burden_int_genes, burden_int_gene$p.value)
+    # burden_ext_genes <- c(burden_ext_genes, burden_ext_gene$p.value)
+    # burden_all_genes <- c(burden_all_genes, burden_all_gene$p.value)
   }
 
   # Store the LogProx, iECAT-O, SKAT gene p-values
   # Each col represents a gene and each row represents a sim rep
   
-  # LogProx p-values
-  prox2_ext_genes_p <- rbind(prox2_ext_genes_p, prox2_ext_genes)
-  prox2_ext_genes_p_adj_Ncc <- rbind(prox2_ext_genes_p_adj_Ncc, prox2_ext_genes_adj_Ncc)
-  prox2_ext_genes_p_adj_Neff <- rbind(prox2_ext_genes_p_adj_Neff, prox2_ext_genes_adj_Neff)
-  
-  prox2_all_genes_p <- rbind(prox2_all_genes_p, prox2_all_genes)
-  prox2_all_genes_p_adj_Ncc <- rbind(prox2_all_genes_p_adj_Ncc, prox2_all_genes_adj_Ncc)
-  prox2_all_genes_p_adj_Neff <- rbind(prox2_all_genes_p_adj_Neff, prox2_all_genes_adj_Neff)
-  
-  # LogProx AC info
-  prox2_ext_ACs <- rbind(prox2_ext_ACs, prox2_ext_genes_ACs)
-  prox2_ext_adj_Ncc_ACs <- rbind(prox2_ext_adj_Ncc_ACs, prox2_ext_adj_Ncc_genes_ACs)
-  prox2_ext_adj_Neff_ACs <- rbind(prox2_ext_adj_Neff_ACs, prox2_ext_adj_Neff_genes_ACs)
-  
-  prox2_all_ACs <- rbind(prox2_all_ACs, prox2_all_genes_ACs)
-  prox2_all_adj_Ncc_ACs <- rbind(prox2_all_adj_Ncc_ACs, prox2_all_adj_Ncc_genes_ACs)
-  prox2_all_adj_Neff_ACs <- rbind(prox2_all_adj_Neff_ACs, prox2_all_adj_Neff_genes_ACs)
+  # # LogProx p-values
+  # prox2_ext_genes_p <- rbind(prox2_ext_genes_p, prox2_ext_genes)
+  # prox2_ext_genes_p_adj_Ncc <- rbind(prox2_ext_genes_p_adj_Ncc, prox2_ext_genes_adj_Ncc)
+  # prox2_ext_genes_p_adj_Neff <- rbind(prox2_ext_genes_p_adj_Neff, prox2_ext_genes_adj_Neff)
+  # 
+  # prox2_all_genes_p <- rbind(prox2_all_genes_p, prox2_all_genes)
+  # prox2_all_genes_p_adj_Ncc <- rbind(prox2_all_genes_p_adj_Ncc, prox2_all_genes_adj_Ncc)
+  # prox2_all_genes_p_adj_Neff <- rbind(prox2_all_genes_p_adj_Neff, prox2_all_genes_adj_Neff)
+  # 
+  # # LogProx AC info
+  # prox2_ext_ACs <- rbind(prox2_ext_ACs, prox2_ext_genes_ACs)
+  # prox2_ext_adj_Ncc_ACs <- rbind(prox2_ext_adj_Ncc_ACs, prox2_ext_adj_Ncc_genes_ACs)
+  # prox2_ext_adj_Neff_ACs <- rbind(prox2_ext_adj_Neff_ACs, prox2_ext_adj_Neff_genes_ACs)
+  # 
+  # prox2_all_ACs <- rbind(prox2_all_ACs, prox2_all_genes_ACs)
+  # prox2_all_adj_Ncc_ACs <- rbind(prox2_all_adj_Ncc_ACs, prox2_all_adj_Ncc_genes_ACs)
+  # prox2_all_adj_Neff_ACs <- rbind(prox2_all_adj_Neff_ACs, prox2_all_adj_Neff_genes_ACs)
 
   # iECAT-O p-values
   iecat_genes_p <- rbind(iecat_genes_p, iecat_genes)
   iecat_genes_p_adj_Ncc <- rbind(iecat_genes_p_adj_Ncc, iecat_genes_adj_Ncc)
   iecat_genes_p_adj_Neff <- rbind(iecat_genes_p_adj_Neff, iecat_genes_adj_Neff)
 
-  # SKAT-O p-values
-  skato_int_genes_p <- rbind(skato_int_genes_p, skato_int_genes)
-  skato_ext_genes_p <- rbind(skato_ext_genes_p, skato_ext_genes)
-  skato_all_genes_p <- rbind(skato_all_genes_p, skato_all_genes)
-
-  # SKAT p-values
-  skat_int_genes_p <- rbind(skat_int_genes_p, skat_int_genes)
-  skat_ext_genes_p <- rbind(skat_ext_genes_p, skat_ext_genes)
-  skat_all_genes_p <- rbind(skat_all_genes_p, skat_all_genes)
-
-  # Burden p-values
-  burden_int_genes_p <- rbind(burden_int_genes_p, burden_int_genes)
-  burden_ext_genes_p <- rbind(burden_ext_genes_p, burden_ext_genes)
-  burden_all_genes_p <- rbind(burden_all_genes_p, burden_all_genes)
+  # # SKAT-O p-values
+  # skato_int_genes_p <- rbind(skato_int_genes_p, skato_int_genes)
+  # skato_ext_genes_p <- rbind(skato_ext_genes_p, skato_ext_genes)
+  # skato_all_genes_p <- rbind(skato_all_genes_p, skato_all_genes)
+  # 
+  # # SKAT p-values
+  # skat_int_genes_p <- rbind(skat_int_genes_p, skat_int_genes)
+  # skat_ext_genes_p <- rbind(skat_ext_genes_p, skat_ext_genes)
+  # skat_all_genes_p <- rbind(skat_all_genes_p, skat_all_genes)
+  # 
+  # # Burden p-values
+  # burden_int_genes_p <- rbind(burden_int_genes_p, burden_int_genes)
+  # burden_ext_genes_p <- rbind(burden_ext_genes_p, burden_ext_genes)
+  # burden_all_genes_p <- rbind(burden_all_genes_p, burden_all_genes)
 
   print(i)
 }
@@ -451,34 +452,31 @@ for (i in start:end){
 # Set col names to the genes
 colnames(prox_ext_genes_p) <- colnames(prox_ext_genes_p_adj_Ncc) <- colnames(prox_ext_genes_p_adj_Neff) <- genes
 colnames(proxW_ext_genes_p) <- colnames(proxW_ext_genes_p_adj_Ncc) <- colnames(proxW_ext_genes_p_adj_Neff) <- genes
-colnames(prox2_ext_genes_p) <- colnames(prox2_ext_genes_p_adj_Ncc) <- colnames(prox2_ext_genes_p_adj_Neff) <- genes
-colnames(prox2_all_genes_p) <- colnames(prox2_all_genes_p_adj_Ncc) <- colnames(prox2_all_genes_p_adj_Neff) <- genes
 colnames(iecat_genes_p) <- colnames(iecat_genes_p_adj_Ncc) <- colnames(iecat_genes_p_adj_Neff) <- genes
-colnames(skato_int_genes_p) <- colnames(skato_ext_genes_p) <- colnames(skato_all_genes_p) <- genes
-colnames(skat_int_genes_p) <- colnames(skat_ext_genes_p) <- colnames(skat_all_genes_p) <- genes
-colnames(burden_int_genes_p) <- colnames(burden_ext_genes_p) <- colnames(burden_all_genes_p) <- genes
-
-# Set file path name
-file_path <- paste0(scen, "_", sub_scen, "_maf", maf, ".txt")
+# colnames(prox2_ext_genes_p) <- colnames(prox2_ext_genes_p_adj_Ncc) <- colnames(prox2_ext_genes_p_adj_Neff) <- genes
+# colnames(prox2_all_genes_p) <- colnames(prox2_all_genes_p_adj_Ncc) <- colnames(prox2_all_genes_p_adj_Neff) <- genes
+# colnames(skato_int_genes_p) <- colnames(skato_ext_genes_p) <- colnames(skato_all_genes_p) <- genes
+# colnames(skat_int_genes_p) <- colnames(skat_ext_genes_p) <- colnames(skat_all_genes_p) <- genes
+# colnames(burden_int_genes_p) <- colnames(burden_ext_genes_p) <- colnames(burden_all_genes_p) <- genes
 
 # Save the proportion estimates
 # write.table(data.frame(prop_ests_cc), paste0(dir_out, "T1e_cc_prop_ests_", int_prune, "_v_", ext_prune, "_", Pop1, '_', Pop2, "_", scen, "_maf", maf, ".txt"), quote=F, row.names=F)
 
 # Save the effective sample sizes
-write.csv(neff_vec, paste0(dir_out, "neff_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
+write.csv(neff_vec, paste0(dir_out, "neff_", scen, "_", sub_scen, "_maf", maf, "_", mysim, ".csv"), quote=F, row.names=F)
 
 # Save the AC info
-write.csv(prox_ext_ACs, paste0(dir_out, "ACs_prox_ext_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(prox_ext_adj_Ncc_ACs, paste0(dir_out, "ACs_prox_ext_adj_Ncc_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(prox_ext_adj_Neff_ACs, paste0(dir_out, "ACs_prox_ext_adj_Neff_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
+write.csv(prox_ext_ACs, paste0(dir_out, "ACs_prox_ext_", scen, "_", sub_scen, "_maf", maf, "_", mysim, ".csv"), quote=F, row.names=F)
+write.csv(prox_ext_adj_Ncc_ACs, paste0(dir_out, "ACs_prox_ext_adj_Ncc_", scen, "_", sub_scen, "_maf", maf, "_", mysim, ".csv"), quote=F, row.names=F)
+write.csv(prox_ext_adj_Neff_ACs, paste0(dir_out, "ACs_prox_ext_adj_Neff_", scen, "_", sub_scen, "_maf", maf, "_", mysim, ".csv"), quote=F, row.names=F)
 
-write.csv(prox2_ext_ACs, paste0(dir_out, "ACs_prox2_ext_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(prox2_ext_adj_Ncc_ACs, paste0(dir_out, "ACs_prox2_ext_adj_Ncc_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(prox2_ext_adj_Neff_ACs, paste0(dir_out, "ACs_prox2_ext_adj_Neff_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
-
-write.csv(prox2_all_ACs, paste0(dir_out, "ACs_prox2_all_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(prox2_all_adj_Ncc_ACs, paste0(dir_out, "ACs_prox2_all_adj_Ncc_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
-write.csv(prox2_all_adj_Neff_ACs, paste0(dir_out, "ACs_prox2_all_adj_Neff_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
+# write.csv(prox2_ext_ACs, paste0(dir_out, "ACs_prox2_ext_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
+# write.csv(prox2_ext_adj_Ncc_ACs, paste0(dir_out, "ACs_prox2_ext_adj_Ncc_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
+# write.csv(prox2_ext_adj_Neff_ACs, paste0(dir_out, "ACs_prox2_ext_adj_Neff_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
+# 
+# write.csv(prox2_all_ACs, paste0(dir_out, "ACs_prox2_all_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
+# write.csv(prox2_all_adj_Ncc_ACs, paste0(dir_out, "ACs_prox2_all_adj_Ncc_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
+# write.csv(prox2_all_adj_Neff_ACs, paste0(dir_out, "ACs_prox2_all_adj_Neff_", scen, "_", sub_scen, "_maf", maf, ".csv"), quote=F, row.names=F)
 
 # Save the p-values
 # ProxECAT
@@ -489,29 +487,29 @@ write.table(prox_ext_genes_p_adj_Neff, paste0(dir_out, "T1e_gene_prox_ext_adj_Ne
 write.table(proxW_ext_genes_p, paste0(dir_out, "T1e_gene_prox_weighted_ext_", file_path), quote=F, row.names=F, col.names=T)
 write.table(proxW_ext_genes_p_adj_Ncc, paste0(dir_out, "T1e_gene_prox_weighted_ext_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
 write.table(proxW_ext_genes_p_adj_Neff, paste0(dir_out, "T1e_gene_prox_weighted_ext_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
-# LogProx
-write.table(prox2_ext_genes_p, paste0(dir_out, "T1e_gene_prox2_ext_", file_path), quote=F, row.names=F, col.names=T)
-write.table(prox2_ext_genes_p_adj_Ncc, paste0(dir_out, "T1e_gene_prox2_ext_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
-write.table(prox2_ext_genes_p_adj_Neff, paste0(dir_out, "T1e_gene_prox2_ext_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
-write.table(prox2_all_genes_p, paste0(dir_out, "T1e_gene_prox2_all_", file_path), quote=F, row.names=F, col.names=T)
-write.table(prox2_all_genes_p_adj_Ncc, paste0(dir_out, "T1e_gene_prox2_all_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
-write.table(prox2_all_genes_p_adj_Neff, paste0(dir_out, "T1e_gene_prox2_all_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
 # iECAT-O
 write.table(iecat_genes_p, paste0(dir_out, "T1e_gene_iecat_all_", file_path), quote=F, row.names=F, col.names=T)
 write.table(iecat_genes_p_adj_Ncc, paste0(dir_out, "T1e_gene_iecat_all_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
 write.table(iecat_genes_p_adj_Neff, paste0(dir_out, "T1e_gene_iecat_all_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
-# SKAT-O
-write.table(skato_int_genes_p, paste0(dir_out, "T1e_gene_skato_int_", file_path), quote=F, row.names=F, col.names=T)
-write.table(skato_ext_genes_p, paste0(dir_out, "T1e_gene_skato_ext_", file_path), quote=F, row.names=F, col.names=T)
-write.table(skato_all_genes_p, paste0(dir_out, "T1e_gene_skato_all_", file_path), quote=F, row.names=F, col.names=T)
-# SKAT
-write.table(skat_int_genes_p, paste0(dir_out, "T1e_gene_skat_int_", file_path), quote=F, row.names=F, col.names=T)
-write.table(skat_ext_genes_p, paste0(dir_out, "T1e_gene_skat_ext_", file_path), quote=F, row.names=F, col.names=T)
-write.table(skat_all_genes_p, paste0(dir_out, "T1e_gene_skat_all_", file_path), quote=F, row.names=F, col.names=T)
-# Burden
-write.table(burden_int_genes_p, paste0(dir_out, "T1e_gene_burden_int_", file_path), quote=F, row.names=F, col.names=T)
-write.table(burden_ext_genes_p, paste0(dir_out, "T1e_gene_burden_ext_", file_path), quote=F, row.names=F, col.names=T)
-write.table(burden_all_genes_p, paste0(dir_out, "T1e_gene_burden_all_", file_path), quote=F, row.names=F, col.names=T)
+# # LogProx
+# write.table(prox2_ext_genes_p, paste0(dir_out, "T1e_gene_prox2_ext_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox2_ext_genes_p_adj_Ncc, paste0(dir_out, "T1e_gene_prox2_ext_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox2_ext_genes_p_adj_Neff, paste0(dir_out, "T1e_gene_prox2_ext_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox2_all_genes_p, paste0(dir_out, "T1e_gene_prox2_all_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox2_all_genes_p_adj_Ncc, paste0(dir_out, "T1e_gene_prox2_all_adj_Ncc_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(prox2_all_genes_p_adj_Neff, paste0(dir_out, "T1e_gene_prox2_all_adj_Neff_", file_path), quote=F, row.names=F, col.names=T)
+# # SKAT-O
+# write.table(skato_int_genes_p, paste0(dir_out, "T1e_gene_skato_int_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(skato_ext_genes_p, paste0(dir_out, "T1e_gene_skato_ext_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(skato_all_genes_p, paste0(dir_out, "T1e_gene_skato_all_", file_path), quote=F, row.names=F, col.names=T)
+# # SKAT
+# write.table(skat_int_genes_p, paste0(dir_out, "T1e_gene_skat_int_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(skat_ext_genes_p, paste0(dir_out, "T1e_gene_skat_ext_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(skat_all_genes_p, paste0(dir_out, "T1e_gene_skat_all_", file_path), quote=F, row.names=F, col.names=T)
+# # Burden
+# write.table(burden_int_genes_p, paste0(dir_out, "T1e_gene_burden_int_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(burden_ext_genes_p, paste0(dir_out, "T1e_gene_burden_ext_", file_path), quote=F, row.names=F, col.names=T)
+# write.table(burden_all_genes_p, paste0(dir_out, "T1e_gene_burden_all_", file_path), quote=F, row.names=F, col.names=T)
 
 ##############################################################################
 # Check adjustments between unadj AF and case AF
