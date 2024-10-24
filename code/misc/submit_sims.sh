@@ -242,11 +242,12 @@ done
 Scen=s2
 Sub=Ncase4000_Nic4000
 cd /home/math/siglersa/admixed/47IAM_44NFE_5EAS_4AFR/${Scen}/${Sub}/
-Method=prox_ext
+NSIM=1K
+Method=prox_weighted_ext
 
 # keep the header from the first batch
-cp ./t1e/T1e_gene_${Method}_${Scen}_${Sub}_maf0.001_100.txt ./t1e/T1e_gene_${Method}_${Scen}_${Sub}_maf0.001_NEW.txt
-cp ./power/Power_gene_${Method}_${Scen}_${Sub}_maf0.001_100.txt ./power/Power_gene_${Method}_${Scen}_${Sub}_maf0.001_NEW.txt
+cp ./t1e/T1e_gene_${Method}_${Scen}_${Sub}_maf0.001_100.txt ./t1e/T1e_gene_${Method}_${Scen}_${Sub}_maf0.001_Nsim${NSIM}.txt
+cp ./power/Power_gene_${Method}_${Scen}_${Sub}_maf0.001_100.txt ./power/Power_gene_${Method}_${Scen}_${Sub}_maf0.001_Nsim${NSIM}.txt
 
 for j in {200..1000..100} 
 do
@@ -255,8 +256,8 @@ do
 sed -i '1d' ./t1e/T1e_gene_${Method}_${Scen}_${Sub}_maf0.001_${j}.txt
 sed -i '1d' ./power/Power_gene_${Method}_${Scen}_${Sub}_maf0.001_${j}.txt
 
-cat ./t1e/T1e_gene_${Method}_${Scen}_${Sub}_maf0.001_${j}.txt >> ./t1e/T1e_gene_${Method}_${Scen}_${Sub}_maf0.001_NEW.txt
-cat ./power/Power_gene_${Method}_${Scen}_${Sub}_maf0.001_${j}.txt >> ./power/Power_gene_${Method}_${Scen}_${Sub}_maf0.001_NEW.txt
+cat ./t1e/T1e_gene_${Method}_${Scen}_${Sub}_maf0.001_${j}.txt >> ./t1e/T1e_gene_${Method}_${Scen}_${Sub}_maf0.001_Nsim${NSIM}.txt
+cat ./power/Power_gene_${Method}_${Scen}_${Sub}_maf0.001_${j}.txt >> ./power/Power_gene_${Method}_${Scen}_${Sub}_maf0.001_Nsim${NSIM}.txt
 
 done
 
@@ -265,26 +266,36 @@ done
 cd /home/math/siglersa/admixed/47IAM_44NFE_5EAS_4AFR/code/
 Scen=s2
 Sub=Ncase4000_Nic4000
-Nsim=1000
+Nsim=1K
+
+# make scripts
+cp ./submit_summarize_t1e.sh ./summarize_t1e_scripts/submit_summarize_t1e_${Scen}_${Sub}_${Nsim}.sh 
+cp ./summarize_t1e.R ./summarize_t1e_scripts/summarize_t1e_${Scen}_${Sub}_${Nsim}.R
+
+cp ./submit_summarize_power.sh ./summarize_power_scripts/submit_summarize_power_${Scen}_${Sub}_${Nsim}.sh 
+cp ./summarize_power.R ./summarize_power_scripts/summarize_power_${Scen}_${Sub}_${Nsim}.R
 
 # change "xSCENx" to the current scenario
-sed -i "s/xSCENx/$Scen/g" ./submit_summarize_t1e.sh
-sed -i "s/xSCENx/$Scen/g" ./summarize_t1e.R
+sed -i "s/xSCENx/$Scen/g" ./summarize_t1e_scripts/submit_summarize_t1e_${Scen}_${Sub}_${Nsim}.sh
+sed -i "s/xSCENx/$Scen/g" ./summarize_t1e_scripts/summarize_t1e_${Scen}_${Sub}_${Nsim}.R
 
-sed -i "s/xSCENx/$Scen/g" ./submit_summarize_power.sh
-sed -i "s/xSCENx/$Scen/g" ./summarize_power.R
+sed -i "s/xSCENx/$Scen/g" ./summarize_power_scripts/submit_summarize_power_${Scen}_${Sub}_${Nsim}.sh
+sed -i "s/xSCENx/$Scen/g" ./summarize_power_scripts/summarize_power_${Scen}_${Sub}_${Nsim}.R
 
 # change "xSUBx" to the current scenario
-sed -i "s/xSUBx/$Sub/g" ./submit_summarize_t1e.sh
-sed -i "s/xSUBx/$Sub/g" ./summarize_t1e.R
+sed -i "s/xSUBx/$Sub/g" ./summarize_t1e_scripts/submit_summarize_t1e_${Scen}_${Sub}_${Nsim}.sh
+sed -i "s/xSUBx/$Sub/g" ./summarize_t1e_scripts/summarize_t1e_${Scen}_${Sub}_${Nsim}.R
 
-sed -i "s/xSUBx/$Sub/g" ./submit_summarize_power.sh
-sed -i "s/xSUBx/$Sub/g" ./summarize_power.R
+sed -i "s/xSUBx/$Sub/g" ./summarize_power_scripts/submit_summarize_power_${Scen}_${Sub}_${Nsim}.sh
+sed -i "s/xSUBx/$Sub/g" ./summarize_power_scripts/summarize_power_${Scen}_${Sub}_${Nsim}.R
 
 # change "xNSIMx" to the current scenario
-sed -i "s/xNSIMx/$Nsim/g" ./submit_summarize_t1e.sh
-sed -i "s/xNSIMx/$Nsim/g" ./submit_summarize_power.sh
+sed -i "s/xNSIMx/$Nsim/g" ./summarize_t1e_scripts/submit_summarize_t1e_${Scen}_${Sub}_${Nsim}.sh
+sed -i "s/xNSIMx/$Nsim/g" ./summarize_t1e_scripts/summarize_t1e_${Scen}_${Sub}_${Nsim}.R
+
+sed -i "s/xNSIMx/$Nsim/g" ./summarize_power_scripts/submit_summarize_power_${Scen}_${Sub}_${Nsim}.sh
+sed -i "s/xNSIMx/$Nsim/g" ./summarize_power_scripts/summarize_power_${Scen}_${Sub}_${Nsim}.R
 
 # submit jobs
-sbatch ./summarize_t1e.sh
-sbatch ./summarize_power.sh
+sbatch ./summarize_t1e_scripts/submit_summarize_t1e_${Scen}_${Sub}_${Nsim}.sh
+sbatch ./summarize_power_scripts/submit_summarize_power_${Scen}_${Sub}_${Nsim}.sh
